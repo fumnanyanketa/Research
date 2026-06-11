@@ -1,0 +1,4 @@
+yt-dlp>=2026.1.1
+PyYAML>=6.0
+feedparser>=6.0
+html2text>=2024.2.26

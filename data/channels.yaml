@@ -1,0 +1,110 @@
+# Source map for the fetcher scripts.
+#
+# watch_channels: podcast/interview YouTube channels scanned for appearances.
+#   The transcript fetcher lists each channel's uploads since --since, matches
+#   video title/description against each person's `aliases`, and pulls captions.
+# people.<slug>.blogs: RSS/Atom feeds pulled by the blog fetcher.
+# people.<slug>.youtube: a person's own channel (scanned in full, no alias match).
+
+watch_channels:
+  - name: Dwarkesh Podcast
+    url: https://www.youtube.com/@DwarkeshPatel
+  - name: Lex Fridman
+    url: https://www.youtube.com/@lexfridman
+  - name: Lenny's Podcast
+    url: https://www.youtube.com/@LennysPodcast
+  - name: 20VC
+    url: https://www.youtube.com/@20VC
+  - name: All-In Podcast
+    url: https://www.youtube.com/@allin
+  - name: No Priors
+    url: https://www.youtube.com/@NoPriorsPodcast
+  - name: Hard Fork (NYT)
+    url: https://www.youtube.com/@hardfork
+  - name: The Cognitive Revolution
+    url: https://www.youtube.com/@CognitiveRevolutionPodcast
+  - name: Big Technology
+    url: https://www.youtube.com/@BigTechnologyPodcast
+  - name: BG2
+    url: https://www.youtube.com/@bg2pod
+  - name: Y Combinator
+    url: https://www.youtube.com/@ycombinator
+  - name: a16z
+    url: https://www.youtube.com/@a16z
+  - name: TED
+    url: https://www.youtube.com/@TED
+  - name: Anthropic
+    url: https://www.youtube.com/@anthropic-ai
+  - name: OpenAI
+    url: https://www.youtube.com/@OpenAI
+  - name: Google DeepMind
+    url: https://www.youtube.com/@GoogleDeepMind
+
+people:
+  sam-altman:
+    name: Sam Altman
+    aliases: [Sam Altman, Altman]
+    blogs:
+      - https://blog.samaltman.com/posts.atom
+  dario-amodei:
+    name: Dario Amodei
+    aliases: [Dario Amodei, Dario]
+    blogs:
+      - https://www.darioamodei.com/feed.xml
+  demis-hassabis:
+    name: Demis Hassabis
+    aliases: [Demis Hassabis, Demis]
+  elon-musk:
+    name: Elon Musk
+    aliases: [Elon Musk, Elon]
+  mark-zuckerberg:
+    name: Mark Zuckerberg
+    aliases: [Mark Zuckerberg, Zuckerberg]
+  alexandr-wang:
+    name: Alexandr Wang
+    aliases: [Alexandr Wang, Alex Wang]
+  ilya-sutskever:
+    name: Ilya Sutskever
+    aliases: [Ilya Sutskever, Ilya]
+  andrej-karpathy:
+    name: Andrej Karpathy
+    aliases: [Andrej Karpathy, Karpathy]
+    youtube: https://www.youtube.com/@AndrejKarpathy
+    blogs:
+      - https://karpathy.bearblog.dev/feed/
+  boris-cherny:
+    name: Boris Cherny
+    aliases: [Boris Cherny, Cherny]
+  jensen-huang:
+    name: Jensen Huang
+    aliases: [Jensen Huang]
+  yann-lecun:
+    name: Yann LeCun
+    aliases: [Yann LeCun, LeCun]
+  geoffrey-hinton:
+    name: Geoffrey Hinton
+    aliases: [Geoffrey Hinton, Hinton]
+  mustafa-suleyman:
+    name: Mustafa Suleyman
+    aliases: [Mustafa Suleyman, Suleyman]
+  eliezer-yudkowsky:
+    name: Eliezer Yudkowsky
+    aliases: [Eliezer Yudkowsky, Yudkowsky]
+  leopold-aschenbrenner:
+    name: Leopold Aschenbrenner
+    aliases: [Leopold Aschenbrenner, Aschenbrenner]
+  simon-willison:
+    name: Simon Willison
+    aliases: [Simon Willison]
+    blogs:
+      - https://simonwillison.net/atom/everything/
+  zvi-mowshowitz:
+    name: Zvi Mowshowitz
+    aliases: [Zvi Mowshowitz, Zvi]
+    blogs:
+      - https://thezvi.substack.com/feed
+  dwarkesh-patel:
+    name: Dwarkesh Patel
+    aliases: [Dwarkesh Patel, Dwarkesh]
+    blogs:
+      - https://www.dwarkesh.com/feed
