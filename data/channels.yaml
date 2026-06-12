@@ -1,10 +1,10 @@
 # Source map for the fetcher scripts.
 #
 # watch_channels: podcast/interview YouTube channels scanned for appearances.
-#   The transcript fetcher lists each channel's uploads since --since, matches
-#   video title/description against each person's `aliases`, and pulls captions.
+#   The transcript fetcher lists each channel's uploads, matches video titles
+#   against each person's `aliases`, and pulls captions.
 # people.<slug>.blogs: RSS/Atom feeds pulled by the blog fetcher.
-# people.<slug>.youtube: a person's own channel (scanned in full, no alias match).
+# people.<slug>.youtube: a person's own channel (scanned directly).
 
 watch_channels:
   - name: Dwarkesh Podcast
@@ -39,8 +39,17 @@ watch_channels:
     url: https://www.youtube.com/@OpenAI
   - name: Google DeepMind
     url: https://www.youtube.com/@GoogleDeepMind
+  - name: Latent Space
+    url: https://www.youtube.com/@LatentSpacePod
+  - name: Machine Learning Street Talk
+    url: https://www.youtube.com/@MachineLearningStreetTalk
+  - name: The Logan Bartlett Show
+    url: https://www.youtube.com/@LoganBartlett
+  - name: Founders Fund
+    url: https://www.youtube.com/@foundersfund
 
 people:
+  # ── Tier 1: Frontier lab owners & CEOs ───────────────────────────────────
   sam-altman:
     name: Sam Altman
     aliases: [Sam Altman, Altman]
@@ -51,6 +60,9 @@ people:
     aliases: [Dario Amodei, Dario]
     blogs:
       - https://www.darioamodei.com/feed.xml
+  daniela-amodei:
+    name: Daniela Amodei
+    aliases: [Daniela Amodei, Daniela]
   demis-hassabis:
     name: Demis Hassabis
     aliases: [Demis Hassabis, Demis]
@@ -63,6 +75,32 @@ people:
   alexandr-wang:
     name: Alexandr Wang
     aliases: [Alexandr Wang, Alex Wang]
+  sundar-pichai:
+    name: Sundar Pichai
+    aliases: [Sundar Pichai, Pichai]
+  satya-nadella:
+    name: Satya Nadella
+    aliases: [Satya Nadella, Nadella]
+  mustafa-suleyman:
+    name: Mustafa Suleyman
+    aliases: [Mustafa Suleyman, Suleyman]
+  jensen-huang:
+    name: Jensen Huang
+    aliases: [Jensen Huang, Jensen]
+  liang-wenfeng:
+    name: Liang Wenfeng
+    aliases: [Liang Wenfeng, DeepSeek founder]
+  arthur-mensch:
+    name: Arthur Mensch
+    aliases: [Arthur Mensch, Mensch]
+  aravind-srinivas:
+    name: Aravind Srinivas
+    aliases: [Aravind Srinivas, Srinivas]
+  greg-brockman:
+    name: Greg Brockman
+    aliases: [Greg Brockman, Brockman]
+
+  # ── Tier 2: Chief scientists & researchers ────────────────────────────────
   ilya-sutskever:
     name: Ilya Sutskever
     aliases: [Ilya Sutskever, Ilya]
@@ -72,37 +110,162 @@ people:
     youtube: https://www.youtube.com/@AndrejKarpathy
     blogs:
       - https://karpathy.bearblog.dev/feed/
-  boris-cherny:
-    name: Boris Cherny
-    aliases: [Boris Cherny, Cherny]
-  jensen-huang:
-    name: Jensen Huang
-    aliases: [Jensen Huang]
   yann-lecun:
     name: Yann LeCun
     aliases: [Yann LeCun, LeCun]
   geoffrey-hinton:
     name: Geoffrey Hinton
     aliases: [Geoffrey Hinton, Hinton]
-  mustafa-suleyman:
-    name: Mustafa Suleyman
-    aliases: [Mustafa Suleyman, Suleyman]
+  yoshua-bengio:
+    name: Yoshua Bengio
+    aliases: [Yoshua Bengio, Bengio]
+  jakub-pachocki:
+    name: Jakub Pachocki
+    aliases: [Jakub Pachocki, Pachocki]
+  mark-chen:
+    name: Mark Chen
+    aliases: [Mark Chen]
+  jared-kaplan:
+    name: Jared Kaplan
+    aliases: [Jared Kaplan, Kaplan]
+  chris-olah:
+    name: Chris Olah
+    aliases: [Chris Olah, Olah]
+  jan-leike:
+    name: Jan Leike
+    aliases: [Jan Leike, Leike]
+  noam-shazeer:
+    name: Noam Shazeer
+    aliases: [Noam Shazeer, Shazeer]
+  noam-brown:
+    name: Noam Brown
+    aliases: [Noam Brown]
+  john-schulman:
+    name: John Schulman
+    aliases: [John Schulman, Schulman]
+  mira-murati:
+    name: Mira Murati
+    aliases: [Mira Murati, Murati]
+  sholto-douglas:
+    name: Sholto Douglas
+    aliases: [Sholto Douglas, Sholto]
+  trenton-bricken:
+    name: Trenton Bricken
+    aliases: [Trenton Bricken, Bricken]
+  francois-chollet:
+    name: François Chollet
+    aliases: [François Chollet, Francois Chollet, Chollet]
+    youtube: https://www.youtube.com/@francois_chollet
+
+  # ── Tier 3: Futurists & ideologues ───────────────────────────────────────
+  ray-kurzweil:
+    name: Ray Kurzweil
+    aliases: [Ray Kurzweil, Kurzweil]
+  nick-bostrom:
+    name: Nick Bostrom
+    aliases: [Nick Bostrom, Bostrom]
   eliezer-yudkowsky:
     name: Eliezer Yudkowsky
     aliases: [Eliezer Yudkowsky, Yudkowsky]
   leopold-aschenbrenner:
     name: Leopold Aschenbrenner
     aliases: [Leopold Aschenbrenner, Aschenbrenner]
-  simon-willison:
-    name: Simon Willison
-    aliases: [Simon Willison]
-    blogs:
-      - https://simonwillison.net/atom/everything/
+  daniel-kokotajlo:
+    name: Daniel Kokotajlo
+    aliases: [Daniel Kokotajlo, Kokotajlo]
+  marc-andreessen:
+    name: Marc Andreessen
+    aliases: [Marc Andreessen, Andreessen, a16z founder]
+  reid-hoffman:
+    name: Reid Hoffman
+    aliases: [Reid Hoffman, Hoffman]
+  vinod-khosla:
+    name: Vinod Khosla
+    aliases: [Vinod Khosla, Khosla]
+  max-tegmark:
+    name: Max Tegmark
+    aliases: [Max Tegmark, Tegmark]
+  stuart-russell:
+    name: Stuart Russell
+    aliases: [Stuart Russell, Russell]
+  roman-yampolskiy:
+    name: Roman Yampolskiy
+    aliases: [Roman Yampolskiy, Yampolskiy]
+  guillaume-verdon:
+    name: Guillaume Verdon
+    aliases: [Guillaume Verdon, Beff Jezos, beff jezos]
+  sam-harris:
+    name: Sam Harris
+    aliases: [Sam Harris, Harris]
+
+  # ── Tier 4: Policy & power brokers ───────────────────────────────────────
+  david-sacks:
+    name: David Sacks
+    aliases: [David Sacks, Sacks]
+  masayoshi-son:
+    name: Masayoshi Son
+    aliases: [Masayoshi Son, Son]
+  larry-ellison:
+    name: Larry Ellison
+    aliases: [Larry Ellison, Ellison]
+  dylan-patel:
+    name: Dylan Patel
+    aliases: [Dylan Patel, Patel]
   zvi-mowshowitz:
     name: Zvi Mowshowitz
     aliases: [Zvi Mowshowitz, Zvi]
     blogs:
       - https://thezvi.substack.com/feed
+
+  # ── Tier 5: Builders & practitioners ─────────────────────────────────────
+  boris-cherny:
+    name: Boris Cherny
+    aliases: [Boris Cherny, Cherny]
+  cat-wu:
+    name: Cat Wu
+    aliases: [Cat Wu]
+  michael-truell:
+    name: Michael Truell
+    aliases: [Michael Truell, Truell]
+  amjad-masad:
+    name: Amjad Masad
+    aliases: [Amjad Masad, Masad]
+    youtube: https://www.youtube.com/@replit
+  scott-wu:
+    name: Scott Wu
+    aliases: [Scott Wu]
+  guillermo-rauch:
+    name: Guillermo Rauch
+    aliases: [Guillermo Rauch, Rauch]
+  garry-tan:
+    name: Garry Tan
+    aliases: [Garry Tan, Tan]
+  simon-willison:
+    name: Simon Willison
+    aliases: [Simon Willison]
+    blogs:
+      - https://simonwillison.net/atom/everything/
+  swyx:
+    name: swyx
+    aliases: [swyx, Shawn Wang]
+    youtube: https://www.youtube.com/@swyx
+  andrew-ng:
+    name: Andrew Ng
+    aliases: [Andrew Ng, Ng]
+    youtube: https://www.youtube.com/@Deeplearningai
+  jeremy-howard:
+    name: Jeremy Howard
+    aliases: [Jeremy Howard, Howard]
+    youtube: https://www.youtube.com/@howardjeremyp
+  george-hotz:
+    name: George Hotz
+    aliases: [George Hotz, geohot]
+    youtube: https://www.youtube.com/@geohotarchive
+  logan-kilpatrick:
+    name: Logan Kilpatrick
+    aliases: [Logan Kilpatrick, Kilpatrick]
+
+  # ── Aggregator ────────────────────────────────────────────────────────────
   dwarkesh-patel:
     name: Dwarkesh Patel
     aliases: [Dwarkesh Patel, Dwarkesh]
