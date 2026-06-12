@@ -32,13 +32,14 @@ def run_ytdlp(args: list[str]) -> str:
 
 
 def list_videos_since(channel_url: str, since: str) -> list[dict]:
-    """List videos uploaded on/after `since` (YYYY-MM-DD) for a channel."""
-    dateafter = since.replace("-", "")
+    """List recent videos for a channel.
+
+    Flat playlists carry no upload dates, so date filtering happens later in
+    fetch_transcript via --dateafter; here we just cap to recent uploads.
+    """
     out = run_ytdlp([
         "--flat-playlist",
-        "--dateafter", dateafter,
-        "--break-on-reject",
-        "--lazy-playlist",
+        "--playlist-items", "1:80",
         "--print", "%(.{id,title,description,upload_date})j",
         f"{channel_url}/videos",
     ])
@@ -66,11 +67,22 @@ def vtt_to_text(vtt: str) -> str:
     return "\n".join(text)
 
 
-def fetch_transcript(video_id: str, workdir: Path) -> str | None:
-    run_ytdlp([
+def fetch_transcript(video_id: str, workdir: Path, since: str) -> tuple[str, str] | None:
+    """Return (upload_date YYYYMMDD, transcript) or None if too old/no subs.
+
+    --dateafter makes yt-dlp reject videos older than `since` so no subs are
+    written for them. player_client=web_embedded avoids YouTube's bot check
+    on datacenter IPs; it exposes no video formats, hence
+    --ignore-no-formats-error (we only want subtitles anyway).
+    """
+    out = run_ytdlp([
         "--skip-download",
+        "--ignore-no-formats-error",
+        "--extractor-args", "youtube:player_client=web_embedded",
+        "--dateafter", since.replace("-", ""),
+        "--no-simulate", "--print", "upload_date",
         "--write-auto-subs", "--write-subs",
-        "--sub-langs", "en.*",
+        "--sub-langs", "en,en-orig,en-US,en-GB",
         "--sub-format", "vtt",
         "-o", str(workdir / "%(id)s"),
         f"https://www.youtube.com/watch?v={video_id}",
@@ -81,7 +93,7 @@ def fetch_transcript(video_id: str, workdir: Path) -> str | None:
     text = vtt_to_text(vtts[0].read_text(encoding="utf-8"))
     for f in vtts:
         f.unlink()
-    return text
+    return out.strip().splitlines()[0] if out.strip() else "00000000", text
 
 
 def main() -> None:
@@ -115,11 +127,11 @@ def main() -> None:
             if not matched:
                 continue
             print(f"  match: {video['title']}")
-            transcript = fetch_transcript(video["id"], workdir)
-            if not transcript:
-                print("    no captions available", file=sys.stderr)
+            result = fetch_transcript(video["id"], workdir, args.since)
+            if not result:
+                print("    skipped (too old or no captions)", file=sys.stderr)
                 continue
-            date = video.get("upload_date", "00000000")
+            date, transcript = result
             date = f"{date[:4]}-{date[4:6]}-{date[6:]}"
             for slug in matched:
                 dest = args.out / slug
