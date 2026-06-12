@@ -33,6 +33,11 @@ allowed). Two options:
 
 2. Or relax the environment's network policy for Claude Code on the web
    (see https://code.claude.com/docs/en/claude-code-on-the-web) and ask Claude to run them.
+   Hosts needed: `www.youtube.com`, `blog.samaltman.com`, `www.darioamodei.com`,
+   `karpathy.bearblog.dev`, `simonwillison.net`, `thezvi.substack.com`, `www.dwarkesh.com`.
+   A SessionStart hook (`.claude/hooks/session-start.sh`) installs the script
+   dependencies and patches the certifi CA bundle (yt-dlp ignores `SSL_CERT_FILE`,
+   so the environment's TLS proxy CA must be appended for YouTube fetches to work).
 
 ## Updating
 
