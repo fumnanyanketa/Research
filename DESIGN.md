@@ -30,9 +30,13 @@ You talk; the system listens, files, and follows up. Five jobs:
 
 ## 2. Understand (the pipeline)
 
-Runs server-side after upload:
-
-1. **Transcription with speaker diarization** — Deepgram or AssemblyAI.
+1. **Transcription — free, on-device** — Whisper running on the phone via
+   `whisper.rn` (whisper.cpp). No per-minute cost, works offline, audio never
+   leaves the device for transcription. Trade-offs accepted for v1: no
+   automatic speaker labels (Claude infers speakers from conversation flow
+   during extraction) and some on-device processing time after long
+   recordings. Paid diarized transcription (Deepgram/AssemblyAI) stays on the
+   shelf as an optional upgrade if ever wanted.
 2. **Extraction pass (Claude)** — structured JSON output:
    - Summary (2–5 sentences)
    - Action items: `{what, owner (me/them), due date if mentioned, source quote}`
@@ -80,9 +84,9 @@ Audio retention is a setting: keep forever / delete after transcription / keep 3
 
 | Piece | Choice | Why |
 |---|---|---|
-| Mobile app | React Native + Expo | One codebase, iPhone + Android; audio, push, widgets supported |
+| Mobile app | React Native + Expo (dev client) | One codebase, iPhone + Android; audio, push, widgets supported |
 | Backend | Supabase | Postgres + auth + file storage + edge functions + pgvector, solo-dev friendly |
-| Transcription | Deepgram or AssemblyAI | Speaker diarization built in, ~1–2¢/min |
+| Transcription | whisper.rn (on-device Whisper) | Free, offline, private; no per-minute API cost |
 | AI | Claude API | Extraction, debriefs, recall chat |
 | Calendar | Google Calendar API | Reliable cross-platform notifications |
 | Push | Expo Notifications | Works on both platforms |
@@ -107,11 +111,14 @@ Audio retention is a setting: keep forever / delete after transcription / keep 3
 - **Phase 3 — Recall & relationships**: chat over history, people pages, weekly
   review.
 
+## Decisions made
+
+- **Platforms:** both iPhone and Android from day one (single Expo codebase).
+- **Source of truth:** Supabase (custom Postgres database).
+- **Transcription:** free on-device Whisper (`whisper.rn`); no paid
+  transcription APIs. Claude (text-only, pennies per conversation) handles
+  extraction, debriefs, and recall.
+
 ## Open decisions
 
-- Primary platform for testing (iPhone vs Android) — Expo covers both, but we
-  pick one to iterate on first.
-- v1 source of truth: custom Supabase database (long-term right answer) vs
-  Notion as the backend (faster start, already connected, easy to browse) —
-  possible to start with Notion and migrate.
-- Audio retention default.
+- Audio retention default (keep forever vs delete after transcription).
