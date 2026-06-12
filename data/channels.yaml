@@ -45,8 +45,8 @@ watch_channels:
     url: https://www.youtube.com/@MachineLearningStreetTalk
   - name: The Logan Bartlett Show
     url: https://www.youtube.com/@LoganBartlett
-  - name: Founders Fund
-    url: https://www.youtube.com/@foundersfund
+  - name: EconTalk
+    url: https://www.youtube.com/@EconTalk
 
 people:
   # ── Tier 1: Frontier lab owners & CEOs ───────────────────────────────────

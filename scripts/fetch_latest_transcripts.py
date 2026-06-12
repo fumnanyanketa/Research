@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """Fetch the most recent YouTube transcript for each tracked person.
 
-Strategy per person:
-  1. Scan their own YouTube channel (if configured) — last N uploads.
-  2. Scan each watch_channel for the last N uploads, alias-match to person.
-  3. Run targeted YouTube searches (flat-playlist, no per-video fetch).
-  Candidates are tried newest-first; first one with English captions wins.
-  Videos we already have on disk are skipped.
+Runs two passes per person:
 
-All transcript downloads use player_client=web_embedded to bypass the
-datacenter-IP bot check. Subtitle-endpoint 429s are retried with backoff.
+  Pass A — Latest content (any topic):
+    Scans own channel + watch channels + general interview searches.
+    Saves the single most recent video with English captions.
+
+  Pass B — Big-ideas / futurism (last 6 months):
+    Targeted searches for predictions, AGI, future-of-AI, business-model
+    thinking, and any futuristic or forward-looking talk. Saves up to
+    --futures-top results, skipping videos already captured in Pass A.
+    Output filename is prefixed with "futures-".
 
 Usage:
     python scripts/fetch_latest_transcripts.py data/channels.yaml
     python scripts/fetch_latest_transcripts.py data/channels.yaml --channel-depth 40
+    python scripts/fetch_latest_transcripts.py data/channels.yaml --futures-only
 """
 
 import argparse
@@ -22,6 +25,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import date, timedelta
 from pathlib import Path
 
 import yaml
@@ -37,14 +41,14 @@ def run_ytdlp(args: list[str], timeout: int = 180) -> str:
     if result.returncode != 0 and result.stderr.strip():
         last = result.stderr.strip().splitlines()[-1]
         skip = ("n challenge", "impersonation", "Only images",
-                "Requested format", "No video formats")
+                "Requested format", "No video formats", "404")
         if not any(s in last for s in skip):
             print(f"  yt-dlp: {last}", file=sys.stderr)
     return result.stdout
 
 
 def flat_list(url_or_search: str, n: int) -> list[dict]:
-    """Return flat-playlist entries — no per-video page fetches."""
+    """Return flat-playlist entries — no per-video page fetches, no bot check."""
     out = run_ytdlp([
         "--flat-playlist",
         "--playlist-items", f"1:{n}",
@@ -78,8 +82,8 @@ def fetch_transcript(video_id: str, workdir: Path,
                      retries: int = 2) -> tuple[str, str] | None:
     """Return (upload_date YYYYMMDD, transcript) or None.
 
-    Uses web_embedded client to avoid bot-check on datacenter IPs.
-    Retries subtitle-endpoint 429s with exponential backoff.
+    Uses web_embedded client to bypass bot-check on datacenter IPs.
+    Retries 429s with exponential backoff.
     """
     for attempt in range(retries + 1):
         if attempt:
@@ -100,11 +104,10 @@ def fetch_transcript(video_id: str, workdir: Path,
             text = vtt_to_text(vtts[0].read_text(encoding="utf-8"))
             for f in vtts:
                 f.unlink()
-            date = out.strip().splitlines()[0] if out.strip() else "00000000"
-            return date, text
-        # check if it was a 429 (worth retrying)
+            upload_date = out.strip().splitlines()[0] if out.strip() else "00000000"
+            return upload_date, text
         if "429" not in out and attempt == 0:
-            return None  # not a transient error, don't retry
+            return None
     return None
 
 
@@ -113,13 +116,13 @@ def already_have(out_dir: Path, slug: str, video_id: str) -> bool:
 
 
 def save_transcript(out_dir: Path, slug: str, video_id: str,
-                    title: str, channel: str,
-                    upload_date: str, transcript: str) -> Path:
+                    title: str, channel: str, upload_date: str,
+                    transcript: str, prefix: str = "") -> Path:
     d = upload_date or "00000000"
     date_fmt = f"{d[:4]}-{d[4:6]}-{d[6:]}"
     dest = out_dir / slug
     dest.mkdir(exist_ok=True)
-    path = dest / f"{date_fmt}-{video_id}.md"
+    path = dest / f"{prefix}{date_fmt}-{video_id}.md"
     path.write_text(
         f"# {title}\n\n"
         f"- Channel: {channel}\n"
@@ -131,6 +134,57 @@ def save_transcript(out_dir: Path, slug: str, video_id: str,
     return path
 
 
+def dedup_sort(vids: list[dict]) -> list[dict]:
+    seen, out = set(), []
+    for v in vids:
+        if v.get("id") and v["id"] not in seen:
+            seen.add(v["id"])
+            out.append(v)
+    return sorted(out, key=lambda v: v.get("upload_date") or "0", reverse=True)
+
+
+def try_download(pool: list[dict], slug: str, out_dir: Path,
+                 workdir: Path, label: str, max_try: int = 20,
+                 prefix: str = "", futures_since: str = "") -> int:
+    """Try pool entries in order; save first success. Return count saved."""
+    saved = 0
+    for video in pool[:max_try]:
+        vid_id = video["id"]
+        title = video.get("title", "Untitled")
+        channel = video.get("channel", "")
+        date_tag = video.get("upload_date") or "?"
+
+        if already_have(out_dir, slug, vid_id):
+            print(f"  already have: {title[:72]}")
+            return 1  # counts as done
+
+        print(f"  [{date_tag}] {title[:72]}")
+        result = fetch_transcript(vid_id, workdir)
+        if not result:
+            print(f"    → no English captions")
+            continue
+
+        upload_date, transcript = result
+        if not transcript.strip():
+            print(f"    → empty transcript")
+            continue
+
+        # For futures pass: skip if video is older than the cutoff
+        if futures_since and upload_date and upload_date != "00000000":
+            if upload_date < futures_since.replace("-", ""):
+                print(f"    → older than 6-month cutoff ({upload_date}), skipping")
+                continue
+
+        path = save_transcript(out_dir, slug, vid_id, title, channel,
+                               upload_date, transcript, prefix=prefix)
+        print(f"  ✓ {label} → {path.name}")
+        saved += 1
+        time.sleep(2)
+        break
+
+    return saved
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -139,12 +193,17 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", type=Path)
     parser.add_argument("--out", type=Path, default=Path("transcripts"))
-    parser.add_argument("--channel-depth", type=int, default=60,
-                        help="Videos to scan per watch channel (default 60)")
-    parser.add_argument("--own-depth", type=int, default=15,
-                        help="Own-channel videos to consider (default 15)")
-    parser.add_argument("--search-n", type=int, default=8,
-                        help="Search results per query (default 8)")
+    parser.add_argument("--channel-depth", type=int, default=60)
+    parser.add_argument("--own-depth", type=int, default=15)
+    parser.add_argument("--search-n", type=int, default=8)
+    parser.add_argument("--futures-top", type=int, default=1,
+                        help="Max futures transcripts per person (default 1)")
+    parser.add_argument("--futures-months", type=int, default=6,
+                        help="How far back to look for futures content (default 6)")
+    parser.add_argument("--futures-only", action="store_true",
+                        help="Skip Pass A; only run the futures pass")
+    parser.add_argument("--latest-only", action="store_true",
+                        help="Skip Pass B; only run the latest-content pass")
     args = parser.parse_args()
 
     config = yaml.safe_load(args.config.read_text())
@@ -155,12 +214,15 @@ def main() -> None:
     workdir = args.out / ".tmp"
     workdir.mkdir(exist_ok=True)
 
-    # candidates[slug] = list of {id, title, upload_date, channel}
-    candidates: dict[str, list[dict]] = {slug: [] for slug in people}
+    since_date = (date.today() - timedelta(days=args.futures_months * 30)
+                  ).strftime("%Y-%m-%d")
 
     # -----------------------------------------------------------------------
-    # Pass 1: own channels
+    # Candidate discovery (shared by both passes)
     # -----------------------------------------------------------------------
+    candidates: dict[str, list[dict]] = {slug: [] for slug in people}
+    futures_candidates: dict[str, list[dict]] = {slug: [] for slug in people}
+
     print("=== Scanning own channels ===")
     for slug, person in people.items():
         if not person.get("youtube"):
@@ -170,27 +232,23 @@ def main() -> None:
         for v in vids:
             v.setdefault("channel", person["name"])
         candidates[slug].extend(vids)
+        futures_candidates[slug].extend(vids)
 
-    # -----------------------------------------------------------------------
-    # Pass 2: watch channels — scan once, fan out to matched people
-    # -----------------------------------------------------------------------
     print(f"\n=== Scanning {len(watch_channels)} watch channels "
-          f"(last {args.channel_depth} videos each) ===")
+          f"(last {args.channel_depth} each) ===")
     for wc in watch_channels:
         print(f"  {wc['name']}...")
         vids = flat_list(f"{wc['url']}/videos", args.channel_depth)
         for v in vids:
             v.setdefault("channel", wc["name"])
-            haystack = f"{v.get('title','')}"
+            haystack = v.get("title", "")
             for slug, person in people.items():
                 if any(a.lower() in haystack.lower()
                        for a in person.get("aliases", [person["name"]])):
                     candidates[slug].append(v)
+                    futures_candidates[slug].append(v)
 
-    # -----------------------------------------------------------------------
-    # Pass 3: targeted YouTube searches (flat, no per-video fetch)
-    # -----------------------------------------------------------------------
-    print("\n=== YouTube search per person ===")
+    print("\n=== YouTube search — latest content ===")
     for slug, person in people.items():
         name = person["name"]
         for query in [
@@ -198,73 +256,100 @@ def main() -> None:
             f"{name} artificial intelligence 2025",
             f'"{name}" podcast interview',
         ]:
-            vids = flat_list(f"ytsearch{args.search_n}:{query}",
-                             args.search_n)
+            vids = flat_list(f"ytsearch{args.search_n}:{query}", args.search_n)
             for v in vids:
                 v.setdefault("channel", "")
             candidates[slug].extend(vids)
             time.sleep(0.5)
 
-    # -----------------------------------------------------------------------
-    # Deduplicate and sort candidates
-    # -----------------------------------------------------------------------
-    def dedup_sort(vids: list[dict]) -> list[dict]:
-        seen, out = set(), []
-        for v in vids:
-            if v.get("id") and v["id"] not in seen:
-                seen.add(v["id"])
-                out.append(v)
-        # Sort: known dates descending; unknowns at end
-        return sorted(out,
-                      key=lambda v: v.get("upload_date") or "0",
-                      reverse=True)
-
-    for slug in candidates:
-        candidates[slug] = dedup_sort(candidates[slug])
-
-    # -----------------------------------------------------------------------
-    # Download transcripts — one per person (most recent with captions)
-    # -----------------------------------------------------------------------
-    print("\n=== Downloading transcripts ===")
-    total_saved = 0
+    print("\n=== YouTube search — big ideas / futures ===")
     for slug, person in people.items():
         name = person["name"]
-        pool = candidates[slug]
-        print(f"\n{name} ({len(pool)} candidates)")
+        for query in [
+            f"{name} future of AI predictions 2026",
+            f"{name} AGI artificial general intelligence",
+            f"{name} superintelligence predictions",
+            f"{name} AI future business models",
+            f'"{name}" where is AI going',
+            f'"{name}" AI 2025 2026 predictions interview',
+        ]:
+            vids = flat_list(f"ytsearch{args.search_n}:{query}", args.search_n)
+            for v in vids:
+                v.setdefault("channel", "")
+            futures_candidates[slug].extend(vids)
+            time.sleep(0.5)
 
-        saved = False
-        for video in pool[:20]:  # try at most 20 per person
-            vid_id = video["id"]
-            title = video.get("title", "Untitled")
-            channel = video.get("channel", "")
-            date = video.get("upload_date") or "?"
+    for slug in people:
+        candidates[slug] = dedup_sort(candidates[slug])
+        futures_candidates[slug] = dedup_sort(futures_candidates[slug])
 
-            if already_have(args.out, slug, vid_id):
-                print(f"  already have: {title[:70]}")
-                saved = True
-                break
+    # -----------------------------------------------------------------------
+    # Pass A — Latest content
+    # -----------------------------------------------------------------------
+    total_latest = 0
+    if not args.futures_only:
+        print("\n=== Pass A: downloading latest transcripts ===")
+        for slug, person in people.items():
+            print(f"\n{person['name']} ({len(candidates[slug])} candidates)")
+            n = try_download(candidates[slug], slug, args.out,
+                             workdir, label="latest", max_try=20)
+            total_latest += n
+            if n == 0:
+                print(f"  ✗ no transcript found")
 
-            print(f"  [{date}] {title[:70]}")
-            result = fetch_transcript(vid_id, workdir)
-            if not result:
-                print(f"    → no English captions")
-                continue
+    # -----------------------------------------------------------------------
+    # Pass B — Big ideas / futures (last 6 months)
+    # -----------------------------------------------------------------------
+    total_futures = 0
+    if not args.latest_only:
+        print(f"\n=== Pass B: downloading futures transcripts "
+              f"(since {since_date}) ===")
+        for slug, person in people.items():
+            pool = futures_candidates[slug]
+            print(f"\n{person['name']} ({len(pool)} candidates)")
 
-            upload_date, transcript = result
-            if not transcript.strip():
-                print(f"    → empty transcript")
-                continue
+            # Filter: prefer videos we don't already have from Pass A,
+            # but still try own-channel / watch-channel ones which may be recent
+            saved = 0
+            for video in pool[:25]:
+                vid_id = video["id"]
+                title = video.get("title", "Untitled")
+                channel = video.get("channel", "")
+                date_tag = video.get("upload_date") or "?"
 
-            path = save_transcript(args.out, slug, vid_id,
-                                   title, channel, upload_date, transcript)
-            print(f"  ✓ saved → {path}")
-            saved = True
-            total_saved += 1
-            time.sleep(2)
-            break
+                # Skip if already saved (any file for this video_id in this slug)
+                existing = list(args.out.glob(f"{slug}/*{vid_id}*"))
+                if existing:
+                    print(f"  already have: {title[:72]}")
+                    continue  # don't count as saved; look for a different video
 
-        if not saved:
-            print(f"  ✗ no transcript found")
+                print(f"  [{date_tag}] {title[:72]}")
+                result = fetch_transcript(vid_id, workdir)
+                if not result:
+                    print(f"    → no English captions")
+                    continue
+
+                upload_date, transcript = result
+                if not transcript.strip():
+                    print(f"    → empty transcript")
+                    continue
+
+                if upload_date and upload_date != "00000000":
+                    if upload_date < since_date.replace("-", ""):
+                        print(f"    → older than {since_date} ({upload_date})")
+                        continue
+
+                path = save_transcript(args.out, slug, vid_id, title, channel,
+                                       upload_date, transcript, prefix="futures-")
+                print(f"  ✓ futures → {path.name}")
+                saved += 1
+                total_futures += 1
+                time.sleep(2)
+                if saved >= args.futures_top:
+                    break
+
+            if saved == 0:
+                print(f"  ✗ no futures transcript found")
 
     try:
         workdir.rmdir()
@@ -272,7 +357,9 @@ def main() -> None:
         pass
 
     print(f"\n{'='*60}")
-    print(f"Done. Transcripts saved this run: {total_saved}")
+    print(f"Latest transcripts saved:  {total_latest}")
+    print(f"Futures transcripts saved: {total_futures}")
+    print(f"Total: {total_latest + total_futures}")
 
 
 if __name__ == "__main__":
