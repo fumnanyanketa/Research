@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Life OS — desktop dashboard preview</title>
+<style>
+  :root {
+    --ink: #1c1c1e; --teal: #2a9d8f; --amber: #e9a200; --red: #d62828;
+    --grey: #8d99ae; --line: #e5e5ea; --bg: #f4f4f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .shell { max-width: 1180px; margin: 0 auto; }
+  .topbar { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+  .brand { font-size: 22px; font-weight: 800; }
+  .who { color: #777; font-size: 14px; }
+
+  .capture { display: flex; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 18px; }
+  .capture .field { flex: 1; color: #aaa; font-size: 15px; align-self: center; }
+  .capture .rec { background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 18px; font-weight: 600; font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 18px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .card h3 { margin: 0 0 12px; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; color: #8a8a8e; }
+  .span2 { grid-column: span 2; }
+
+  /* finance pulse */
+  .finance { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .finance h3 { color: #9a9aa0; }
+  .net { font-size: 30px; font-weight: 800; letter-spacing: 2px; }
+  .reveal { float: right; font-size: 12px; color: var(--ink); background: var(--amber); border-radius: 14px; padding: 4px 12px; font-weight: 700; }
+  .frow { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: #c7c7cc; }
+  .fsrc { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .chip { background: #2a2a2e; color: #ddd; border-radius: 12px; padding: 4px 10px; font-size: 12px; }
+
+  /* goal */
+  .goalbig { font-size: 40px; font-weight: 800; color: var(--amber); line-height: 1; }
+  .goalsub { color: #555; font-size: 13px; margin-top: 6px; }
+  .goalt { font-weight: 600; margin-top: 14px; font-size: 14px; }
+
+  .task { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .taskhead { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.high { background: var(--red); } .dot.med { background: var(--amber); } .dot.low { background: var(--grey); }
+  .what { font-size: 14px; } .what.done { text-decoration: line-through; color: #999; }
+  .meta { font-size: 12px; color: #666; margin-top: 5px; }
+
+  .habit { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+  .box { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+  .box.on { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 700; }
+  .hl { font-size: 14px; } .hl.done { color: #999; }
+  .hsub { font-size: 11px; color: #999; }
+  .ring { float: right; background: var(--teal); color: #fff; border-radius: 14px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+
+  .cal { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f2; font-size: 14px; }
+  .cal .time { color: var(--teal); font-weight: 700; width: 56px; flex: none; }
+
+  .areas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .area { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .area .n { font-size: 13px; font-weight: 600; }
+  .area .c { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .note { max-width: 1180px; margin: 26px auto 0; color: #666; font-size: 13px; line-height: 19px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">Life OS</div>
+    <div class="who">Operator · Saturday, June 13</div>
+  </div>
+
+  <div class="capture">
+    <div class="field">Capture a thought, task, or note — or record a conversation…</div>
+    <div class="rec">● Record</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="card finance">
+      <h3>Finance Pulse <span class="reveal">Reveal</span></h3>
+      <div class="net">$ ••••••</div>
+      <div class="frow"><span>This month</span><span>•••••</span></div>
+      <div class="frow"><span>Today</span><span>•••••</span></div>
+      <div class="fsrc"><span class="chip">Day job</span><span class="chip">Photography</span><span class="chip">Clients</span></div>
+    </div>
+
+    <div class="card">
+      <h3>September Goal</h3>
+      <div class="goalbig">80</div>
+      <div class="goalsub">days to go · 2026-09-01</div>
+      <div class="goalt">Strong language progress before school resumes</div>
+    </div>
+
+    <div class="card">
+      <h3>This week's goals</h3>
+      <div class="task"><div class="taskhead"><span class="dot med"></span><span class="what">Land first paying AI client</span></div></div>
+      <div class="task"><div class="taskhead"><span class="dot low"></span><span class="what">Ship 10 content pieces</span></div></div>
+      <div class="task"><div class="taskhead"><span class="dot low"></span><span class="what">Gym 6 days</span></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Key tasks today</h3>
+      <div class="task">
+        <div class="taskhead"><span class="dot high"></span><span class="what">Send proposal to the nonprofit client</span></div>
+        <div class="meta">You owe · Maria · due 2026-06-16 · AI Business</div>
+      </div>
+      <div class="task">
+        <div class="taskhead"><span class="dot med"></span><span class="what">Edit &amp; deliver the wedding photos</span></div>
+        <div class="meta">You owe · due 2026-06-18 · Photography</div>
+      </div>
+      <div class="task">
+        <div class="taskhead"><span class="dot low"></span><span class="what done">Buy supplements</span></div>
+        <div class="meta">Body &amp; Health</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Today's habits <span class="ring">2/4</span></h3>
+      <div class="habit"><div class="box on">✓</div><div><div class="hl done">Language app — 30 min</div><div class="hsub">5/7 this week</div></div></div>
+      <div class="habit"><div class="box"></div><div><div class="hl">Gym</div><div class="hsub">3/7 this week</div></div></div>
+      <div class="habit"><div class="box on">✓</div><div><div class="hl done">Morning business block</div><div class="hsub">4/7 this week</div></div></div>
+      <div class="habit"><div class="box"></div><div><div class="hl">Evening journal</div><div class="hsub">2/7 this week</div></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Calendar</h3>
+      <div class="cal"><span class="time">09:00</span><span>Cleaning shift</span></div>
+      <div class="cal"><span class="time">14:00</span><span>Client intro call</span></div>
+      <div class="cal"><span class="time">17:30</span><span>Language practice block</span></div>
+      <div class="cal"><span class="time">19:00</span><span>Evening journal</span></div>
+    </div>
+
+    <div class="card span2">
+      <h3>Brain · life areas</h3>
+      <div class="areas">
+        <div class="area"><div class="n">AI Business</div><div class="c">5 open · 2 key</div></div>
+        <div class="area"><div class="n">Photography</div><div class="c">3 open</div></div>
+        <div class="area"><div class="n">Day Job</div><div class="c">1 open</div></div>
+        <div class="area"><div class="n">Money</div><div class="c">2 open</div></div>
+        <div class="area"><div class="n">Language Learning</div><div class="c">goal · 80 days</div></div>
+        <div class="area"><div class="n">Body &amp; Health</div><div class="c">on track</div></div>
+        <div class="area"><div class="n">Mind &amp; Journal</div><div class="c">last entry today</div></div>
+        <div class="area"><div class="n">Personal</div><div class="c">2 open</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">Static preview of the always-on desktop dashboard — same Supabase backend as the phone app, just a wider front end. Finance is hidden by default (click-to-reveal) so your net worth doesn't sit exposed on a screen. Sample data shown; your real entries replace it. Tell me what to change.</p>
+</div>
+</body>
+</html>

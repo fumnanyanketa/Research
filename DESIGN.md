@@ -143,6 +143,10 @@ This shaped v1:
   and a goal with a 2026-09-01 countdown on the Today screen.
 - Capture method: **native app first** (owner's choice). Telegram remains an
   easy future add for zero-friction capture from any device.
+- **Desktop dashboard confirmed** as a second, always-on front end over the
+  same Supabase backend — a wide glanceable view for when the owner is at their
+  desktop, in addition to the phone app. The backend is the asset; front ends
+  are swappable.
 
 ## Open decisions
 
