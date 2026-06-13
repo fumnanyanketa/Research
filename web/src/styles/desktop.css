@@ -1,0 +1,97 @@
+/* Anchor — desktop dashboard styles (light field, dark top bar + hero) */
+
+.dash {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+/* dark top bar */
+.dash-top { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; padding: 13px 14px; border-radius: 20px; }
+.dash-glyph { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
+.dash-brand { font-family: "Geist", sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.03em; line-height: 1; }
+
+/* greeting band */
+.dash-greeting { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 6px 6px 18px; }
+.greet-title { font-family: var(--sans); font-weight: 600; font-size: 30px; letter-spacing: -0.025em; color: var(--text); }
+.greet-sub { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+.greet-chip { display: inline-flex; align-items: center; gap: 8px; flex: none; background: #15171C; border: 1px solid #262A31; border-radius: 999px; padding: 10px 16px; font-size: 13px; font-weight: 600; color: #F4F6F8; box-shadow: var(--shadow-sm); }
+.greet-sep { color: #5E636D; }
+
+.capbar { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--inset); border: 1px solid var(--border); border-radius: 999px; padding: 7px 7px 7px 16px; transition: border-color 140ms ease; }
+.capbar:focus-within { border-color: var(--accent); }
+.capbar-input { flex: 1; min-width: 0; background: none; border: none; outline: none; color: var(--text); font-family: var(--sans); font-size: 14px; }
+.capbar-input::placeholder { color: var(--muted-2); }
+.capbar-rec { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 999px; padding: 9px 16px; font-family: var(--sans); font-weight: 600; font-size: 13px; cursor: pointer; transition: all 140ms ease; flex: none; }
+.capbar-rec:hover { filter: brightness(1.04); }
+.capbar-rec.rec { background: var(--card-2); color: var(--red); border: 1px solid var(--border-2); animation: recpulse 1.5s ease-out infinite; }
+
+.icon-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: all 140ms ease; flex: none; }
+.icon-btn:hover { color: var(--text); border-color: var(--border-2); }
+.icon-badge { position: absolute; top: -3px; right: -3px; min-width: 17px; height: 17px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 10px; font-weight: 700; display: grid; place-items: center; padding: 0 4px; border: 2px solid var(--fc-bg); }
+
+/* grid */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-areas:
+    "goal goal habits habits finance finance"
+    "goal goal cal    cal    finance finance"
+    "tasks tasks tasks brain brain brain";
+  gap: 16px;
+}
+.dcard { padding: 22px; }
+.goal-area { grid-area: goal; display: flex; flex-direction: column; }
+.habits-area { grid-area: habits; }
+.cal-area { grid-area: cal; }
+.finance-area { grid-area: finance; position: relative; display: flex; flex-direction: column; }
+.tasks-area { grid-area: tasks; }
+.brain-area { grid-area: brain; }
+
+/* secondary countdowns in the dark hero */
+.mini-counts { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 16px; display: flex; flex-direction: column; gap: 13px; }
+.mini-count { gap: 12px; }
+.goal-add-row { display: inline-flex; align-items: center; gap: 8px; background: none; border: none; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 12.5px; cursor: pointer; padding: 0; align-self: flex-start; transition: color 140ms ease; }
+.goal-add-row:hover { color: var(--accent); }
+
+/* calendar */
+.calday { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 9px; }
+.cd-name { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted-2); }
+.cd-num { width: 100%; max-width: 46px; aspect-ratio: 1; border-radius: 14px; display: grid; place-items: center; font-size: 16px; font-weight: 600; background: var(--inset); border: 1px solid var(--border); color: var(--muted); }
+.cd-num.now { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.cd-dots { display: flex; gap: 4px; height: 6px; }
+.cd-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+/* finance */
+.reveal-toggle { display: inline-flex; align-items: center; gap: 6px; background: var(--card-2); border: 1px solid var(--border-2); color: var(--muted); border-radius: 999px; padding: 6px 12px; font-family: var(--sans); font-weight: 600; font-size: 12px; cursor: pointer; transition: all 140ms ease; }
+.reveal-toggle:hover { color: var(--text); border-color: var(--faint); }
+.finance-lock { position: absolute; left: 0; right: 0; bottom: 0; top: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--muted-2); font-size: 12.5px; font-weight: 500; pointer-events: none; }
+
+/* brain grid */
+.brain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+.brain-tile { background: var(--inset); border: 1px solid var(--border); border-radius: var(--r-md); padding: 14px; transition: all 150ms ease; cursor: default; }
+.brain-tile.has:hover { border-color: var(--accent); transform: translateY(-2px); }
+.brain-tile .bt-name { font-size: 13px; font-weight: 600; margin-top: 16px; }
+.brain-tile .bt-sub { font-size: 11px; color: var(--muted-2); margin-top: 3px; }
+
+/* responsive */
+@media (max-width: 1100px) {
+  .dash-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "goal goal"
+      "habits finance"
+      "cal finance"
+      "tasks tasks"
+      "brain brain";
+  }
+}
+@media (max-width: 720px) {
+  .dash-top { flex-wrap: wrap; }
+  .capbar { order: 3; flex-basis: 100%; }
+  .dash-grid { grid-template-columns: 1fr; grid-template-areas: "goal" "habits" "cal" "finance" "tasks" "brain"; }
+  .brain-grid { grid-template-columns: repeat(2, 1fr); }
+}

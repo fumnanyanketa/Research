@@ -10,7 +10,8 @@ Full design: [DESIGN.md](./DESIGN.md)
 
 | Path | What it is |
 |---|---|
-| `app/` | Expo (React Native) app, iPhone + Android. Four tabs: **Today** (goal countdown, key tasks, habits), **Capture** (typed or spoken quick thoughts + full conversation recording, on-device transcription), **Tasks** (review/confirm AI-proposed tasks, star key ones, mark done), **Habits** (daily check-offs with weekly streak). |
+| `web/` | **The implemented design** (React + Vite). Recreated from the Claude Design handoff: light field with dark feature cards, lime accent, Geist type. Renders the mobile app (Today / Capture / Tasks / Habits) and the desktop dashboard (countdowns, habits, calendar, finance pulse, key tasks, the "Brain" of life areas). Currently runs on in-memory sample data; next step is wiring it to Supabase. Run: `cd web && npm install && npm run dev`. |
+| `app/` | Earlier Expo (React Native) prototype, iPhone + Android. Four tabs: **Today**, **Capture** (typed or spoken thoughts + conversation recording, on-device transcription), **Tasks**, **Habits**. Kept for the native capture path; the `web/` app is the current design implementation. |
 | `supabase/schema.sql` | Database: `areas`, `entries`, `tasks` (with priority + key star), `habits` + `habit_logs`, `goals`, `finance_entries`. Seeded with life areas, a language-learning habit, and a September goal. |
 | `supabase/functions/process-entry/` | Edge function that runs Claude over a transcript and extracts a summary, the life area, people, decisions, insights, and priority-ranked action items (owed-by-you vs owed-to-you). |
 
