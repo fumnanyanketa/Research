@@ -1,4 +1,4 @@
-# Life OS — Personal Assistant App Design
+# Anchor — Personal Assistant App Design
 
 A personal "life operating system" mobile app: capture conversations and thoughts
 with one tap, have AI understand and file them, and get back action items, daily

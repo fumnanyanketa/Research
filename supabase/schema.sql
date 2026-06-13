@@ -1,4 +1,4 @@
--- Life OS schema. Run in the Supabase SQL editor (idempotent — safe to re-run).
+-- Anchor schema. Run in the Supabase SQL editor (idempotent — safe to re-run).
 
 create extension if not exists pgcrypto;
 

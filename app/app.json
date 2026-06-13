@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Life OS",
-    "slug": "life-os",
+    "name": "Anchor",
+    "slug": "anchor",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,7 +25,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Life OS to record conversations and voice notes for on-device transcription."
+          "microphonePermission": "Allow Anchor to record conversations and voice notes for on-device transcription."
         }
       ]
     ]

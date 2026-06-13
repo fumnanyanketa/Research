@@ -1,4 +1,4 @@
-# Life OS
+# Anchor
 
 A personal "life operating system": record conversations and thoughts with one
 tap, get free on-device transcription, and let AI file everything into a single
