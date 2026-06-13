@@ -1,96 +1,136 @@
-# What This Research Says About Your Career (v2 — deeper, sourced, 3–6 month focus)
+# What 64 AI Voices Actually Say About Your Career (v3 — grounded in the full transcripts)
 
-A synthesis of the AI Voices research **plus** a fresh primary-source pass (June 2026) into one
-question: **what should you actually learn in the next 3–6 months to stay relevant?**
+This version is built by reading the **full verbatim transcripts** — 137 files, ~1.76M words, 64
+people, two long-form appearances each — not the news-summary digests. Eight parallel passes read
+every transcript and pulled the career/skills signal with quotes and file citations. Where a quote
+is cited to `transcripts/<name>/...`, that's the primary source on this branch.
 
-Compiled 2026-06-13. Note on sources: the repo never contained transcripts — the `transcripts/`
-and `posts/` folders were never generated, because the fetcher scripts need network access the
-*default* managed environment blocks (see `README.md`). The 16 files in `voices/` are the research;
-`data/channels.yaml` configures sources for 18 people; `ROSTER.md` lists ~73 *names*. This v2 goes
-beyond those digests by pulling the **primary statements these people made specifically about
-skills and careers**, plus the career-relevant voices the digests skipped, with live links.
+Compiled 2026-06-13. Horizon deliberately capped at **3–6 months** (per your point: past that,
+nobody — including these people — actually knows what "intelligence" will be).
 
 ---
 
-## 1. The load-bearing consensus (what to bank on)
+## 0. A data-quality finding you should act on
 
-1. **2026 is when agents started genuinely working.** Hassabis calls it "soft self-improvement"; Boris Cherny orchestrates hundreds–to–tens-of-thousands of agents a day; Zuckerberg: one or two people now build what took dozens months.
-2. **Verifiable knowledge work is automated first and fastest** — Karpathy's verifiability thesis: capability follows automatic reward signals (math, code, tests). [AI Ascent 2026 talk](https://www.youtube.com/watch?v=96jN2OCOfLs) · [his own summary](https://karpathy.bearblog.dev/sequoia-ascent-2026/)
-3. **The binding constraint moved from algorithms to physical infrastructure** — power, chips, data centers. Jensen Huang: "compute is revenue," $1T+ backlog. Leopold Aschenbrenner bet a $20B fund on it.
-4. **As execution gets cheap, human judgment becomes the scarce input** — Karpathy: "understanding becomes the bottleneck — you must know what to ask, inspect, and reject."
-5. **Even optimists concede large labor disruption is coming** (Dario Amodei wants to pre-fund it; Boris: "job loss really is coming — but job creation is, too").
+The transcript fetcher's title/alias matching produced **many misattributions** — folders that
+don't contain the named person, mostly in the `futures-*` files. Confirmed wrong speaker in at least:
+`jan-leike` (→ Ilya), `jared-kaplan` (→ Jeff Kaplan the Overwatch designer + a Cognition panel),
+`john-schulman` (→ Verizon CEO + a Jensen keynote), `jakub-pachocki/futures` (→ Hassabis),
+`aravind-srinivas` (→ Balaji Srinivasan + Aishwarya Srinivasan), `alexandr-wang/futures` (→ Raschka/Lambert),
+`dylan-patel/futures` (→ Jeetu Patel, Cisco), `chris-olah/futures`, `dwarkesh/futures` (→ Elon),
+`mira-murati/futures` (→ Sundar Pichai), `noam-shazeer/futures` (→ Dario), `noam-brown/futures` (→ No Priors hosts),
+`michael-truell/futures` (→ Dan Shipper), `larry-ellison/futures` (→ Elon), `masayoshi-son` (both),
+`liang-wenfeng` (both), `mark-chen` (both), `garry-tan` (both → Dwarkesh solo + Jessica Fain),
+`vinod-khosla` (→ Keith Rabois), `sam-harris` (both → Kamala Harris politics + a Jeremie Harris panel),
+`reid-hoffman/...` (→ All-In), `sam-altman/2026-01-22` (→ 20VC), `sholto-douglas/futures`, plus several
+third-party "explainer" videos. **Fix: add disambiguation (channel + full-name + role) to the alias
+matcher**, and re-fetch the affected slugs. Ironically, several mislabeled files held the *best* career
+content (Balaji, Aishwarya, Dan Shipper, Keith Rabois, Jeetu Patel, Jessica Fain) — attributed correctly below.
 
-## 2. The disagreement *is* the strategy
+## 1. The overwhelming consensus — "move one level up"
 
-The best-informed people on Earth can't agree on timeline (Musk 2026 · Hassabis ~2030 · Sutskever 5–20 yrs · LeCun "LLMs are a dead end by early 2027") or on job impact (Hinton: most intellectual work at risk · [LeCun: CEO job-loss hype is "extremely destructive," trust economists](https://fortune.com/2026/05/05/ai-job-apocalypse-warnings-destructive-yann-lecun/) · Jensen: net job *creator*).
+The single loudest, most-repeated message across the entire corpus: **as execution gets cheap, your
+value moves up the stack from *doing* to *deciding, directing, and verifying.*** This is not one camp;
+it's nearly everyone, including people who agree on nothing else:
 
-You flagged this yourself: by 18 months out nobody knows what "intelligence" even means. Exactly. So the doc now plans only to a **3–6 month** horizon, and biases toward skills that pay off **whether AGI arrives in 2027 or stalls**. Optionality beats prediction.
+- Karpathy: *"The things that agents can't do is your job now."* (`transcripts/andrej-karpathy/futures-2026-03-20-kwSVtQ7dziU.md`)
+- Cat Wu: *"As code becomes much cheaper to write, the thing that becomes more valuable is deciding what to write."* (`transcripts/cat-wu/2026-04-23-PplmzlgE0kg.md`)
+- LeCun: *"Humans now go one level up in the abstraction hierarchy and our [role] is to decide what to build."* (`transcripts/yann-lecun/2026-05-15-ngBraLDqzdI.md`)
+- Keith Rabois: *"The skill is more like being a CEO now — what are we building and why?"* (`transcripts/vinod-khosla/2026-04-12-xCd9ykretlg.md`)
+- Nadella: *"Golden age for idea people."* (`transcripts/swyx/futures-2026-06-03-cFNI2FORAc0.md`)
+- Michael Truell: workers are *"becoming agent managers… delegating and managing all of these agents working in parallel."* (`transcripts/michael-truell/2026-05-12-8h9j2rskP14.md`)
+- Pachocki: the skill set shifts *"towards this more general vision setting."* (`transcripts/jakub-pachocki/2026-04-09-vK1qEF3a3WM.md`)
+- Noam Brown: *"The people that will be most successful will be the people that complement the AI models really well."* (`transcripts/noam-brown/2026-06-04-h4ZguzEMKAU.md`)
+- George Hotz: *"You are a senior who's reviewing junior dev code."* (`transcripts/george-hotz/2026-02-03-erBX3gTZqJI.md`)
 
-## 3. The "meat sauce" — what the voices *actually advise people to do*
+## 2. What gets automated first — the verifiability rule
 
-This is the layer the v1 digest didn't surface. Here is the real, sourced career advice:
+Karpathy, Chollet, Sholto Douglas, Trenton Bricken, and Hassabis independently give the same rule:
+**work with an automatic, checkable reward signal (code, math, tests) gets automated fastest.** Front-end
+and single-file coding, syntax recall, boilerplate, translation, first-draft writing, routine analysis,
+admin, call-center, and document review are named repeatedly as already-eroding. Chollet: *"the more
+expertise you have… the better you're able to leverage these tools"* — capability follows verifiability,
+so the jagged frontier is superhuman at the verifiable and weak at the fuzzy.
 
-- **Andrej Karpathy — become an "agentic engineer," not a vibe coder.** "Vibe coding raises the floor; agentic engineering extrapolates the ceiling." The human owns *taste, engineering, design*; agents fill the blanks. He admits he sometimes feels "behind as a programmer" — the bar moved. [AI Ascent 2026](https://www.youtube.com/watch?v=96jN2OCOfLs) · [summary](https://karpathy.bearblog.dev/sequoia-ascent-2026/)
-- **Andrew Ng — "this is the best time yet to learn to code," and learn to build agents.** He argues AI makes coding *more* valuable, not less, and that building AI agents is "one of the most in-demand skills in the job market." [Ng on learning to code](https://www.tweaktown.com/news/103975/andrew-ng-pushes-back-on-ai-job-fears-this-is-the-best-time-yet-to-learn-code/index.html) · [his Agentic AI course](https://learn.deeplearning.ai/courses/agentic-ai/information)
-- **Boris Cherny — "go start a startup… it's the golden age."** His advice to 22-year-old CS grads. The durable skills he names: problem-solving, translating user needs into specs an AI can execute, and critical thinking to catch when AI is wrong. [Cherny urges grads to found startups](https://letsdatascience.com/news/boris-cherny-urges-cs-grads-to-found-startups-248f3b70) · [Platformer interview](https://www.platformer.news/boris-cherny-interview-ai-jobs/)
-- **Jensen Huang — "don't watch from the sidelines; build," and your degree matters less than you think.** "All the things that used to matter are still going to matter." Ask: "How can AI elevate my craft?" And separately: the AI buildout is creating *six-figure trade jobs* (electricians, plumbers, technicians). [CMU commencement](https://blogs.nvidia.com/blog/your-career-starts-at-the-beginning-of-the-ai-revolution-nvidia-ceo-tells-graduates/) · [on what to study](https://fortune.com/2026/05/26/jensen-huang-nvidia-ai-colleges-and-universities-china-cutting-arts-degrees/)
-- **swyx (Shawn Wang) — the "AI Engineer" is now a real, fast-growing role.** Not an ML researcher — someone who *integrates* foundation-model APIs into products. The community went from 1 conference (2023) to 7+ worldwide in 2026. [Rise of the AI Engineer](https://www.latent.space/p/ai-engineer) · [AI Engineer summit](https://www.ai.engineer/about)
-- **The AGI-economists (Dwarkesh ep.) — bet on the "relational sector."** Imas & Trammell: what stays scarce is work where *a human being in the loop is itself the value* — trust, empathy, authenticity, accountability. Automating it *lowers* willingness-to-pay. [What remains scarce after AGI?](https://www.dwarkesh.com/p/alex-imas-phil-trammell)
+## 3. What stays scarce — four durable edges
 
-Two surprises worth noting: the optimists (Ng, Cherny, Huang) and the skeptic (LeCun) **converge** on one thing — *keep learning, keep building, don't freeze*. And both Huang and Cherny independently flagged the **trades** (electricians/plumbers/technicians) as concrete winners.
+1. **Taste / judgment / "the right question."** Hassabis ("the soul of a project"), Cat Wu, Rauch, Noam Brown ("research taste"), Dan Shipper, Tegmark (*"what employers pay most for is judgment… taste"* — `transcripts/max-tegmark/futures-2026-03-20-KF_uNAxPFFA.md`).
+2. **Verification / knowing what's safe to ship.** Balaji Srinivasan: *"AI reduces the cost of generation but increases the cost of verification"* (`transcripts/aravind-srinivas/2026-04-07-oheUsh7VtKY.md`); Jeremie Harris cross-checks one model against another; Willison: turning *"fuzzy human requirements into actual working software."*
+3. **The relational / human-chosen edge.** Yampolskiy: *"Jobs where I choose to hire a human. If I don't care who does it, it gets automated"* (`transcripts/roman-yampolskiy/2026-04-17-00RHph_eok4.md`); Altman: people *"will significantly prefer the human doctor"* even when the AI is better; Bengio: *"the human touch is going to take more and more value"*; the Dwarkesh AGI-economics episode's "relational sector."
+4. **The physical world.** Dario and Demis both note robotics lags cognition by years; Dylan Patel and Jensen point to the trades and power/chip buildout as the bottleneck (see §5).
 
-## 4. Mental models to decide with
+## 4. The central tension you must resolve: *adopt aggressively* vs *don't de-skill*
 
-1. **The verifiability spectrum** — the more cheaply your output can be auto-checked, the faster AI eats it. Stay on the "jagged edge": real-world grounding, messy judgment, accountability.
-2. **The barbell** — pair one *maximally AI-leveraged* skill (orchestrating agents) with one *AI-resistant anchor* (a high-trust/physical domain). Avoid the squishy middle: mid-level knowledge work with no physical or relational moat.
-3. **Comparative advantage migrates; it doesn't vanish.** Humans keep work where a human is *required* to be accountable, where trust drops if it's a machine (the relational sector), or where embodiment is still expensive.
-4. **Own a layer of the stack** (Jensen's five: energy → chips → infrastructure → models → applications). Lower = more durable demand now; higher = lower entry barrier but faster churn.
-5. **Be the orchestrator, not the producer** — direct, verify, and *take responsibility for* fleets of agents.
+This is the most useful thing the long-form transcripts surface that the digests miss — a real, unresolved
+fault line:
 
-## 5. The recommendation (ranked by robustness)
+- **Adopt now, the cost of waiting compounds:** Nadella — *"Skilling is not mystical. It's just by doing."* (`transcripts/satya-nadella/futures-2026-01-21-5nCbHsCG334.md`); swyx — *"the opportunity cost of waiting has increased… if you wait you will necessarily choose to be behind."* (`transcripts/swyx/2026-02-20-kQqrMNviM9U.md`); Dan Shipper — *"the only thing you need to do is ride the models."*; Scott Wu — *"we have to go learn how to do this right now."*; Ray Kurzweil — *"you'll be replaced by someone who knows how to use AI."*
+- **But guard your mastery — AI can quietly de-skill you:** Jeremy Howard — *"As AI gets better, it's more and more important that your skills are growing faster than the AI skills,"* and bluntly, *"the people getting you to use AI don't care about your autonomy and mastery. They care about your outputs."* (`transcripts/jeremy-howard/futures-2026-02-01-LrFbxIvsipw.md`); George Hotz cites a study where the AI-assisted group was no faster and understood their work *less*; Tegmark warns of "cognitive debt."
 
-The best path is a **posture, not a title: be the human who can deploy AI at scale against a domain where trust, physical reality, or accountability keeps a human in the loop.**
+**The resolution (my read):** use AI as an *amplifier and a tutor*, not a crutch. Marc Andreessen
+nails the move — *"people who really want to improve themselves… should be spending every spare hour…
+talking to an AI being like, 'train me up'"* (`transcripts/marc-andreessen/futures-2026-01-29-87Pm0SGTtN8.md`)
+— and insists that to be one of the best you still *"understand this thing all the way down the stack"*
+so you can judge what the bots produce. LeCun is the sharpest contrarian here: *"the idea that we don't
+need to study anymore… is completely false… we're going to have to study more."* Adopt the tools daily,
+**and** keep doing hard things yourself often enough that your judgment stays real.
 
-- **Tier A:** (a) AI-leveraged builder inside a high-trust/high-stakes domain — health/bio, energy, law, finance, security; (b) agentic engineer / "builder" *who owns the judgment layer*; (c) the physical-world + AI bridge — energy, data centers, robotics, advanced trades.
-- **Tier B:** AI safety / interpretability / governance (surging money, structurally under-supplied — Hinton: ~1% of effort goes to safety); the domain expert who becomes their org's AI-translation layer.
-- **Tier C — not as a sole bet:** pure execution knowledge work with no physical, relational, or accountability moat. That's the verifiable middle being eaten first.
+## 5. The genuine disagreements (so you don't over-index on any one guru)
 
-## 6. The 3–6 month plan (concrete, with links)
+- **Is the job apocalypse real?** *Reassurance camp* — "tasks, not jobs": Andreessen (*"task loss… the job persists longer than the individual tasks"*), Jensen (*"the job of a radiologist is patient care; the task is to read a scan"*), Suleyman (*"I said tasks… that does not mean jobs"*), Zuckerberg (*"take away 90% of the work and that leads you to want more people not less"*), Dan Shipper (*"the AI job apocalypse is not really a thing"*), Willison (record-high open eng roles). *Disruption camp*: Kokotajlo (*"whatever new jobs you're imagining, AGI could do those too"* — `transcripts/daniel-kokotajlo/futures-2025-12-18-CkspCK5mGHA.md`), Yampolskiy (99% automatable ~2030), Hinton (call centers gone; use the *elastic-vs-non-elastic market* test), Dario (*"whole careers… that may not be present"*; candidly *"I'm not sure"* what to recommend).
+- **The blue-collar inversion (a strong, repeated, under-covered point):** knowledge work may be the *more* exposed category, and the durable, well-paid near-term opportunity is **physical**. Jensen tells graduates the trades are *"your time"* (six-figure electrician/plumber jobs); Dylan Patel, the hardware analyst, is specific: electrician wages *"double or triple,"* the bottleneck is power, memory (HBM/DRAM), and fabs, not code (`transcripts/dylan-patel/2026-03-13-mDG_Hx3BSUE.md`); Bengio echoes Hinton's *"be a plumber."*
+- **Reject the premise entirely:** Zvi Mowshowitz calls "skill up to escape the underclass" *"hopium"* and advises building a financial buffer instead; Kokotajlo's call to action is civic/political, not vocational; Bengio's advice for his grandson is *"work on the beautiful human being that you can become."*
 
-Assumes ~6–8 focused hours/week. Adjust to your background; the sequence matters more than the pace.
+## 6. The recommendation
 
-**Month 1 — become genuinely agent-fluent (table stakes on every path).**
-- Use an agent daily for real work (Claude Code / equivalent). Goal: learn to *direct and verify*, not chat.
-- Read [Anthropic's "Building Effective AI Agents"](https://www.anthropic.com/research/building-effective-agents) and skim the [Claude Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview).
-- Internalize the agent loop: **gather context → act → verify → repeat.**
+The best path is a **posture, not a title: be the human who can deploy AI at scale against a domain
+where trust, physical reality, or accountability keeps a human in the loop** — and who keeps their own
+judgment sharp enough to verify the machines. Ranked by robustness:
 
-**Months 2–3 — build the orchestration skill from first principles.**
-- Take [Andrew Ng's Agentic AI course](https://learn.deeplearning.ai/courses/agentic-ai/information) — the four patterns (reflection, tool use, planning, multi-agent) transfer across every framework. ([DeepLearning.AI](https://www.deeplearning.ai/) catalog for the rest.)
-- Ship **one real agentic project** end-to-end: build it with agents, deploy it, secure it (Karpathy's literal hiring test). Put it in public.
-- If you want to understand what's under the hood: work through [Karpathy's nanochat / LLM101n](https://github.com/karpathy/nanochat) and his [YouTube "Zero to Hero" series](https://www.youtube.com/@AndrejKarpathy). You don't need to train models — you need to lose the fear of the internals.
+- **Tier A:** (a) **AI-leveraged builder in a high-trust/high-stakes domain** — health/bio, law, finance, energy, security (Daniela/Dario's vertical-app thesis; Suleyman's healthcare bet; Hassabis's "AlphaFold moment" for science). (b) **Agent orchestrator / "agent manager" / forward-deployed engineer** who owns judgment, taste, and verification (Truell, Hoffman, Nadella, Shipper). (c) **The physical-world + AI bridge** — energy, data centers, robotics, advanced trades (Jensen, Dylan Patel).
+- **Tier B:** **AI safety / interpretability / governance** — repeatedly flagged as radically undersupplied (Kokotajlo: ~700 people, wants 100–500; Bricken: interpretability is "low-hanging fruit"; Sholto, Tegmark, Bengio, Dario). **Performance/kernel engineering** (CUDA/TPU/Trainium) — Sholto/Bricken: a clean implementation gives *"a pretty high likelihood you'll get a job offer."* **The domain expert who becomes their org's AI-translation layer.**
+- **Tier C — not as a sole bet:** pure execution knowledge work with no physical, relational, or accountability moat — the verifiable middle being eaten first (and where Stuart Russell notes CS-grad unemployment is now high).
 
-**Months 4–6 — pick ONE anchor domain and go deep, or branch deliberately.**
-- **If builder/AI-engineer:** follow the [AI Engineer](https://www.ai.engineer/about) community and [Latent Space](https://www.latent.space/); ship 2–3 more projects; the portfolio *is* the resume now.
-- **If you want the safety/interpretability branch:** start [80,000 Hours' AI-safety career review](https://80000hours.org/career-reviews/ai-safety-researcher/), then BlueDot's free *AI Safety Fundamentals* course and Neel Nanda's TransformerLens/ARENA exercises. (Quantitative background helps; CS/ML not strictly required.) [Neel Nanda's path](https://80000hours.org/stories/neel-nanda/)
-- **If the physical/infra branch appeals:** the data-center buildout has a structural worker shortage — six-figure trade and power-systems roles, hundreds of thousands unfilled. [CNBC on the trades boom](https://www.cnbc.com/2026/03/18/ai-data-center-buildout-jobs-salary-skilled-traders-worker-shortage.html)
-- **If domain-expert + AI:** pick the field where you already (or want to) carry trust — health, law, finance, science — and become the person there who wields the tools and is trusted to sign off.
+## 7. The 3–6 month plan (transcript-sourced tactics + real links)
 
-**Throughout:** build in public, follow the constraint and the spend (physical buildout + domain-specific deployment, not generic chatbot wrappers), and keep optionality.
+Assume ~6–10 focused hours/week. The sequence matters more than the pace.
 
-## 7. On what you've already built
+**Month 1 — get genuinely agent-fluent by *doing* (this is the universal advice).**
+- Use an agent daily on your real work; learn to direct and verify, not chat. *"Skilling is just by doing"* (Nadella); *"it takes a lot of practice"* (Willison).
+- Read [Anthropic — Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) and skim the [Claude Agent SDK overview](https://code.claude.com/docs/en/agent-sdk/overview). Internalize the loop: **gather context → act → verify → repeat.**
+- Spend a slice of every session getting the model to **train you** (Andreessen): after it unblocks you, ask "what could I have said to avoid this?"
 
-This research system *is* a Tier-A skill in action: AI-leveraged synthesis and sense-making in a fast-moving domain — exactly the orchestrator posture the research points to. Whatever you anchor to, that capability travels with you. The cleanest next move is to keep this system live (re-run the window, wire up the fetchers when you have network) and let it become *your* edge — the analyst layer on top of the noise.
+**Months 2–3 — build orchestration + the verification habit.**
+- Take [Andrew Ng's Agentic AI course](https://learn.deeplearning.ai/courses/agentic-ai/information): the four patterns (reflection, tool use, planning, multi-agent) transfer everywhere. Balance building with concepts (Ng: pure-builders miss fundamentals; pure-students can't apply them).
+- Adopt Willison's highest-leverage habit: **red/green TDD with agents** ("the most important thing"), hoard reusable tools, start from thin templates so agents mirror your style.
+- Learn to **write evals** — under-appreciated; *"just 10 good ones help"* (Cat Wu); Nadella: build *"your harness, your evals, your tools, your context."*
+- **Ship one real agentic project** end-to-end — build it with agents, deploy it, secure it (Karpathy's literal hiring test) — and push any automation to **100% reliability** (Cat Wu: *"there's not much value in a 95% automation"*). Make it something you actually use daily.
+- Want the internals (so you can verify, not just vibe)? [Karpathy's "Zero to Hero" + nanochat](https://www.youtube.com/@AndrejKarpathy). Aishwarya Srinivasan's AI-PM roadmap recommends exactly this plus [DeepLearning.AI](https://www.deeplearning.ai/) short courses.
+
+**Months 4–6 — pick ONE anchor and go deep; build agency in public.**
+- Decide your lane using two filters: **Hinton's elastic-vs-non-elastic market test** (does cheaper service expand demand and keep humans in the relational loop?) and the **verifiability rule** (the less auto-checkable, the safer for now).
+- **Builder / AI-engineer:** follow [the AI Engineer community](https://www.ai.engineer/about) and [Latent Space](https://www.latent.space/); be the non-fungible "superpowered individual" — deep in one of {coder, designer, PM}, AI-covered in the other two (Andreessen). Aim at solo/tiny-team ventures ("an explosion in small businesses" — Scott Wu; ~$1M/person teams — swyx).
+- **Safety / interpretability:** start [80,000 Hours' AI-safety career review](https://80000hours.org/career-reviews/ai-safety-researcher/), then BlueDot's free *AI Safety Fundamentals* and Neel Nanda's TransformerLens/ARENA exercises. ([Neel Nanda's path](https://80000hours.org/stories/neel-nanda/).)
+- **Physical / infra:** the data-center buildout has a structural shortage of six-figure trade and power roles ([CNBC](https://www.cnbc.com/2026/03/18/ai-data-center-buildout-jobs-salary-skilled-traders-worker-shortage.html)).
+- **Domain expert + AI:** become the trusted person in your field who wields the tools and signs off on the output.
+- **Throughout:** "invest in your own agency" (Willison); build a recognizable public presence *"before AI is better than you"* (Yampolskiy); shed sunk-cost workflows (Sholto: *"get rid of the sunk cost of your previous workflows"*); and keep growing your skills faster than the models (Jeremy Howard).
+
+## 8. On what you've already built
+
+This research system — and now this transcript corpus — *is* a Tier-A skill in action: AI-leveraged
+synthesis and verification in a fast-moving domain. The misattribution finding above is exactly the
+kind of judgment layer that stays scarce: the machine fetched 137 files; a human (with agents) caught
+that a quarter of them were the wrong person. Keep this system live, fix the matcher, and let it be
+your edge.
 
 ---
 
-### Link appendix (everything in one place)
-- Karpathy AI Ascent 2026: https://www.youtube.com/watch?v=96jN2OCOfLs · summary: https://karpathy.bearblog.dev/sequoia-ascent-2026/ · channel: https://www.youtube.com/@AndrejKarpathy · nanochat: https://github.com/karpathy/nanochat
-- Andrew Ng: https://www.tweaktown.com/news/103975/andrew-ng-pushes-back-on-ai-job-fears-this-is-the-best-time-yet-to-learn-code/index.html · course: https://learn.deeplearning.ai/courses/agentic-ai/information · https://www.deeplearning.ai/
-- Boris Cherny: https://letsdatascience.com/news/boris-cherny-urges-cs-grads-to-found-startups-248f3b70 · https://www.platformer.news/boris-cherny-interview-ai-jobs/
-- Jensen Huang: https://blogs.nvidia.com/blog/your-career-starts-at-the-beginning-of-the-ai-revolution-nvidia-ceo-tells-graduates/ · https://fortune.com/2026/05/26/jensen-huang-nvidia-ai-colleges-and-universities-china-cutting-arts-degrees/
-- swyx / AI Engineer: https://www.latent.space/p/ai-engineer · https://www.ai.engineer/about · https://www.latent.space/
-- AGI economics (Dwarkesh): https://www.dwarkesh.com/p/alex-imas-phil-trammell
-- LeCun: https://fortune.com/2026/05/05/ai-job-apocalypse-warnings-destructive-yann-lecun/
+### Link appendix
 - Anthropic agents: https://www.anthropic.com/research/building-effective-agents · https://code.claude.com/docs/en/agent-sdk/overview · https://www.anthropic.com/learn/build-with-claude
+- Andrew Ng Agentic AI course: https://learn.deeplearning.ai/courses/agentic-ai/information · https://www.deeplearning.ai/
+- Karpathy: https://www.youtube.com/@AndrejKarpathy · https://github.com/karpathy/nanochat · AI Ascent 2026: https://www.youtube.com/watch?v=96jN2OCOfLs
+- swyx / AI Engineer: https://www.latent.space/p/ai-engineer · https://www.ai.engineer/about · https://www.latent.space/
+- AGI economics (what stays scarce): https://www.dwarkesh.com/p/alex-imas-phil-trammell
 - AI safety: https://80000hours.org/career-reviews/ai-safety-researcher/ · https://80000hours.org/stories/neel-nanda/
 - Trades / data-center buildout: https://www.cnbc.com/2026/03/18/ai-data-center-buildout-jobs-salary-skilled-traders-worker-shortage.html
+- (Primary transcripts: `transcripts/<name>/*.md` on this branch.)
