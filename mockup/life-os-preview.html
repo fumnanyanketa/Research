@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Life OS — visual preview</title>
+<style>
+  :root {
+    --ink: #1c1c1e;
+    --teal: #2a9d8f;
+    --amber: #e9a200;
+    --red: #d62828;
+    --grey: #8d99ae;
+    --line: #e5e5ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #ececed;
+    color: var(--ink);
+    padding: 28px 16px 48px;
+  }
+  h1.page { text-align: center; font-size: 24px; margin: 0 0 4px; }
+  p.page { text-align: center; color: #777; margin: 0 0 28px; font-size: 14px; }
+  .wrap { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; align-items: flex-start; }
+  .device { width: 320px; }
+  .label { text-align: center; font-weight: 700; margin-bottom: 8px; color: #444; }
+  .screen {
+    height: 660px; background: #fff; border-radius: 34px; border: 1px solid #d8d8dc;
+    box-shadow: 0 12px 30px rgba(0,0,0,.15); overflow: hidden; display: flex; flex-direction: column;
+  }
+  .scroll { flex: 1; overflow: auto; padding: 22px 18px 12px; }
+  .h1 { font-size: 26px; font-weight: 700; margin: 0 0 12px; }
+  .h2 { font-size: 17px; font-weight: 600; margin: 20px 0 6px; }
+  .muted { color: #888; font-size: 13px; }
+  .empty { color: #888; font-size: 14px; margin-top: 6px; }
+
+  .goal { background: var(--ink); border-radius: 12px; padding: 14px; margin-top: 8px; }
+  .goal .t { color: #fff; font-size: 14px; font-weight: 600; }
+  .goal .d { color: var(--amber); font-size: 13px; margin-top: 5px; }
+
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-top: 8px; }
+  .cardhead { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot.high { background: var(--red); } .dot.med { background: var(--amber); } .dot.low { background: var(--grey); }
+  .what { font-size: 15px; }
+  .what.done { text-decoration: line-through; color: #999; }
+  .meta { font-size: 12px; color: #666; margin-top: 6px; }
+  .btnrow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 8px; padding: 7px 13px; color: #fff; font-weight: 600; font-size: 13px; }
+  .b-confirm { background: var(--teal); } .b-dismiss { background: var(--grey); }
+  .b-key { background: #495057; } .b-keyon { background: var(--amber); } .b-done { background: var(--ink); }
+
+  .habit { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .box { width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; flex: none; }
+  .box.on { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 700; }
+  .habit .lab { font-size: 15px; }
+  .habit .lab.done { color: #999; }
+  .habit .sub { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .pills { display: flex; gap: 8px; margin-bottom: 16px; }
+  .pill { border: 1px solid var(--ink); border-radius: 20px; padding: 6px 15px; font-weight: 600; font-size: 13px; }
+  .pill.on { background: var(--ink); color: #fff; }
+  .input { border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 78px; color: #aaa; font-size: 15px; }
+  .or { text-align: center; color: #aaa; margin: 14px 0; font-size: 13px; }
+  .reccol { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 0; }
+  .record { width: 120px; height: 120px; border-radius: 50%; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: 600; }
+  .body { font-size: 15px; line-height: 21px; }
+
+  .tabbar { display: flex; border-top: 1px solid var(--line); padding: 12px 0 22px; }
+  .tab { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: #aaa; }
+  .tab.active { color: var(--ink); }
+  .note { max-width: 760px; margin: 36px auto 0; color: #666; font-size: 13px; line-height: 19px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1 class="page">Life OS — visual preview</h1>
+  <p class="page">A static mock of the four screens, with your seeded data. This is what the app you're building looks like.</p>
+
+  <div class="wrap">
+
+    <!-- TODAY -->
+    <div class="device">
+      <div class="label">Today</div>
+      <div class="screen">
+        <div class="scroll">
+          <div class="h1">Today</div>
+          <div class="goal">
+            <div class="t">Strong language progress before school resumes</div>
+            <div class="d">80 days to go · 2026-09-01</div>
+          </div>
+
+          <div class="h2">Key tasks</div>
+          <div class="card">
+            <div class="cardhead"><span class="dot high"></span><span class="what">Send proposal to the nonprofit client</span></div>
+            <div class="meta">You owe · Maria · due 2026-06-16 · AI Business</div>
+            <div class="btnrow"><span class="btn b-done">Done</span></div>
+          </div>
+          <div class="card">
+            <div class="cardhead"><span class="dot med"></span><span class="what">Edit &amp; deliver the wedding photos</span></div>
+            <div class="meta">You owe · due 2026-06-18 · Photography</div>
+            <div class="btnrow"><span class="btn b-done">Done</span></div>
+          </div>
+
+          <div class="h2">Habits · 2/4</div>
+          <div class="habit"><div class="box on">✓</div><div><div class="lab done">Language app — 30 min</div><div class="sub">30 min</div></div></div>
+          <div class="habit"><div class="box"></div><div><div class="lab">Gym</div><div class="sub">daily</div></div></div>
+          <div class="habit"><div class="box on">✓</div><div><div class="lab done">Morning business block</div><div class="sub">daily</div></div></div>
+          <div class="habit"><div class="box"></div><div><div class="lab">Evening journal</div><div class="sub">daily</div></div></div>
+        </div>
+        <div class="tabbar"><div class="tab active">Today</div><div class="tab">Capture</div><div class="tab">Tasks</div><div class="tab">Habits</div></div>
+      </div>
+    </div>
+
+    <!-- CAPTURE -->
+    <div class="device">
+      <div class="label">Capture</div>
+      <div class="screen">
+        <div class="scroll">
+          <div class="h1">Capture</div>
+          <div class="pills"><span class="pill on">Quick thought</span><span class="pill">Conversation</span></div>
+          <div class="input">Type a thought, task, or note…</div>
+          <div class="or">— or speak it —</div>
+          <div class="reccol"><div class="record">Record</div></div>
+
+          <div class="h2">Summary</div>
+          <div class="body">You agreed to send the nonprofit a project proposal by Monday and to follow up with Maria about the photography invoice.</div>
+          <div class="h2">Proposed tasks</div>
+          <div class="card">
+            <div class="cardhead"><span class="dot high"></span><span class="what">Send the project proposal</span></div>
+            <div class="meta">You owe · Maria · due 2026-06-16 · AI Business</div>
+            <div class="btnrow"><span class="btn b-confirm">Confirm</span><span class="btn b-dismiss">Dismiss</span></div>
+          </div>
+          <div class="card">
+            <div class="cardhead"><span class="dot low"></span><span class="what">Follow up on the photography invoice</span></div>
+            <div class="meta">Owed to you · Maria · Money</div>
+            <div class="btnrow"><span class="btn b-confirm">Confirm</span><span class="btn b-dismiss">Dismiss</span></div>
+          </div>
+        </div>
+        <div class="tabbar"><div class="tab">Today</div><div class="tab active">Capture</div><div class="tab">Tasks</div><div class="tab">Habits</div></div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="device">
+      <div class="label">Tasks</div>
+      <div class="screen">
+        <div class="scroll">
+          <div class="h1">Tasks</div>
+          <div class="h2">Proposed by AI · review</div>
+          <div class="card">
+            <div class="cardhead"><span class="dot med"></span><span class="what">Back up last shoot to the drive</span></div>
+            <div class="meta">You owe · Photography</div>
+            <div class="btnrow"><span class="btn b-confirm">Confirm</span><span class="btn b-dismiss">Dismiss</span></div>
+          </div>
+
+          <div class="h2">Active</div>
+          <div class="card">
+            <div class="cardhead"><span class="dot high"></span><span class="what">Send proposal to the nonprofit client</span></div>
+            <div class="meta">You owe · Maria · due 2026-06-16 · AI Business</div>
+            <div class="btnrow"><span class="btn b-keyon">★ Key</span><span class="btn b-done">Done</span></div>
+          </div>
+          <div class="card">
+            <div class="cardhead"><span class="dot low"></span><span class="what">Draft this week's content ideas</span></div>
+            <div class="meta">You owe · AI Business</div>
+            <div class="btnrow"><span class="btn b-key">☆ Key</span><span class="btn b-done">Done</span></div>
+          </div>
+
+          <div class="h2">Done</div>
+          <div class="card">
+            <div class="cardhead"><span class="dot low"></span><span class="what done">Buy supplements</span></div>
+            <div class="meta">You owe · Body &amp; Health</div>
+          </div>
+        </div>
+        <div class="tabbar"><div class="tab">Today</div><div class="tab">Capture</div><div class="tab active">Tasks</div><div class="tab">Habits</div></div>
+      </div>
+    </div>
+
+    <!-- HABITS -->
+    <div class="device">
+      <div class="label">Habits</div>
+      <div class="screen">
+        <div class="scroll">
+          <div class="h1">Habits</div>
+          <div class="habit"><div class="box on">✓</div><div><div class="lab done">Language app — 30 min</div><div class="sub">30 min · 5/7 this week</div></div></div>
+          <div class="habit"><div class="box"></div><div><div class="lab">Gym</div><div class="sub">daily · 3/7 this week</div></div></div>
+          <div class="habit"><div class="box on">✓</div><div><div class="lab done">Morning business block</div><div class="sub">daily · 4/7 this week</div></div></div>
+          <div class="habit"><div class="box"></div><div><div class="lab">Evening journal</div><div class="sub">daily · 2/7 this week</div></div></div>
+        </div>
+        <div class="tabbar"><div class="tab">Today</div><div class="tab">Capture</div><div class="tab">Tasks</div><div class="tab active">Habits</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">Static preview — buttons don't click. Colors, layout, and copy match the real app code. The sample tasks/people (Maria, the wedding shoot) are placeholders to show the shape; your real entries replace them. Tell me what to change and I'll update both this mock and the app.</p>
+</body>
+</html>
