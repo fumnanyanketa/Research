@@ -119,6 +119,33 @@ Audio retention is a setting: keep forever / delete after transcription / keep 3
   transcription APIs. Claude (text-only, pennies per conversation) handles
   extraction, debriefs, and recall.
 
+## Personalization (v1 owner)
+
+The owner is in the build phase of an AI business (an "agent orchestrator"
+helping companies become AI-native, pre-revenue), works a part-time cleaning
+job a few days a week, takes occasional paid photography gigs, and is learning
+a language ~30 min/day to make strong progress before language school resumes
+in **September 2026**. Stated bottlenecks: forgets to log things, to-do list is
+an unsorted mess, commitments slip, everything is scattered.
+
+This shaped v1:
+
+- **Life areas** seeded to match: AI Business, Photography, Day Job, Money,
+  Language Learning, Body & Health, Mind & Journal, Personal.
+- **Capture auto-files and auto-prioritizes** (addresses "forget to log" +
+  "messy list"): a typed or spoken brain dump is classified into an area and
+  turned into priority-ranked tasks; nothing needs manual sorting.
+- **Commitment tracking** (addresses "commitments slip"): extraction tags each
+  task as owed-by-you vs owed-to-you, with the person and due date.
+- **One app, all domains** (addresses "scattered"): Today / Capture / Tasks /
+  Habits tabs over one Supabase backend.
+- **Language goal front-and-center**: seeded habit ("Language app — 30 min")
+  and a goal with a 2026-09-01 countdown on the Today screen.
+- Capture method: **native app first** (owner's choice). Telegram remains an
+  easy future add for zero-friction capture from any device.
+
 ## Open decisions
 
 - Audio retention default (keep forever vs delete after transcription).
+- Finance UI (schema exists: `finance_entries`) — log income/expenses and show
+  a net figure; next round.

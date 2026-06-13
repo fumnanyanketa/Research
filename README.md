@@ -10,9 +10,9 @@ Full design: [DESIGN.md](./DESIGN.md)
 
 | Path | What it is |
 |---|---|
-| `app/` | Expo (React Native) app — record button, live on-device Whisper transcription, review screen for AI-proposed action items. Runs on iPhone and Android. |
-| `supabase/schema.sql` | Database: `entries` (every recording/note) and `tasks` (action items). |
-| `supabase/functions/process-entry/` | Edge function that runs Claude over a transcript and extracts summary, people, decisions, insights, and action items. |
+| `app/` | Expo (React Native) app, iPhone + Android. Four tabs: **Today** (goal countdown, key tasks, habits), **Capture** (typed or spoken quick thoughts + full conversation recording, on-device transcription), **Tasks** (review/confirm AI-proposed tasks, star key ones, mark done), **Habits** (daily check-offs with weekly streak). |
+| `supabase/schema.sql` | Database: `areas`, `entries`, `tasks` (with priority + key star), `habits` + `habit_logs`, `goals`, `finance_entries`. Seeded with life areas, a language-learning habit, and a September goal. |
+| `supabase/functions/process-entry/` | Edge function that runs Claude over a transcript and extracts a summary, the life area, people, decisions, insights, and priority-ranked action items (owed-by-you vs owed-to-you). |
 
 Transcription is **free**: Whisper runs on the phone via `whisper.rn` (the model
 downloads once on first use, ~60 MB). Only the Claude extraction step uses an
@@ -55,13 +55,20 @@ npx expo start --dev-client
 
 ### 3. Use it
 
-Tap **Record**, have a conversation or dump a thought, tap **Stop**. The
-transcript appears live; when you stop, Claude summarizes it and proposes
-action items you confirm or dismiss. Confirmed tasks land in the `tasks` table.
+- **Capture** tab: type a quick thought and hit *Save & file*, or tap *Record*
+  to speak it (or to record a real conversation — switch the mode toggle).
+  Claude files it into the right life area, summarizes it, and proposes
+  priority-ranked tasks you confirm or dismiss.
+- **Tasks** tab: review AI proposals, star 3–5 as *key*, mark them done.
+- **Today** tab: your key tasks, today's habits, and the countdown to your
+  September language goal.
+- **Habits** tab: check off daily habits (the 30-min language habit is seeded)
+  and see your weekly streak.
 
 ## Roadmap
 
 - **Phase 2:** push-notification reminders for confirmed tasks, Google Calendar
-  sync for dated commitments, nightly debrief.
-- **Phase 3:** chat over your whole history (semantic search), people pages,
-  weekly review.
+  sync for dated commitments, nightly debrief + voice journaling, finance UI.
+- **Phase 3:** chat over your whole history (semantic search), the strategic
+  "top 3 things to do now" query, people pages, weekly review. Optional
+  Telegram capture channel and an always-on web dashboard over the same backend.
