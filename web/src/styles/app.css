@@ -34,3 +34,13 @@ html, body, #root { height: 100%; }
 }
 .view-toggle button.on { background: var(--accent); color: var(--accent-ink); }
 @media (min-width: 820px) { .view-toggle { bottom: 16px; } }
+
+/* boot / loading state while live data loads */
+.boot {
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+}

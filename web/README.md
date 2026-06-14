@@ -33,14 +33,22 @@ npm run build    # production build into dist/
 | `src/viz.jsx` | Ring, Donut, Waveform, DotMatrix, LineChart |
 | `src/styles/*.css` | Design tokens + component styles (verbatim from the handoff) |
 
-## Status & next step
+## Data (Supabase)
 
-Right now the app runs on the in-memory store in `src/app.jsx` (the handoff's
-sample data — name Fumnanya, the Spanish habit, three countdowns, eight areas,
-three income sources), so it renders exactly as designed.
+`src/lib/store.js` (`useAnchorStore`) is the data layer. It reads/writes Supabase
+and maps rows to the UI shapes the components expect (priority `high/medium/low`
+↔ `red/amber/grey`, `confirmed` ↔ `active`, goals' `target_date` → day-counts,
+habit streaks from `habit_logs`, finance aggregated by source). Capture writes an
+`entries` row and calls the `process-entry` edge function, then reloads tasks.
 
-**Next:** replace that store with live data from Supabase — the same
-`supabase/schema.sql` and `process-entry` function the repo already has — so
-Capture writes real entries and the screens read real tasks/habits/goals. That
-requires a small field mapping (the design's `status: "active"` ↔ the schema's
-`confirmed`; goals' day-counts ↔ `target_date`; habit `streak`/`cue`).
+**It only goes live when these two env vars are set** (local `web/.env` and the
+Vercel project env) — otherwise it falls back to sample data so the app still
+renders:
+
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+Backend setup: apply `../supabase/schema.sql` and deploy `../supabase/functions/process-entry`
+(with `ANTHROPIC_API_KEY` set as a function secret).
