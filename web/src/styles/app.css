@@ -1,0 +1,36 @@
+/* Anchor — real-app shell: responsive switch between the phone app and the
+   desktop dashboard, plus a small manual view toggle. */
+
+html, body, #root { height: 100%; }
+
+/* Full-screen mobile app (no device frame). Centered as a column on wide
+   screens when the phone view is forced. */
+.app-shell {
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Desktop dashboard container */
+.dash-shell { max-width: 1480px; margin: 0 auto; padding: 24px 22px 64px; }
+
+/* Manual Auto / Phone / Desk override */
+.view-toggle {
+  position: fixed; right: 12px; bottom: 84px; z-index: 60;
+  display: flex; gap: 2px; padding: 3px;
+  background: rgba(20, 22, 27, 0.82); backdrop-filter: blur(10px);
+  border: 1px solid #2a2e36; border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.30);
+}
+.view-toggle button {
+  border: none; background: transparent; color: #cfd2d8;
+  font-family: var(--sans); font-weight: 600; font-size: 11px;
+  padding: 5px 11px; border-radius: 999px; cursor: pointer; line-height: 1;
+}
+.view-toggle button.on { background: var(--accent); color: var(--accent-ink); }
+@media (min-width: 820px) { .view-toggle { bottom: 16px; } }

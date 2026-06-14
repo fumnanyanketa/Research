@@ -1,7 +1,6 @@
-/* Anchor — app state, store, and stage composition */
-import { useState } from "react";
-import { Icon } from "./icons.jsx";
-import { MobileApp } from "./mobile.jsx";
+/* Anchor — app state, store, and responsive app shell */
+import { useState, useEffect } from "react";
+import { MobileShell } from "./mobile.jsx";
 import { DesktopApp } from "./desktop.jsx";
 
 const INITIAL_TASKS = [
@@ -50,10 +49,36 @@ const GOALS = [
 let pid = 100;
 let gid = 100;
 
+function ViewToggle({ value, onChange }) {
+  const opts = [["auto", "Auto"], ["mobile", "Phone"], ["desktop", "Desk"]];
+  return (
+    <div className="view-toggle" role="group" aria-label="View">
+      {opts.map(([v, label]) => (
+        <button key={v} className={value === v ? "on" : ""} onClick={() => onChange(v)}>{label}</button>
+      ))}
+    </div>
+  );
+}
+
 export default function App() {
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [habits, setHabits] = useState(INITIAL_HABITS);
   const [goals, setGoals] = useState(GOALS);
+
+  // Responsive: phone-width visitors get the mobile app, wider screens get the
+  // dashboard. `override` lets you force either view (handy on a phone).
+  const [view, setView] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(min-width: 820px)").matches
+      ? "desktop"
+      : "mobile",
+  );
+  const [override, setOverride] = useState("auto");
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 820px)");
+    const onChange = (e) => setView(e.matches ? "desktop" : "mobile");
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const toggleHabit = (id) => setHabits(hs => hs.map(h => h.id === id ? { ...h, done: !h.done } : h));
   const confirmTask = (id) => setTasks(ts => ts.map(t => t.id === id ? { ...t, status: "active", key: false, owe: t.owe || "by", person: t.person || "you", due: t.due || "This week" } : t));
@@ -76,21 +101,17 @@ export default function App() {
     toggleHabit, confirmTask, dismissTask, completeTask, toggleKey, addThought, addGoal,
   };
 
+  const effective = override === "auto" ? view : override;
   return (
-    <div className="stage">
-      <div className="stage-head">
-        <div className="brandmark">
-          <span className="glyph"><Icon name="anchor" size={20} /></span>
-          <span className="wordmark">Anchor</span>
+    <>
+      {effective === "mobile" ? (
+        <MobileShell store={store} />
+      ) : (
+        <div className="dash-shell">
+          <DesktopApp store={store} />
         </div>
-        <div className="tagline">Your single source of truth. The one calm place where you run your whole life.</div>
-      </div>
-
-      <div className="section-label"><span className="n">A</span> Mobile app</div>
-      <MobileApp store={store} />
-
-      <div className="section-label"><span className="n">B</span> Desktop dashboard</div>
-      <DesktopApp store={store} />
-    </div>
+      )}
+      <ViewToggle value={override} onChange={setOverride} />
+    </>
   );
 }

@@ -362,6 +362,20 @@ function Phone({ initial, store }) {
   );
 }
 
+/* Full-screen mobile app (no device frame) — the real, usable app. */
+export function MobileShell({ store }) {
+  const [active, setActive] = mUseState("today");
+  const Screen = { today: TodayScreen, capture: CaptureScreen, tasks: TasksScreen, habits: HabitsScreen }[active];
+  return (
+    <div className="app-shell">
+      <div className="screen-body scroll-y">
+        <Screen store={store} />
+      </div>
+      <TabBar active={active} setActive={setActive} badge={store.proposed.length} />
+    </div>
+  );
+}
+
 export function MobileApp({ store }) {
   return (
     <div className="phones-row">
