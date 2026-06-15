@@ -29,10 +29,10 @@ API, and that's text — pennies per conversation.
    ```sh
    supabase login
    supabase link --project-ref YOUR_PROJECT_REF
-   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+   supabase secrets set GEMINI_API_KEY=...
    supabase functions deploy process-entry
    ```
-   (Get an Anthropic API key at console.anthropic.com.)
+   (Get a free Gemini API key at aistudio.google.com/apikey.)
 
 ### 2. App
 

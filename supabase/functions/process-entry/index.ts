@@ -1,65 +1,46 @@
 // Supabase Edge Function: process-entry
-// Takes an entry_id, runs Claude over the transcript, and:
+// Runs Google Gemini (free tier) over an entry's transcript and:
 //  - writes summary / area / people / decisions / insights onto the entry
 //  - inserts proposed tasks with area + priority + owner + due date
 //
 // Deploy:  supabase functions deploy process-entry
-// Secrets: supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+// Secrets: supabase secrets set GEMINI_API_KEY=...   (free: aistudio.google.com/apikey)
+//          (optional) supabase secrets set GEMINI_MODEL=gemini-2.5-flash
 
-import Anthropic from "npm:@anthropic-ai/sdk";
+import { GoogleGenAI } from "npm:@google/genai";
 import { createClient } from "npm:@supabase/supabase-js@2";
+
+const MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-2.5-flash";
 
 const SYSTEM = `You process the user's captured conversations, voice notes, and journal entries into a personal life database.
 
-Context on the user: they are building an AI business (an "agent orchestrator" helping companies become AI-native, still pre-revenue), work a part-time cleaning job a few days a week for income, take occasional paid photography gigs, and are learning a language ~30 minutes a day to make strong progress before language school resumes in September.
+Context on the user: building an AI business (an "agent orchestrator" helping companies become AI-native, still pre-revenue), works a part-time cleaning job a few days a week, takes occasional paid photography gigs, and is learning a language ~20 minutes a day to make strong progress before language school resumes in September.
 
-Your job:
-- Write a 2-5 sentence summary of the entry.
-- Classify the whole entry into the single best life area from the provided list (use the area key).
-- Extract real action items only — commitments actually made or things to do that were actually stated. Never invent tasks. A short brain-dump may yield zero tasks, and that's fine.
-- For each task: phrase it as an imperative; set owner ("me" if the user owes it, "them" if it is owed to the user); name the other person if there is one; set due_date by resolving relative dates ("next Friday", "by month end") against the recording date, else null; set priority (high/medium/low) by urgency and importance; and pick the best area for that task.
-- Capture decisions made and insights/ideas worth keeping (insights are reflections or ideas, not action items).
-
-Transcripts may have no speaker labels — infer who is speaking from context.`;
-
-function buildSchema(areaKeys: string[]) {
-  const areaEnum = { type: "string", enum: areaKeys };
-  return {
-    type: "object",
-    properties: {
-      summary: { type: "string" },
-      area: areaEnum,
-      people: { type: "array", items: { type: "string" } },
-      decisions: { type: "array", items: { type: "string" } },
-      insights: { type: "array", items: { type: "string" } },
-      action_items: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            what: { type: "string" },
-            area: areaEnum,
-            owner: { type: "string", enum: ["me", "them"] },
-            person: { anyOf: [{ type: "string" }, { type: "null" }] },
-            due_date: { anyOf: [{ type: "string", format: "date" }, { type: "null" }] },
-            priority: { type: "string", enum: ["high", "medium", "low"] },
-          },
-          required: ["what", "area", "owner", "person", "due_date", "priority"],
-          additionalProperties: false,
-        },
-      },
-    },
-    required: ["summary", "area", "people", "decisions", "insights", "action_items"],
-    additionalProperties: false,
-  };
+Return ONLY a JSON object (no markdown fences) with exactly this shape:
+{
+  "summary": string,            // 2-5 sentences
+  "area": string,               // one of the provided area keys
+  "people": string[],
+  "decisions": string[],
+  "insights": string[],         // ideas/reflections worth keeping, not action items
+  "action_items": [
+    {
+      "what": string,           // imperative
+      "area": string,           // one of the provided area keys
+      "owner": "me" | "them",  // "me" if the user owes it, "them" if it is owed to the user
+      "person": string | null,
+      "due_date": string | null, // ISO date YYYY-MM-DD, resolving relative dates against the recording date; else null
+      "priority": "high" | "medium" | "low"
+    }
+  ]
 }
+
+Extract only action items that were actually stated or committed to — never invent. A short note may yield zero action items. Transcripts have no speaker labels — infer who is speaking from context.`;
 
 Deno.serve(async (req) => {
   try {
     const { entry_id } = await req.json();
-    if (!entry_id) {
-      return Response.json({ error: "entry_id is required" }, { status: 400 });
-    }
+    if (!entry_id) return Response.json({ error: "entry_id is required" }, { status: 400 });
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -68,59 +49,55 @@ Deno.serve(async (req) => {
 
     const { data: entry, error: entryError } = await supabase
       .from("entries").select().eq("id", entry_id).single();
-    if (entryError || !entry) {
-      return Response.json({ error: "entry not found" }, { status: 404 });
-    }
+    if (entryError || !entry) return Response.json({ error: "entry not found" }, { status: 404 });
 
     const { data: areas } = await supabase.from("areas").select("id,key,label");
     const areaList = (areas ?? []) as { id: string; key: string; label: string }[];
-    const areaKeys = areaList.map((a) => a.key);
     const areaIdByKey: Record<string, string> = {};
     for (const a of areaList) areaIdByKey[a.key] = a.id;
     const areaLabels = areaList.map((a) => `${a.key} (${a.label})`).join(", ");
 
-    const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY
-    const response = await anthropic.messages.create({
-      model: "claude-opus-4-8",
-      max_tokens: 16000,
-      thinking: { type: "adaptive" },
-      system: SYSTEM,
-      output_config: { format: { type: "json_schema", schema: buildSchema(areaKeys) } },
-      messages: [{
-        role: "user",
-        content:
-          `Recorded at: ${entry.created_at}\nEntry type: ${entry.kind}\n` +
-          `Available areas: ${areaLabels}\n\nTranscript:\n${entry.transcript}`,
-      }],
+    const ai = new GoogleGenAI({ apiKey: Deno.env.get("GEMINI_API_KEY")! });
+    const prompt =
+      `Recorded at: ${entry.created_at}\nEntry type: ${entry.kind}\n` +
+      `Available area keys: ${areaLabels}\n\nTranscript:\n${entry.transcript}`;
+
+    const result = await ai.models.generateContent({
+      model: MODEL,
+      contents: prompt,
+      config: { systemInstruction: SYSTEM, responseMimeType: "application/json", temperature: 0.2 },
     });
 
-    if (response.stop_reason === "refusal") {
-      return Response.json({ error: "model declined the request" }, { status: 422 });
+    const raw = (result.text ?? "{}").trim();
+    let extraction: Record<string, unknown>;
+    try {
+      extraction = JSON.parse(raw);
+    } catch {
+      // tolerate accidental ```json fences
+      extraction = JSON.parse(raw.replace(/^```json\s*/i, "").replace(/```$/, "").trim());
     }
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    const extraction = JSON.parse(textBlock?.text ?? "{}");
-
+    const area = typeof extraction.area === "string" ? extraction.area : "";
     await supabase.from("entries").update({
-      summary: extraction.summary,
-      area_id: areaIdByKey[extraction.area] ?? null,
-      people: extraction.people,
-      decisions: extraction.decisions,
-      insights: extraction.insights,
+      summary: (extraction.summary as string) ?? null,
+      area_id: areaIdByKey[area] ?? null,
+      people: (extraction.people as string[]) ?? [],
+      decisions: (extraction.decisions as string[]) ?? [],
+      insights: (extraction.insights as string[]) ?? [],
     }).eq("id", entry_id);
 
     let tasks: unknown[] = [];
-    const items = (extraction.action_items ?? []) as Record<string, unknown>[];
+    const items = (extraction.action_items as Record<string, unknown>[]) ?? [];
     if (items.length > 0) {
       const { data: inserted, error: taskError } = await supabase.from("tasks").insert(
         items.map((item) => ({
           entry_id,
-          area_id: areaIdByKey[item.area as string] ?? areaIdByKey[extraction.area] ?? null,
+          area_id: areaIdByKey[item.area as string] ?? areaIdByKey[area] ?? null,
           what: item.what,
-          owner: item.owner,
-          person: item.person,
-          due_date: item.due_date,
-          priority: item.priority,
+          owner: item.owner === "them" ? "them" : "me",
+          person: (item.person as string) ?? null,
+          due_date: (item.due_date as string) ?? null,
+          priority: ["high", "medium", "low"].includes(item.priority as string) ? item.priority : "medium",
           status: "proposed",
         })),
       ).select();
@@ -128,7 +105,7 @@ Deno.serve(async (req) => {
       tasks = inserted ?? [];
     }
 
-    return Response.json({ summary: extraction.summary, area: extraction.area, tasks });
+    return Response.json({ summary: extraction.summary, area, tasks });
   } catch (err) {
     console.error(err);
     return Response.json({ error: String(err) }, { status: 500 });

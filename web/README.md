@@ -51,4 +51,4 @@ VITE_SUPABASE_ANON_KEY=...
 ```
 
 Backend setup: apply `../supabase/schema.sql` and deploy `../supabase/functions/process-entry`
-(with `ANTHROPIC_API_KEY` set as a function secret).
+(with `GEMINI_API_KEY` set as a function secret — free key from aistudio.google.com/apikey).
