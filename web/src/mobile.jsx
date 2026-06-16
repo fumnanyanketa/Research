@@ -68,6 +68,10 @@ function TodayScreen({ store }) {
               <span style={{ fontSize: 11, color: "var(--muted-2)" }}>{g.elapsed} of {g.total} days</span>
               <span style={{ fontSize: 11, color: "var(--muted-2)" }}>{Math.round(g.elapsed/g.total*100)}%</span>
             </div>
+            <div className="row" style={{ gap: 16, marginTop: 12 }}>
+              <button className="link-btn" onClick={() => store.editGoal(g.id)}>Edit</button>
+              <button className="link-btn" onClick={() => store.deleteGoal(g.id)}>Delete</button>
+            </div>
           </div>
         ))}
         <button className="goal-add" onClick={store.addGoal}>
@@ -150,6 +154,9 @@ function TodayScreen({ store }) {
           </div>
         )}
       </div>
+      <button className="btn-ghost" style={{ width: "100%", marginTop: 12 }} onClick={store.addFinance}>
+        <Icon name="plus" size={16} /> Log income / expense
+      </button>
     </div>
   );
 }
@@ -263,7 +270,7 @@ function CaptureScreen({ store }) {
 
 /* ---------- TASKS ---------- */
 function TaskCard({ t, store }) {
-  const { confirmTask, dismissTask, completeTask, toggleKey } = store;
+  const { confirmTask, dismissTask, completeTask, toggleKey, editTask, deleteTask } = store;
   if (t.status === "proposed") {
     return (
       <div className="proposed-card">
@@ -304,6 +311,10 @@ function TaskCard({ t, store }) {
           </button>
         )}
       </div>
+      <div className="row" style={{ gap: 16, marginTop: 10, paddingLeft: 24 }}>
+        <button className="link-btn" onClick={() => editTask(t.id)}>Edit</button>
+        <button className="link-btn" onClick={() => deleteTask(t.id)}>Delete</button>
+      </div>
     </div>
   );
 }
@@ -339,7 +350,7 @@ function TasksScreen({ store }) {
 
 /* ---------- HABITS ---------- */
 function HabitsScreen({ store }) {
-  const { habits, toggleHabit } = store;
+  const { habits, toggleHabit, addHabit, editHabit, deleteHabit } = store;
   const doneCount = habits.filter(h => h.done).length;
   const week = ["M", "T", "W", "T", "F", "S", "S"];
   return (
@@ -378,10 +389,17 @@ function HabitsScreen({ store }) {
                   </div>
                 </div>
               </div>
+              <div className="row" style={{ gap: 16, marginTop: 10, paddingLeft: 37 }}>
+                <button className="link-btn" onClick={() => editHabit(h.id)}>Edit</button>
+                <button className="link-btn" onClick={() => deleteHabit(h.id)}>Delete</button>
+              </div>
             </div>
           );
         })}
       </div>
+      <button className="btn-ghost" style={{ width: "100%", marginTop: 14 }} onClick={addHabit}>
+        <Icon name="plus" size={16} /> Add habit
+      </button>
     </div>
   );
 }

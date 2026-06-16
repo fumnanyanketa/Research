@@ -44,3 +44,10 @@ html, body, #root { height: 100%; }
   font-family: var(--sans);
   font-size: 14px;
 }
+
+/* small inline text button (Edit / Delete on cards) */
+.link-btn {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-family: var(--sans); font-weight: 600; font-size: 12px; color: var(--muted);
+}
+.link-btn:hover { color: var(--text); }

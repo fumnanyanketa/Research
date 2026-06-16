@@ -214,6 +214,101 @@ export function useAnchorStore() {
       })();
     };
 
+    const reloadGoals = async () => {
+      const { data } = await supabase.from("goals").select().eq("status", "active").order("sort");
+      setGoals((data || []).map(mapGoal));
+    };
+    const reloadHabits = async () => {
+      const [{ data: hs }, { data: logs }] = await Promise.all([
+        supabase.from("habits").select().eq("active", true).order("sort"),
+        supabase.from("habit_logs").select().gte("day", isoDaysAgo(60)),
+      ]);
+      setHabits((hs || []).map((h) => mapHabit(h, logs || [])));
+    };
+    const reloadFinance = async () => {
+      const { data } = await supabase.from("finance_entries").select().eq("kind", "income").gte("occurred_on", isoDaysAgo(31));
+      setFinance(aggregateFinance(data || []));
+    };
+
+    const editTask = (id) => {
+      const cur = tasks.find((t) => t.id === id);
+      const what = window.prompt("Edit task", cur ? cur.title : "");
+      if (what == null || !what.trim()) return;
+      setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, title: what.trim() } : t)));
+      persist(() => supabase.from("tasks").update({ what: what.trim() }).eq("id", id));
+    };
+    const deleteTask = (id) => {
+      if (!window.confirm("Delete this task?")) return;
+      setTasks((ts) => ts.filter((t) => t.id !== id));
+      persist(() => supabase.from("tasks").delete().eq("id", id));
+    };
+    const editGoal = (id) => {
+      const cur = goals.find((g) => g.id === id);
+      if (!cur) return;
+      const title = window.prompt("Edit countdown", cur.title);
+      if (title == null || !title.trim()) return;
+      const days = parseInt(window.prompt("Days left?", String(cur.remaining)), 10);
+      const remaining = Number.isFinite(days) ? Math.max(days, 0) : cur.remaining;
+      setGoals((gs) => gs.map((g) => (g.id === id ? { ...g, title: title.trim(), remaining, total: Math.max(g.elapsed + remaining, 1) } : g)));
+      persist(async () => {
+        await supabase.from("goals").update({ title: title.trim(), target_date: isoDaysAgo(-remaining) }).eq("id", id);
+        await reloadGoals();
+      });
+    };
+    const deleteGoal = (id) => {
+      if (!window.confirm("Delete this countdown?")) return;
+      setGoals((gs) => gs.filter((g) => g.id !== id));
+      persist(() => supabase.from("goals").update({ status: "dropped" }).eq("id", id));
+    };
+    const addHabit = () => {
+      const label = window.prompt("New habit (e.g. 'Meditate · 10 min')");
+      if (!label || !label.trim()) return;
+      const cue = window.prompt("When? (optional, e.g. 'Morning')") || "";
+      if (!isConfigured) {
+        setHabits((hs) => [...hs, { id: "h" + Date.now(), label: label.trim(), cue, done: false, streak: 0 }]);
+        return;
+      }
+      persist(async () => {
+        await supabase.from("habits").insert({ label: label.trim(), cue, sort: 99 });
+        await reloadHabits();
+      });
+    };
+    const editHabit = (id) => {
+      const cur = habits.find((h) => h.id === id);
+      if (!cur) return;
+      const label = window.prompt("Edit habit", cur.label);
+      if (label == null || !label.trim()) return;
+      const cue = window.prompt("When? (optional)", cur.cue || "") || "";
+      setHabits((hs) => hs.map((h) => (h.id === id ? { ...h, label: label.trim(), cue } : h)));
+      persist(() => supabase.from("habits").update({ label: label.trim(), cue }).eq("id", id));
+    };
+    const deleteHabit = (id) => {
+      if (!window.confirm("Delete this habit?")) return;
+      setHabits((hs) => hs.filter((h) => h.id !== id));
+      persist(() => supabase.from("habits").update({ active: false }).eq("id", id));
+    };
+    const addFinance = () => {
+      const kindIn = (window.prompt("Type: income or expense", "income") || "").toLowerCase();
+      if (!kindIn) return;
+      const kind = kindIn.startsWith("e") ? "expense" : "income";
+      const source = window.prompt("Source (e.g. Photography, Day job, Clients)");
+      if (!source || !source.trim()) return;
+      const amount = parseFloat(window.prompt("Amount (numbers only)", "0"));
+      if (!Number.isFinite(amount) || amount <= 0) return;
+      if (!isConfigured) {
+        setFinance((f) => {
+          const i = f.findIndex((x) => x.label === source.trim());
+          if (i >= 0) { const c = [...f]; c[i] = { ...c[i], value: c[i].value + amount }; return c; }
+          return [...f, { label: source.trim(), value: amount, color: "#4A4F58" }];
+        });
+        return;
+      }
+      persist(async () => {
+        await supabase.from("finance_entries").insert({ kind, source: source.trim(), amount, occurred_on: isoDaysAgo(0) });
+        await reloadFinance();
+      });
+    };
+
     const openByArea = {};
     tasks.forEach((t) => { if (t.status !== "done") openByArea[t.area] = (openByArea[t.area] || 0) + 1; });
     const areasWithOpen = areas.map((a) => ({ ...a, open: openByArea[a.name] || 0 }));
@@ -226,6 +321,7 @@ export function useAnchorStore() {
       tasks, habits, goals, finance, areas: areasWithOpen,
       keyTasks, proposed,
       toggleHabit, confirmTask, dismissTask, completeTask, toggleKey, addThought, addGoal,
+      editTask, deleteTask, editGoal, deleteGoal, addHabit, editHabit, deleteHabit, addFinance,
     };
   }, [loading, tasks, habits, goals, areas, finance]);
 }

@@ -1,0 +1,12 @@
+{
+  "name": "Anchor",
+  "short_name": "Anchor",
+  "description": "Your single source of truth — capture anything, and it keeps your life organized.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E7E5E0",
+  "theme_color": "#E7E5E0",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
