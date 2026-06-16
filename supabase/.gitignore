@@ -1,0 +1,4 @@
+# Supabase CLI local scratch / link cache
+.temp/
+.branches/
+.env
