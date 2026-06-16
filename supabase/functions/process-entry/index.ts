@@ -12,6 +12,14 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-2.5-flash";
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+const json = (body: unknown, status = 200) =>
+  Response.json(body, { status, headers: CORS });
+
 const SYSTEM = `You process the user's captured conversations, voice notes, and journal entries into a personal life database.
 
 Context on the user: building an AI business (an "agent orchestrator" helping companies become AI-native, still pre-revenue), works a part-time cleaning job a few days a week, takes occasional paid photography gigs, and is learning a language ~20 minutes a day to make strong progress before language school resumes in September.
@@ -38,9 +46,10 @@ Return ONLY a JSON object (no markdown fences) with exactly this shape:
 Extract only action items that were actually stated or committed to — never invent. A short note may yield zero action items. Transcripts have no speaker labels — infer who is speaking from context.`;
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   try {
     const { entry_id } = await req.json();
-    if (!entry_id) return Response.json({ error: "entry_id is required" }, { status: 400 });
+    if (!entry_id) return json({ error: "entry_id is required" }, 400);
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -49,7 +58,7 @@ Deno.serve(async (req) => {
 
     const { data: entry, error: entryError } = await supabase
       .from("entries").select().eq("id", entry_id).single();
-    if (entryError || !entry) return Response.json({ error: "entry not found" }, { status: 404 });
+    if (entryError || !entry) return json({ error: "entry not found" }, 404);
 
     const { data: areas } = await supabase.from("areas").select("id,key,label");
     const areaList = (areas ?? []) as { id: string; key: string; label: string }[];
@@ -105,9 +114,9 @@ Deno.serve(async (req) => {
       tasks = inserted ?? [];
     }
 
-    return Response.json({ summary: extraction.summary, area, tasks });
+    return json({ summary: extraction.summary, area, tasks });
   } catch (err) {
     console.error(err);
-    return Response.json({ error: String(err) }, { status: 500 });
+    return json({ error: String(err) }, 500);
   }
 });
