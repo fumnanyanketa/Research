@@ -18,7 +18,13 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,6 +36,12 @@
           "microphonePermission": "Allow Anchor to record conversations and voice notes for on-device transcription."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1009f8e8-74f4-49e0-bb84-f5534efa25a2"
+      }
+    },
+    "owner": "fumnanya"
   }
 }
