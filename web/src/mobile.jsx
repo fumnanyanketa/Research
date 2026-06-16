@@ -175,15 +175,13 @@ function CaptureScreen({ store }) {
     r.interimResults = true;
     r.continuous = true;
     baseRef.current = text.trim() ? text.trim() + " " : "";
-    let finalText = "";
     r.onresult = (e) => {
-      let interim = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const res = e.results[i];
-        if (res.isFinal) finalText += res[0].transcript;
-        else interim += res[0].transcript;
-      }
-      setText((baseRef.current + finalText + interim).replace(/\s+/g, " "));
+      // Rebuild from ALL results each event. Accumulating across events
+      // double-counts on mobile engines that re-emit growing results (the
+      // "has been...has been..." duplication).
+      let txt = "";
+      for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript + " ";
+      setText((baseRef.current + txt).replace(/\s+/g, " ").trim());
     };
     r.onerror = (e) => { setListening(false); if (e.error !== "no-speech" && e.error !== "aborted") window.alert("Voice error: " + e.error); };
     r.onend = () => setListening(false);
