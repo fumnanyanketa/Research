@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 import type {
   Area,
   EntryKind,
+  FinanceSlice,
   Goal,
   Habit,
   HabitLog,
@@ -42,6 +43,11 @@ export async function updateTask(id: string, patch: Partial<Task>): Promise<void
   if (error) throw error;
 }
 
+export async function deleteTask(id: string): Promise<void> {
+  const { error } = await supabase.from('tasks').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export async function getGoals(): Promise<Goal[]> {
   const { data, error } = await supabase
     .from('goals')
@@ -50,6 +56,19 @@ export async function getGoals(): Promise<Goal[]> {
     .order('sort');
   if (error) throw error;
   return (data ?? []) as Goal[];
+}
+
+export async function addGoal(title: string, targetDate: string): Promise<void> {
+  const { error } = await supabase.from('goals').insert({ title, target_date: targetDate, icon: 'today' });
+  if (error) throw error;
+}
+
+export async function updateGoal(
+  id: string,
+  patch: { title?: string; target_date?: string; status?: string },
+): Promise<void> {
+  const { error } = await supabase.from('goals').update(patch).eq('id', id);
+  if (error) throw error;
 }
 
 export async function getHabitsToday(): Promise<HabitToday[]> {
@@ -83,6 +102,58 @@ export async function toggleHabit(habit: Habit, done: boolean): Promise<void> {
     },
     { onConflict: 'habit_id,day' },
   );
+  if (error) throw error;
+}
+
+export async function addHabit(label: string, cue: string | null): Promise<void> {
+  const { error } = await supabase.from('habits').insert({ label, cue, sort: 99 });
+  if (error) throw error;
+}
+
+export async function updateHabit(id: string, patch: { label?: string; cue?: string }): Promise<void> {
+  const { error } = await supabase.from('habits').update(patch).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteHabit(id: string): Promise<void> {
+  const { error } = await supabase.from('habits').update({ active: false }).eq('id', id);
+  if (error) throw error;
+}
+
+const FINANCE_COLORS: Record<string, string> = {
+  'Day job': '#CDEB45',
+  Photography: '#849A35',
+  Clients: '#4A4F58',
+};
+
+export async function getFinance(): Promise<FinanceSlice[]> {
+  const monthAgo = todayStr(new Date(Date.now() - 31 * 86400000));
+  const { data, error } = await supabase
+    .from('finance_entries')
+    .select()
+    .eq('kind', 'income')
+    .gte('occurred_on', monthAgo);
+  if (error) throw error;
+  const bySrc: Record<string, number> = {};
+  (data ?? []).forEach((r: { source: string | null; amount: number }) => {
+    const s = r.source || 'Other';
+    bySrc[s] = (bySrc[s] || 0) + Number(r.amount);
+  });
+  return Object.entries(bySrc).map(([label, value]) => ({
+    label,
+    value,
+    color: FINANCE_COLORS[label] || '#4A4F58',
+  }));
+}
+
+export async function addFinance(
+  kind: 'income' | 'expense',
+  source: string,
+  amount: number,
+): Promise<void> {
+  const { error } = await supabase
+    .from('finance_entries')
+    .insert({ kind, source, amount, occurred_on: todayStr() });
   if (error) throw error;
 }
 

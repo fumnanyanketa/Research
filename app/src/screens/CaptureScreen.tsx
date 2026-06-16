@@ -13,6 +13,7 @@ import { useRecorder } from '../lib/useRecorder';
 import { createEntry, processEntry, updateTask } from '../lib/db';
 import type { EntryKind, Task } from '../lib/types';
 import { TaskCard } from '../components/TaskCard';
+import { colors, radius } from '../theme';
 
 type Mode = 'brain_dump' | 'conversation';
 
@@ -65,59 +66,56 @@ export function CaptureScreen({ onChanged }: { onChanged: () => void }) {
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.h1}>Capture</Text>
 
-      <View style={styles.modeRow}>
-        <Pressable
-          style={[styles.modeBtn, mode === 'brain_dump' && styles.modeOn]}
-          onPress={() => setMode('brain_dump')}
-        >
-          <Text style={[styles.modeText, mode === 'brain_dump' && styles.modeTextOn]}>Quick thought</Text>
+      <View style={styles.seg}>
+        <Pressable style={[styles.segBtn, mode === 'brain_dump' && styles.segOn]} onPress={() => setMode('brain_dump')}>
+          <Text style={[styles.segText, mode === 'brain_dump' && styles.segTextOn]}>Quick thought</Text>
         </Pressable>
-        <Pressable
-          style={[styles.modeBtn, mode === 'conversation' && styles.modeOn]}
-          onPress={() => setMode('conversation')}
-        >
-          <Text style={[styles.modeText, mode === 'conversation' && styles.modeTextOn]}>Conversation</Text>
+        <Pressable style={[styles.segBtn, mode === 'conversation' && styles.segOn]} onPress={() => setMode('conversation')}>
+          <Text style={[styles.segText, mode === 'conversation' && styles.segTextOn]}>Conversation</Text>
         </Pressable>
       </View>
 
       {processing ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={colors.accentText} />
           <Text style={styles.muted}>Filing and extracting tasks…</Text>
         </View>
       ) : (
         <>
-          {mode === 'brain_dump' && recorder.phase === 'idle' && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Type a thought, task, or note…"
-                value={typed}
-                onChangeText={setTyped}
-                multiline
-              />
-              {typed.trim().length > 0 && (
-                <Pressable style={styles.saveBtn} onPress={() => fileEntry('brain_dump', typed)}>
-                  <Text style={styles.saveText}>Save & file</Text>
-                </Pressable>
-              )}
-              <Text style={styles.or}>— or speak it —</Text>
-            </>
+          <TextInput
+            style={styles.input}
+            placeholder={mode === 'brain_dump' ? "What's on your mind? Anchor will sort it." : 'Record a meeting — Anchor pulls out the tasks.'}
+            placeholderTextColor={colors.muted2}
+            value={typed}
+            onChangeText={setTyped}
+            multiline
+          />
+          {typed.trim().length > 0 && (
+            <Pressable style={styles.fileBtn} onPress={() => fileEntry(mode, typed)}>
+              <Text style={styles.fileText}>File it</Text>
+            </Pressable>
           )}
 
-          <View style={styles.center}>
+          <View style={styles.recWrap}>
             {recorder.phase === 'preparing' ? (
               <>
-                <ActivityIndicator size="large" />
-                <Text style={styles.muted}>Loading transcription model…</Text>
+                <ActivityIndicator size="large" color={colors.accentText} />
+                <Text style={styles.muted}>Loading on-device model…</Text>
               </>
             ) : (
-              <Pressable
-                style={[styles.record, recorder.phase === 'recording' && styles.recording]}
-                onPress={recorder.phase === 'recording' ? stopAndFile : recorder.start}
-              >
-                <Text style={styles.recordText}>{recorder.phase === 'recording' ? 'Stop' : 'Record'}</Text>
-              </Pressable>
+              <>
+                <Pressable
+                  style={[styles.record, recorder.phase === 'recording' && styles.recording]}
+                  onPress={recorder.phase === 'recording' ? stopAndFile : recorder.start}
+                >
+                  <Text style={[styles.recordText, recorder.phase === 'recording' && styles.recordTextOn]}>
+                    {recorder.phase === 'recording' ? '■' : '●'}
+                  </Text>
+                </Pressable>
+                <Text style={[styles.recLabel, recorder.phase === 'recording' && { color: colors.accentText }]}>
+                  {recorder.phase === 'recording' ? 'Recording · tap to stop' : 'Tap to record (offline)'}
+                </Text>
+              </>
             )}
           </View>
 
@@ -127,9 +125,11 @@ export function CaptureScreen({ onChanged }: { onChanged: () => void }) {
 
       {summary.length > 0 && (
         <>
-          <Text style={styles.h2}>Summary</Text>
-          <Text style={styles.body}>{summary}</Text>
-          {proposed.length > 0 && <Text style={styles.h2}>Proposed tasks</Text>}
+          <Text style={styles.section}>SUMMARY</Text>
+          <View style={styles.card}>
+            <Text style={styles.body}>{summary}</Text>
+          </View>
+          {proposed.length > 0 && <Text style={styles.section}>PROPOSED TASKS</Text>}
           {proposed.map((t) => (
             <TaskCard key={t.id} task={t} onResolve={(s) => resolve(t, s)} />
           ))}
@@ -141,37 +141,35 @@ export function CaptureScreen({ onChanged }: { onChanged: () => void }) {
 
 const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 60 },
-  h1: { fontSize: 28, fontWeight: '700', marginBottom: 12 },
-  h2: { fontSize: 18, fontWeight: '600', marginTop: 20, marginBottom: 4 },
-  body: { fontSize: 16, lineHeight: 22 },
-  modeRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
-  modeBtn: { borderWidth: 1, borderColor: '#1c1c1e', borderRadius: 20, paddingVertical: 6, paddingHorizontal: 16 },
-  modeOn: { backgroundColor: '#1c1c1e' },
-  modeText: { color: '#1c1c1e', fontWeight: '600' },
-  modeTextOn: { color: '#fff' },
+  h1: { fontSize: 30, fontWeight: '800', color: colors.text, letterSpacing: -0.5, marginBottom: 14 },
+  seg: { flexDirection: 'row', backgroundColor: colors.inset, borderWidth: 1, borderColor: colors.border, borderRadius: 999, padding: 4, marginBottom: 16 },
+  segBtn: { flex: 1, paddingVertical: 9, borderRadius: 999, alignItems: 'center' },
+  segOn: { backgroundColor: colors.accent },
+  segText: { color: colors.muted, fontWeight: '600', fontSize: 13 },
+  segTextOn: { color: colors.accentInk },
   input: {
     borderWidth: 1,
-    borderColor: '#e5e5ea',
-    borderRadius: 12,
-    padding: 12,
-    minHeight: 90,
-    fontSize: 16,
+    borderColor: colors.border,
+    backgroundColor: colors.inset,
+    borderRadius: radius.md,
+    padding: 14,
+    minHeight: 96,
+    fontSize: 15,
+    color: colors.text,
     textAlignVertical: 'top',
   },
-  saveBtn: { backgroundColor: '#2a9d8f', borderRadius: 8, padding: 12, alignItems: 'center', marginTop: 10 },
-  saveText: { color: '#fff', fontWeight: '600' },
-  or: { textAlign: 'center', color: '#aaa', marginVertical: 14 },
-  center: { alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 12 },
-  record: {
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    backgroundColor: '#1c1c1e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recording: { backgroundColor: '#d62828' },
-  recordText: { color: '#fff', fontSize: 22, fontWeight: '600' },
-  transcript: { fontSize: 15, lineHeight: 21, color: '#333', marginTop: 12 },
-  muted: { color: '#888' },
+  fileBtn: { backgroundColor: colors.accent, borderRadius: 999, paddingVertical: 13, alignItems: 'center', marginTop: 12 },
+  fileText: { color: colors.accentInk, fontWeight: '700', fontSize: 15 },
+  recWrap: { alignItems: 'center', gap: 12, marginVertical: 22 },
+  record: { width: 84, height: 84, borderRadius: 42, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
+  recording: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border2 },
+  recordText: { color: colors.accentInk, fontSize: 30, fontWeight: '700' },
+  recordTextOn: { color: colors.red },
+  recLabel: { color: colors.muted, fontWeight: '600', fontSize: 12.5 },
+  center: { alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 30 },
+  muted: { color: colors.muted },
+  transcript: { fontSize: 15, lineHeight: 21, color: colors.text, marginTop: 8 },
+  section: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: colors.muted, marginTop: 22, marginBottom: 8 },
+  card: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, padding: 14 },
+  body: { fontSize: 15, lineHeight: 22, color: colors.text },
 });

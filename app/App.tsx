@@ -5,6 +5,7 @@ import { TodayScreen } from './src/screens/TodayScreen';
 import { CaptureScreen } from './src/screens/CaptureScreen';
 import { TasksScreen } from './src/screens/TasksScreen';
 import { HabitsScreen } from './src/screens/HabitsScreen';
+import { colors } from './src/theme';
 
 type Tab = 'today' | 'capture' | 'tasks' | 'habits';
 
@@ -30,27 +31,34 @@ export default function App() {
         {tab === 'habits' && <HabitsScreen refreshKey={refreshKey} />}
       </View>
       <View style={styles.tabBar}>
-        {TABS.map((t) => (
-          <Pressable key={t.key} style={styles.tab} onPress={() => setTab(t.key)}>
-            <Text style={[styles.tabLabel, tab === t.key && styles.tabActive]}>{t.label}</Text>
-          </Pressable>
-        ))}
+        {TABS.map((t) => {
+          const active = tab === t.key;
+          return (
+            <Pressable key={t.key} style={styles.tab} onPress={() => setTab(t.key)}>
+              <View style={[styles.pill, active && styles.pillActive]}>
+                <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{t.label}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingTop: 56 },
+  container: { flex: 1, backgroundColor: colors.surface, paddingTop: 56 },
   body: { flex: 1 },
   tabBar: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#e5e5ea',
+    backgroundColor: colors.fcBg,
     paddingVertical: 10,
-    paddingBottom: 24,
+    paddingBottom: 26,
+    paddingHorizontal: 8,
   },
   tab: { flex: 1, alignItems: 'center' },
-  tabLabel: { fontSize: 13, color: '#999', fontWeight: '600' },
-  tabActive: { color: '#1c1c1e' },
+  pill: { paddingVertical: 7, paddingHorizontal: 18, borderRadius: 999 },
+  pillActive: { backgroundColor: colors.accent },
+  tabLabel: { fontSize: 12.5, color: colors.fcMuted, fontWeight: '600' },
+  tabLabelActive: { color: colors.accentInk },
 });

@@ -26,6 +26,7 @@ export interface Habit {
   id: string;
   label: string;
   area_id: string | null;
+  cue: string | null;
   target_minutes: number | null;
   sort: number;
   active: boolean;
@@ -51,6 +52,12 @@ export interface Goal {
   target_date: string | null;
   status: 'active' | 'done' | 'dropped';
   sort: number;
+}
+
+export interface FinanceSlice {
+  label: string;
+  value: number;
+  color: string;
 }
 
 export type EntryKind = 'conversation' | 'brain_dump' | 'journal';
