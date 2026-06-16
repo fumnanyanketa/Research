@@ -1,5 +1,5 @@
 import { initWhisper, type WhisperContext } from 'whisper.rn';
-import { RealtimeTranscriber } from 'whisper.rn/realtime-transcription';
+import { RealtimeTranscriber } from 'whisper.rn/realtime-transcription/index';
 import { AudioPcmStreamAdapter } from 'whisper.rn/realtime-transcription/adapters/AudioPcmStreamAdapter';
 import type { RealtimeTranscribeEvent } from 'whisper.rn/realtime-transcription/types';
 import { Directory, File, Paths } from 'expo-file-system';
