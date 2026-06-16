@@ -36,3 +36,22 @@ works offline, no upload limits.
 ## Status
 Approved. Web app stays the primary surface for typing/short capture and review;
 native app becomes the meeting recorder. Multi-session build.
+
+## Decisions / requirements captured (2026-06-16)
+- **Web app is frozen.** No more feature edits on the web; it stays live for
+  capture + data entry. All further work happens in the native Android app.
+- **Target: Android**, installed via an **EAS APK** (no Apple account needed).
+- **Real countdowns.** Goals must count down from a real target date (decrement
+  daily), not a static number. (The web's "80 days" was hard-coded sample data.)
+- **Full card editing**, not just rename: editing a goal/task/habit must let you
+  change the **target date / days-left**, **due date**, **priority**, and area —
+  the things actually being tracked.
+- **Offline Whisper** for long (1–3 hr) meeting recordings: record to file,
+  chunk, transcribe on-device, show progress, then run extraction.
+
+## To start the first installable build I need
+- A free **Expo account** → at **expo.dev**, sign up, then **Account → Settings →
+  Access Tokens → Create token**. Paste it as `EXPO_TOKEN=...`.
+- With that I can run an EAS build and hand back an **APK link** you install
+  directly on your Android phone. Same Supabase + Gemini backend as the web app,
+  so your data is shared.
