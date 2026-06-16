@@ -1,7 +1,7 @@
 /* Anchor — mobile app: phone frame, tab bar, four screens. */
-import { useState as mUseState, useRef as mUseRef } from "react";
+import { useState as mUseState, useRef as mUseRef, useEffect as mUseEffect } from "react";
 import { Icon } from "./icons.jsx";
-import { Ring, Waveform, DotMatrix } from "./viz.jsx";
+import { Ring, Waveform, DotMatrix, Donut } from "./viz.jsx";
 
 /* ---------- shared bits ---------- */
 export function MetaLine({ t }) {
@@ -34,6 +34,9 @@ function TodayScreen({ store }) {
   const doneCount = habits.filter(h => h.done).length;
   const railRef = mUseRef(null);
   const [gi, setGi] = mUseState(0);
+  const [finShown, setFinShown] = mUseState(false);
+  const finance = store.finance || [];
+  const finTotal = finance.reduce((s, f) => s + f.value, 0);
   const onRailScroll = () => {
     const el = railRef.current; if (!el) return;
     const pitch = el.firstChild ? el.firstChild.offsetWidth + 10 : el.clientWidth;
@@ -113,17 +116,88 @@ function TodayScreen({ store }) {
           ))}
         </div>
       </div>
+
+      {/* Finance pulse (hidden until revealed) */}
+      <div className="row spread" style={{ margin: "26px 0 4px" }}>
+        <div className="lbl">FINANCE · MTD</div>
+        <button className="reveal-toggle" onClick={() => setFinShown((s) => !s)}>
+          <Icon name={finShown ? "eyeoff" : "eye"} size={14} /> {finShown ? "Hide" : "Reveal"}
+        </button>
+      </div>
+      <div className="card" style={{ padding: 18, position: "relative" }}>
+        <div className="col" style={{ alignItems: "center", gap: 14, filter: finShown ? "none" : "blur(9px)", transition: "filter 200ms ease", pointerEvents: finShown ? "auto" : "none" }}>
+          <Donut size={132} stroke={18} segments={finance.map((f) => ({ value: f.value, color: f.color }))}>
+            <div style={{ textAlign: "center" }}>
+              <div className="lbl" style={{ fontSize: 9 }}>NET</div>
+              <div className="num" style={{ fontSize: 23 }}>${(finTotal / 1000).toFixed(1)}k</div>
+            </div>
+          </Donut>
+          <div className="col" style={{ gap: 8, width: "100%" }}>
+            {finance.map((f) => (
+              <div key={f.label} className="row spread">
+                <div className="row" style={{ gap: 9 }}>
+                  <span style={{ width: 9, height: 9, borderRadius: 3, background: f.color }} />
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{f.label}</span>
+                </div>
+                <span style={{ fontSize: 13.5, fontWeight: 700 }}>${f.value.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {!finShown && (
+          <div className="finance-lock" style={{ top: 0 }}>
+            <Icon name="eye" size={18} /><span>Private · tap reveal</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 /* ---------- CAPTURE ---------- */
 function CaptureScreen({ store }) {
-  const { proposed, confirmTask, dismissTask } = store;
+  const { proposed, confirmTask, dismissTask, addThought } = store;
   const [mode, setMode] = mUseState("thought");
-  const [rec, setRec] = mUseState(false);
+  const [listening, setListening] = mUseState(false);
+  const [busy, setBusy] = mUseState(false);
   const [text, setText] = mUseState("");
+  const recogRef = mUseRef(null);
+  const baseRef = mUseRef("");
   const waveHeights = [.3,.6,.9,.5,.8,1,.6,.4,.7,.95,.5,.8,.6,.35,.7,.5,.9,.4,.6,.8,.5,.3,.7];
+
+  mUseEffect(() => () => { try { recogRef.current?.stop(); } catch { /* noop */ } }, []);
+
+  const startListening = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { window.alert("Voice input isn't supported in this browser — try Chrome, or just type."); return; }
+    const r = new SR();
+    r.lang = navigator.language || "en-US";
+    r.interimResults = true;
+    r.continuous = true;
+    baseRef.current = text.trim() ? text.trim() + " " : "";
+    let finalText = "";
+    r.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const res = e.results[i];
+        if (res.isFinal) finalText += res[0].transcript;
+        else interim += res[0].transcript;
+      }
+      setText((baseRef.current + finalText + interim).replace(/\s+/g, " "));
+    };
+    r.onerror = (e) => { setListening(false); if (e.error !== "no-speech" && e.error !== "aborted") window.alert("Voice error: " + e.error); };
+    r.onend = () => setListening(false);
+    recogRef.current = r;
+    try { r.start(); setListening(true); } catch { /* already running */ }
+  };
+  const stopListening = () => { try { recogRef.current?.stop(); } catch { /* noop */ } setListening(false); };
+
+  const fileIt = async () => {
+    if (!text.trim() || busy) return;
+    if (listening) stopListening();
+    setBusy(true);
+    try { await addThought(text.trim()); setText(""); } finally { setBusy(false); }
+  };
 
   return (
     <div className="screen-pad">
@@ -135,34 +209,36 @@ function CaptureScreen({ store }) {
       </div>
 
       <textarea className="capture-field" rows={4} value={text} onChange={e => setText(e.target.value)}
-        placeholder={mode === "thought" ? "What's on your mind? Anchor will sort it." : "Record a call or meeting. Anchor will pull out the tasks."} />
+        placeholder={mode === "thought" ? "What's on your mind? Anchor will sort it." : "Speak or type a call/meeting. Anchor will pull out the tasks."} />
 
-      {/* Record */}
-      <div className="col" style={{ alignItems: "center", margin: "22px 0 8px", gap: 12 }}>
-        <button className={`record-btn ${rec ? "rec" : ""}`} onClick={() => setRec(r => !r)}>
-          {rec ? <span className="rec-stop" /> : <Icon name="mic" size={30} />}
+      {text.trim() && (
+        <button className="btn-accent" style={{ width: "100%", marginTop: 12 }} disabled={busy} onClick={fileIt}>
+          {busy ? "Filing…" : "File it"}
         </button>
-        <div style={{ fontSize: 12.5, color: rec ? "var(--accent)" : "var(--muted)", fontWeight: 600 }}>
-          {rec ? "Listening · tap to stop" : "Tap to record"}
+      )}
+
+      {/* Record — live voice dictation (browser speech-to-text) */}
+      <div className="col" style={{ alignItems: "center", margin: "22px 0 8px", gap: 12 }}>
+        <button className={`record-btn ${listening ? "rec" : ""}`} disabled={busy} onClick={listening ? stopListening : startListening}>
+          {listening ? <span className="rec-stop" /> : <Icon name="mic" size={30} />}
+        </button>
+        <div style={{ fontSize: 12.5, color: listening ? "var(--accent)" : "var(--muted)", fontWeight: 600 }}>
+          {listening ? "Listening · tap to stop" : "Tap to dictate"}
         </div>
-        {rec && <div style={{ width: "70%" }}><Waveform heights={waveHeights} height={34} /></div>}
+        {listening && <div style={{ width: "70%" }}><Waveform heights={waveHeights} height={34} /></div>}
       </div>
 
-      {/* AI summary */}
+      {/* Proposed by AI (live) */}
       <div className="row spread" style={{ margin: "20px 0 10px", alignItems: "center" }}>
         <div className="lbl" style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <span className="ai-dot" /> AI SUMMARY
+          <span className="ai-dot" /> PROPOSED BY AI
         </div>
         <span style={{ fontSize: 11, color: "var(--muted-2)" }}>{proposed.length} proposed</span>
       </div>
-      <div className="card" style={{ padding: 16, marginBottom: 12 }}>
-        <div style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.55 }}>
-          Two action items and a reminder. The studio booking is time-sensitive, the roadmap can wait until after the investor update.
-        </div>
-      </div>
 
-      {proposed.length === 0 && (
-        <div className="empty-note">All proposals cleared. Capture something new.</div>
+      {busy && <div className="empty-note">Filing &amp; extracting tasks…</div>}
+      {!busy && proposed.length === 0 && (
+        <div className="empty-note">Nothing pending. Capture a thought above and Anchor pulls out the tasks.</div>
       )}
       {proposed.map(t => (
         <div key={t.id} className="proposed-card">
