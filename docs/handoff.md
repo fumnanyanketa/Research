@@ -1,6 +1,6 @@
 # Anchor — Project Handoff
 
-_Last updated: 2026-06-16. This document is the single source of truth for picking
+_Last updated: 2026-06-17. This document is the single source of truth for picking
 up work in a fresh Claude instance. Read it top to bottom before doing anything._
 
 ## What Anchor is
@@ -22,26 +22,41 @@ feature the web cannot do. All new work goes into `app/`. Do **not** keep editin
 
 ### Where we are right now
 
-- The EAS Android build was failing in the **Bundle JavaScript** phase (NOT native
-  compilation). Root cause: `whisper.rn` v0.6.0 ships a buggy `package.json`
-  `"exports"` map (`"./*" -> "./lib/module/*"`) that resolves the bare
-  `realtime-transcription` subpath to a *directory* with no index fallback. Metro's
-  package-exports resolver (on by default in RN 0.85 / Expo SDK 56) failed to resolve
-  it.
-- **FIXED** in commit `7363914`: changed the import in `app/src/lib/whisper.ts` from
-  `'whisper.rn/realtime-transcription'` to `'whisper.rn/realtime-transcription/index'`.
-  Verified locally: `npx expo export --platform android` now bundles all 628 modules
-  (it then stops at a Hermes engine-consistency check, which is a **local-export-only**
-  false positive — there is no generated `android/` dir locally so the CLI scanned
-  `whisper.rn`'s own `android/gradle.properties`; on EAS `expo prebuild` generates a
-  consistent project, so this does not affect the cloud build). `npx tsc --noEmit`
-  passes.
-- A fresh build was queued after the fix: build id `12177830-c918-4819-85f9-51f7817e629c`
-  (profile `preview`, Android APK, internal distribution). **Status when this handoff
-  was written: IN_QUEUE.** Check it with the command in "How to build" below.
-- The **next risk** is the native gradle phase (compiling `whisper.rn` and
-  `@fugood/react-native-audio-pcm-stream`), which we had never reached before. If the
-  new build fails, read the log and look at that phase.
+**The app builds and is installed on the user's phone.** First successful EAS build:
+`8eaa771a-2dfd-47f8-b338-3c37299df3c5` (profile `preview`, Android APK). APK:
+`https://expo.dev/artifacts/eas/6_eAvdPHEtQvT51_4U3rSsfcUOI0d0u5eqmQTdvUaS8.apk`
+
+The user reports **"a lot of bugs"** on the live app and wants to keep iterating in a
+fresh instance. The next job is bug-fixing the running app, NOT getting it to build.
+Ask the user for a concrete bug list (or have them screen-record) and work through it.
+
+#### How we got the build green (so you don't re-break it)
+
+The EAS **Bundle JavaScript** phase runs `expo export:embed` (production Metro), which
+is much stricter than `expo export` (dev). `whisper.rn` v0.6.0 ships a buggy
+`package.json` `"exports"` map (`"./*" -> "./lib/module/*"`) that the production
+resolver can't follow for the `realtime-transcription` subpaths. Two fixes, both in
+commit `ecef733`, both required:
+
+1. **`app/metro.config.js`** — a `resolveRequest` that hard-maps
+   `whisper.rn/realtime-transcription*` to the real compiled files under
+   `node_modules/whisper.rn/lib/module/realtime-transcription`, bypassing the broken
+   exports map. Do NOT delete this file.
+2. **`buffer` polyfill** — `whisper.rn` → `safe-buffer` requires Node's `buffer`, absent
+   in RN. `buffer` is now a dependency and `global.Buffer` is shimmed at the top of
+   `app/index.ts`. Keep both.
+
+`app/src/lib/whisper.ts` imports the canonical `whisper.rn/realtime-transcription`
+(the metro resolver handles it). `app/tsconfig.json` has a `paths` block pointing TS at
+whisper.rn's `.d.ts` files so `tsc` resolves them.
+
+**To reproduce a JS-bundling failure locally, use the exact EAS command (NOT plain
+`expo export`, which is misleadingly lenient):**
+```bash
+cd app && rm -rf dist && npx expo export:embed --platform android --dev false \
+  --entry-file index.ts --bundle-output /tmp/bundle.js --assets-dest /tmp/assets
+```
+Success = "Android Bundled … (N modules)" + a written /tmp/bundle.js.
 
 The previous failed build (for reference) was `2c64c5f1-1408-4a57-965e-636d32db003c`.
 
@@ -148,16 +163,60 @@ EXPO_TOKEN=<token> npx eas-cli@latest build:view <BUILD_ID> --json
 - To diagnose a failure: `build:view <id> --json` gives `error.message` and a
   `logFiles[0]` URL. The remote log is a non-standard binary format and is hard to read
   directly — the reliable way to reproduce a **Bundle JavaScript** failure is locally
-  with `npx expo export --platform android` (clear cache with `--clear` or
-  `rm -rf dist` between runs; Metro caches resolution).
+  with the `expo export:embed` command in "Local reproduction commands" below. Do NOT
+  trust plain `npx expo export` — its dev resolver is more lenient than EAS's production
+  `export:embed` and will hide real failures.
 
 ## Local reproduction commands
 
 ```bash
 cd /home/user/Research/app
 npx tsc --noEmit                          # typecheck (must be clean)
-rm -rf dist && npx expo export --platform android   # reproduce Metro bundling
+# Reproduce the EXACT EAS "Bundle JavaScript" phase (production resolver):
+rm -rf dist && npx expo export:embed --platform android --dev false \
+  --entry-file index.ts --bundle-output /tmp/bundle.js --assets-dest /tmp/assets
 ```
+
+## Iteration workflow — how to fix bugs now that the app is live (IMPORTANT)
+
+There are two kinds of changes, with very different loops:
+
+**A. JS / UI / logic changes (the vast majority of bug fixes)** — screens, styles,
+`db.ts`, store logic, prompts, etc. These do **NOT** require a full native rebuild.
+The fastest path is **EAS Update (OTA)**: publish a new JS bundle that the installed
+APK downloads on next launch. Seconds-to-minutes, no reinstall, no APK.
+
+> ⚠️ **One-time setup required before OTA works.** The current `preview` APK
+> (`8eaa771a`) was built **without** `expo-updates` configured, so it will NOT pick up
+> OTA updates yet. To enable the fast loop, do this once:
+> 1. `cd app && npx expo install expo-updates`
+> 2. Add a `channel` to the `preview` profile in `eas.json` (e.g. `"channel": "preview"`)
+>    and make sure `runtimeVersion` is set in `app.json` (policy `appVersion` or
+>    `fingerprint`).
+> 3. Do **one** more full `eas build --profile preview` and reinstall that APK on the
+>    phone. From then on, `eas update --branch preview -m "fix X"` ships JS fixes OTA.
+>
+> Until that setup is done, **every** change still requires a full rebuild + reinstall
+> (below). Strongly recommend wiring up `expo-updates` early so bug-fixing isn't gated
+> on the build queue.
+
+**B. Native changes** — adding/removing a native module, changing Android permissions,
+SDK/`app.json` native config, new config plugins. These **require a full EAS build**
+(the "queuing thing") and a fresh APK install. Same command as before:
+```bash
+EXPO_TOKEN=<token> npx eas-cli@latest build --platform android --profile preview --non-interactive --no-wait
+```
+Builds take ~5–15 min in the queue; poll with `build:view <id> --json`.
+
+**The remote-container catch:** This Claude runs in an ephemeral cloud container, so the
+classic local loop (`expo start --dev-client` + Metro hot-reload over USB/LAN to the
+phone) is **not** practical — the container can't reach the user's physical phone. So
+the realistic loops here are: **OTA via `eas update`** (fast, once expo-updates is set
+up) for JS, and **full `eas build`** for native. Always verify changes locally first
+with `npx tsc --noEmit` and the `export:embed` command above before publishing.
+
+**Backend changes** (Supabase schema / edge function) deploy independently of the app
+and take effect immediately for both front-ends — no app rebuild needed.
 
 ## Credentials & security (do NOT commit any of these)
 
@@ -182,10 +241,15 @@ rm -rf dist && npx expo export --platform android   # reproduce Metro bundling
 
 ## Immediate next steps
 
-1. Check the queued build `12177830-c918-4819-85f9-51f7817e629c`
-   (`build:view <id> --json`). If it SUCCEEDED, grab the APK URL and send it to the user.
-2. If it FAILED in the **native gradle** phase, the suspects are `whisper.rn` and
-   `@fugood/react-native-audio-pcm-stream` autolinking/compiling on SDK 56 — read the
-   log, fix, push to the branch, rebuild.
-3. If it failed in **Bundle JavaScript** again, reproduce locally with
-   `npx expo export --platform android` and fix the resolution.
+The build is green and installed. The job now is **fixing bugs on the live app**.
+
+1. Ask the user for the concrete bug list (they said "a lot of bugs"). Get specifics:
+   which screen, what happened vs. expected, ideally a screenshot/recording.
+2. **Set up EAS Update / `expo-updates` early** (see "Iteration workflow" above) so JS
+   bug fixes ship OTA in seconds instead of going through the full build queue + reinstall
+   every time. This is the single biggest unblock for fast iteration.
+3. Triage: most bugs will be JS/UI (fix → `tsc` → `export:embed` to verify → OTA). Only
+   native/permission/module changes need a full `eas build`.
+4. Likely early suspects to verify on a real device: first-run Whisper model download
+   (~60 MB, needs network + mic permission), transcription quality on a real recording,
+   countdowns/finance reading correctly from Supabase, edit/delete flows.
