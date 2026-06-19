@@ -1,6 +1,37 @@
-# Action Items — from meetings of 11 June 2026
+# Action Items — from meetings of 11 + 19 June 2026
 
 Consolidated to-do list. "You" = the meeting host (the one recording). Dates are 2026 unless noted.
+
+> Update 19 June (Richmond meeting): new items folded in below and marked **[R]**. Full context in [2026-06-19-richmond-synthesis.md](2026-06-19-richmond-synthesis.md).
+
+## ⏰ Tomorrow (the 20 June kickoff meeting) — Richmond's prep advice [R]
+
+- [ ] Keep attendance **small** — only serious/active/devoted people; reach out to key people directly.
+- [ ] Open with conversation/vibe, then run an **ideas workshop** (not just Africa Week — what do people want to do/see more of?).
+- [ ] Make sure people **understand what volunteering means**; map people → roles.
+- [ ] Record it for notes. Don't over-grip it — let the room breathe.
+
+## AI Nativity agency — new track [R]
+
+- [ ] Stand up the **website/blog** at ainativity.co; headline = "helping companies become more AI native."
+- [ ] Wire up **Substack + Medium**, publish educational content; optimize for **GEO + SEO** (context not keywords), index via Bing/ChatGPT, localize to Finland, add certifications.
+- [ ] Build the **demo library**: 5–10 agent case studies across 3–4 industries for live demos.
+- [ ] Add **mailing-list capture** (→ phone numbers → newsletters).
+- [ ] Apply to **Business Helsinki** for AI-product-development support.
+- [ ] Decide structure: start **solo entrepreneur**, convert to limited later.
+- [ ] Reach out to **Michael's roommate** (Base44 builder) and **Jude**; build the network.
+- [ ] Build a **security layer** into every app (API-key hygiene, configs).
+- [ ] Use the **sister's printing site (brandinsights.com.ng)** as a portfolio case study.
+
+## Election tools (new project idea) [R]
+
+- [ ] Scope an **AI voter-education tool** (voting rights, low-threshold) and possibly a **candidate-facing tool** ahead of the **17 April 2027** parliamentary election. (Coordinate with the "Community 2027" project — adjacent but distinct.)
+
+## Language app [R]
+
+- [ ] Onboard **test users tomorrow** for feedback; treat fine-tuning (not coding) as the real work.
+
+---
 
 ## 🔴 This week (by ~Fri 13 June)
 
