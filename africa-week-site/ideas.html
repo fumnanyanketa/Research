@@ -110,12 +110,14 @@
     e.preventDefault();
     errMsg.style.display = 'none';
 
+    const fd = new FormData(form);
+    const get = (k) => (fd.get(k) || '').toString().trim();
     const data = {
-      name: form.name.value.trim(),
-      phone: form.phone.value.trim(),
-      email: form.email.value.trim(),
-      ideas: form.ideas.value.trim(),
-      website: form.website.value.trim() // honeypot
+      name: get('name'),
+      phone: get('phone'),
+      email: get('email'),
+      ideas: get('ideas'),
+      website: get('website') // honeypot
     };
 
     if (!data.name || !data.ideas){ showErr('Please add your name and your ideas.'); return; }
