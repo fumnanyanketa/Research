@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { neon } from '@neondatabase/serverless';
 
-// Receives idea submissions from ideas.html and stores them in Supabase.
-// Secrets come from Vercel environment variables, never from the repo.
+// Receives idea submissions from ideas.html and stores them in Neon (Postgres).
+// The connection string comes from a Vercel environment variable.
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed.' });
@@ -19,24 +19,25 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email.' });
   }
 
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
+  const conn = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  if (!conn) {
     return res.status(500).json({ error: 'Server is not configured yet.' });
   }
 
-  const supabase = createClient(url, key);
-  const { error } = await supabase.from('ideas').insert({
-    name: String(name).slice(0, 200),
-    phone: phone ? String(phone).slice(0, 50) : null,
-    email: email ? String(email).slice(0, 200) : null,
-    ideas: String(ideas).slice(0, 5000)
-  });
-
-  if (error) {
-    console.error('Supabase insert failed:', error.message);
+  try {
+    const sql = neon(conn);
+    await sql`
+      insert into ideas (name, phone, email, ideas)
+      values (
+        ${String(name).slice(0, 200)},
+        ${phone ? String(phone).slice(0, 50) : null},
+        ${email ? String(email).slice(0, 200) : null},
+        ${String(ideas).slice(0, 5000)}
+      )
+    `;
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('Insert failed:', err.message);
     return res.status(500).json({ error: 'Could not save right now. Please try again.' });
   }
-
-  return res.status(200).json({ ok: true });
 }

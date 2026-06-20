@@ -1,4 +1,4 @@
--- Run this once in Supabase: Dashboard > SQL Editor > New query > paste > Run.
+-- Run this once in your database's SQL editor (Neon console > SQL Editor).
 
 create table if not exists ideas (
   id uuid primary key default gen_random_uuid(),
@@ -8,7 +8,3 @@ create table if not exists ideas (
   email text,
   ideas text not null
 );
-
--- The API writes with the service role key, which bypasses row level security.
--- We still enable RLS so nothing is readable with the public anon key.
-alter table ideas enable row level security;
