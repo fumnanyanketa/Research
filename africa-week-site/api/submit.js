@@ -29,10 +29,10 @@ export default async function handler(req, res) {
   // Honeypot: real people leave this empty. Bots fill it. Pretend success.
   if (website) return res.status(200).json({ ok: true });
 
-  if (!name || !ideas) {
-    return res.status(400).json({ error: 'Name and ideas are required.' });
+  if (!name || !phone || !email || !ideas) {
+    return res.status(400).json({ error: 'Name, phone, email, and ideas are all required.' });
   }
-  if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
     return res.status(400).json({ error: 'Invalid email.' });
   }
 
