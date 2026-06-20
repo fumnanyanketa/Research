@@ -12,9 +12,9 @@ Working repository for synthesizing meeting recordings into plans and tracking e
 | [africa-week-2027/master-plan.md](africa-week-2027/master-plan.md) | Africa Week 2027 master plan — 12-month roadmap to a Slush-level event |
 | [africa-week-2027/2026-06-20-kickoff-prep.md](africa-week-2027/2026-06-20-kickoff-prep.md) | My prep for the 20 June kickoff (attending as a contributor) — talking points, the capture/onboarding offer, how to be useful |
 | [africa-week-2027/idea-capture-template.md](africa-week-2027/idea-capture-template.md) | Ready-to-use template for capturing ideas live during meetings |
-| [africa-week-2027/START-HERE.html](africa-week-2027/START-HERE.html) | One-page onboarding doc for new volunteers, designed HTML version (open in a browser) |
 | [africa-week-2027/START-HERE-onepager.md](africa-week-2027/START-HERE-onepager.md) | One-page onboarding doc, plain Markdown source version |
 | [africa-week-2027/workspace-structure.md](africa-week-2027/workspace-structure.md) | Proposed shared workspace (Google Drive) folder structure and how the team works |
+| [africa-week-site/](africa-week-site/) | Deployable site: the Start Here landing page (`index.html`), the idea-submission form (`ideas.html`), the `/api/submit` serverless function, and [DEPLOY.md](africa-week-site/DEPLOY.md) for pushing to Vercel + Supabase |
 | [africa-week-2027/tech-integration.md](africa-week-2027/tech-integration.md) | How technology and AI get woven into Africa Week 2027 (app, Anthropic partnership, exhibitions, workshops) |
 | [projects/other-initiatives.md](projects/other-initiatives.md) | Everything else in flight: AI photography tool, AI literacy workshops, agent agency, English Parliament project, storytelling workshop, Finnish language app |
 

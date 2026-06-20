@@ -6,13 +6,13 @@
 
 ## What it is
 
-**Africa Week 2027** is an 8-day celebration of African culture, business, technology, and innovation — "the innovative side of Africa." This edition makes **technology the headline theme** and aims for a **Slush level of quality**: the event partners ask to join, not the other way around.
+**Africa Week 2027** is an 8-day celebration of African culture, business, technology, and innovation, "the innovative side of Africa." We are aiming for a world-class experience, the kind of event partners ask to be part of. **The 2027 theme has not been decided yet.** It is one of the first things we will choose together.
 
 | | |
 |---|---|
 | **Dates** | 18–25 May 2027 (8 days) |
 | **Venue** | Museum of Technology, Helsinki (~5 halls + outdoor area) |
-| **Theme** | Technology, woven across the whole week |
+| **Theme** | To be decided |
 | **Audience goal** | 2,000–5,000 people, including international visitors |
 | **Why now** | We're planning a **full year out** — that head start is our biggest advantage |
 

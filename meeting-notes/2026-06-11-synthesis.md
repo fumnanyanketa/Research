@@ -10,7 +10,7 @@ Four recorded conversations, synthesized by theme. The transcripts are noisy (au
 
 - **Venue is booked**: Museum of Technology (Helsinki), **18–25 May 2027** — an 8-day program. The museum offers ~5 usable halls/spaces plus outdoor space at the entrance (by the lake), so multiple parallel activities are possible.
 - **Why the museum and not a cultural house**: Africa Week is positioned as more than culture — academics, innovation, business. Doing it at a tech museum reinforces the theme and the seriousness of the brand.
-- **Technology is the headline theme** for 2027. The goal is to weave tech into everything, not just one day.
+- **Technology was proposed as the headline theme** for 2027 (not yet formally decided). The goal discussed: weave tech into everything, not just one day.
 - **Program shape discussed** (working draft):
   - Day 1: Opening + exhibition utilizing the whole venue (exhibition runs all week)
   - One dedicated **technology/business day** — adults and kids tracks; lectures on the evolution of technology in Africa, African inventions, innovations; tech companies, coding schools as partners; investor-facing content

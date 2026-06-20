@@ -64,13 +64,19 @@
   .sched .desc{color:var(--muted);font-weight:400;}
   .note{font-size:14px;color:var(--muted);margin-top:18px;font-style:italic;}
 
-  /* Workstreams */
-  .tags{display:flex;flex-wrap:wrap;gap:10px;}
-  .tag{
-    background:var(--card);border:1px solid var(--line);
-    padding:9px 16px;border-radius:999px;font-size:14.5px;font-weight:500;
+  /* Workstreams cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+  .ws{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 18px;display:flex;flex-direction:column;gap:12px;
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .tag span{color:var(--muted);font-weight:400;}
+  .ws:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 22px rgba(28,26,23,.07);}
+  .ws .ic{width:40px;height:40px;border-radius:11px;background:var(--accent-soft);
+    display:flex;align-items:center;justify-content:center;color:var(--accent);}
+  .ws .ic svg{width:21px;height:21px;}
+  .ws .ws-title{font-weight:600;font-size:15.5px;letter-spacing:-.01em;}
+  .ws .ws-desc{font-size:13.5px;color:var(--muted);line-height:1.5;}
 
   /* Timeline */
   .timeline{position:relative;padding-left:26px;}
@@ -92,9 +98,10 @@
   .cta{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:34px 32px;text-align:center;}
   .cta h3{font-size:22px;letter-spacing:-.01em;margin-bottom:12px;}
   .cta p{color:var(--muted);max-width:48ch;margin:0 auto;}
-  .cta .pillline{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .pill{background:var(--accent);color:#fff;padding:6px 15px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.02em;}
-  .pill.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+  .btn{display:inline-block;margin-top:24px;background:var(--accent);color:#fff;
+    text-decoration:none;font-weight:600;font-size:15px;padding:13px 28px;border-radius:10px;
+    transition:background .15s ease, transform .15s ease;}
+  .btn:hover{background:#a8472a;transform:translateY(-1px);}
 
   footer{margin-top:64px;text-align:center;color:var(--muted);font-size:13px;}
 
@@ -105,7 +112,7 @@
     .rule{margin:42px 0;}
     .facts{grid-template-columns:1fr;}
     .fact{padding:18px 20px;}
-    .tag{width:100%;}
+    .cards{grid-template-columns:1fr;}
     .cta{padding:28px 22px;}
   }
 </style>
@@ -123,10 +130,10 @@
   <div class="facts">
     <div class="fact"><div class="label">Dates</div><div class="value">18 to 25 May 2027</div></div>
     <div class="fact"><div class="label">Venue</div><div class="value">Museum of Technology, Helsinki</div></div>
-    <div class="fact"><div class="label">Theme</div><div class="value">Technology, across the whole week</div></div>
+    <div class="fact"><div class="label">Theme</div><div class="value">To be decided</div></div>
     <div class="fact"><div class="label">Audience goal</div><div class="value">2,000 to 5,000 people</div></div>
   </div>
-  <p class="note">We are planning a full year ahead. That head start is our greatest advantage, and it is what will let us deliver a world class experience, the kind of event partners ask to be part of.</p>
+  <p class="note">The theme for Africa Week 2027 has not been decided yet. It is one of the first things we will choose together. We are planning a full year ahead, and that head start is our greatest advantage.</p>
 
   <hr class="rule">
 
@@ -145,16 +152,62 @@
   <hr class="rule">
 
   <h2>Pick where you want to help</h2>
-  <div class="tags">
-    <div class="tag">Program and speakers <span>· curating days, booking speakers</span></div>
-    <div class="tag">Partnerships and sponsors <span>· companies, embassies, funders</span></div>
-    <div class="tag">Food festival and tourism <span>· vendors, layout</span></div>
-    <div class="tag">Tech and digital <span>· app, website, AI features</span></div>
-    <div class="tag">Marketing and content <span>· brand, social, press</span></div>
-    <div class="tag">Operations and venue <span>· logistics, AV, volunteers</span></div>
-    <div class="tag">Finance and grants <span>· budget, applications</span></div>
-    <div class="tag">Youth and education <span>· youth day, schools</span></div>
-    <div class="tag">Cinema and culture <span>· film program</span></div>
+  <div class="cards">
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>
+      <div class="ws-title">Program and speakers</div>
+      <div class="ws-desc">Curating the days and booking speakers.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+      <div class="ws-title">Partnerships and sponsors</div>
+      <div class="ws-desc">Companies, embassies, and funders.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="7"></line><line x1="8" y1="2" x2="8" y2="7"></line><path d="M4 7a2 2 0 0 0 4 0"></path><line x1="6" y1="7" x2="6" y2="22"></line><path d="M17 2c-1.5 1-2 4-2 7 0 2 .6 3 2 3.4"></path><line x1="17" y1="12.4" x2="17" y2="22"></line></svg></div>
+      <div class="ws-title">Food festival and tourism</div>
+      <div class="ws-desc">Vendors, layout, and tourism tie-ins.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+      <div class="ws-title">Tech and digital</div>
+      <div class="ws-desc">App, website, and AI features.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></div>
+      <div class="ws-title">Marketing and content</div>
+      <div class="ws-desc">Brand, social, and press.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+      <div class="ws-title">Operations and venue</div>
+      <div class="ws-desc">Logistics, AV, and volunteers.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+      <div class="ws-title">Finance and grants</div>
+      <div class="ws-desc">Budget and applications.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"></path></svg></div>
+      <div class="ws-title">Youth and education</div>
+      <div class="ws-desc">Youth day, kids, and schools.</div>
+    </div>
+
+    <div class="ws">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.5"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg></div>
+      <div class="ws-title">Cinema and culture</div>
+      <div class="ws-desc">The film program.</div>
+    </div>
+
   </div>
 
   <hr class="rule">
@@ -192,11 +245,8 @@
 
   <div class="cta">
     <h3>Want in?</h3>
-    <p>Tell us what you would like to work on and we will plug you into a workstream. The two things we value most are ideas and devotion. This is built over months, by people who carry their part.</p>
-    <div class="pillline">
-      <span class="pill">Bring ideas</span>
-      <span class="pill ghost">Carry your part</span>
-    </div>
+    <p>Tell us what you would like to work on and share whatever ideas you have. The two things we value most are ideas and devotion. This is built over months, by people who carry their part.</p>
+    <a class="btn" href="./ideas.html">Share your ideas</a>
   </div>
 
   <footer>Africa Week 2027 · Museum of Technology, Helsinki</footer>

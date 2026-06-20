@@ -2,7 +2,7 @@
 
 **Dates:** 18–25 May 2027 (8 days)
 **Venue:** Museum of Technology, Helsinki (booked) — ~5 halls + outdoor entrance area
-**Theme:** Technology — "the innovative side of Africa"
+**Theme:** To be decided (technology proposed) · "the innovative side of Africa"
 **Attendance target:** 2,000–5,000 across the week, including international visitors
 **North star:** Slush-level production quality. Become the event partners ask to join.
 

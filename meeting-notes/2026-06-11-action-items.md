@@ -72,7 +72,7 @@ Consolidated to-do list. "You" = the meeting host (the one recording). Dates are
 ## Decisions already made (don't re-litigate)
 
 - Venue: Museum of Technology, 18–25 May 2027 (booked).
-- Technology is the headline theme; woven across the whole week, plus one dedicated tech/business day and a youth & tech day (tent. Fri 21 May).
+- Technology is *proposed* as the theme but **not yet decided** (to be chosen at/after the kickoff); the idea is to weave tech across the week, plus a dedicated tech/business day and a youth & tech day (tent. Fri 21 May).
 - African Day (25 May) is invite-only; everything else open with registration.
 - Don't depend on partners for critical-path items (venue lesson); every critical element gets a contingency.
 - Announce food festival dates early to beat the competing festival to the calendar.
