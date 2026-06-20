@@ -1,5 +1,22 @@
 import { neon } from '@neondatabase/serverless';
 
+// Run the table creation once per warm instance, not on every request.
+let tableReady = false;
+async function ensureTable(sql) {
+  if (tableReady) return;
+  await sql`
+    create table if not exists ideas (
+      id uuid primary key default gen_random_uuid(),
+      created_at timestamptz not null default now(),
+      name text not null,
+      phone text,
+      email text,
+      ideas text not null
+    )
+  `;
+  tableReady = true;
+}
+
 // Receives idea submissions from ideas.html and stores them in Neon (Postgres).
 // The connection string comes from a Vercel environment variable.
 export default async function handler(req, res) {
@@ -26,6 +43,7 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(conn);
+    await ensureTable(sql);
     await sql`
       insert into ideas (name, phone, email, ideas)
       values (
