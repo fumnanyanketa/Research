@@ -9,8 +9,9 @@
     --ink:#1c1a17;
     --muted:#6f6862;
     --line:#e7e1d8;
-    --bg:#faf8f4;
+    --bg:#ffffff;
     --card:#ffffff;
+    --tint:#faf8f4;
     --accent:#c75b39;
     --accent-soft:#f3e4dd;
   }
@@ -53,11 +54,12 @@
   /* Schedule list */
   .sched{list-style:none;}
   .sched li{
-    display:flex;gap:18px;align-items:baseline;
+    display:flex;gap:14px;align-items:flex-start;
     padding:15px 0;border-bottom:1px solid var(--line);
   }
   .sched li:last-child{border-bottom:0;}
-  .sched .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--accent);transform:translateY(-2px);}
+  .sched .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:11px;}
+  .sched li > span:nth-of-type(2){flex:1;min-width:0;}
   .sched .what{font-weight:600;}
   .sched .desc{color:var(--muted);font-weight:400;}
   .note{font-size:14px;color:var(--muted);margin-top:18px;font-style:italic;}
@@ -97,9 +99,14 @@
   footer{margin-top:64px;text-align:center;color:var(--muted);font-size:13px;}
 
   @media(max-width:560px){
-    .wrap{padding:52px 22px 72px;}
+    .wrap{padding:46px 20px 72px;}
+    h1{font-size:38px;}
+    .lede{font-size:17.5px;}
+    .rule{margin:42px 0;}
     .facts{grid-template-columns:1fr;}
-    .sched li{flex-wrap:wrap;}
+    .fact{padding:18px 20px;}
+    .tag{width:100%;}
+    .cta{padding:28px 22px;}
   }
 </style>
 </head>
