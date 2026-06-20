@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Africa Week 2027 · Start Here</title>
+<style>
+  :root{
+    --ink:#1c1a17;
+    --muted:#6f6862;
+    --line:#e7e1d8;
+    --bg:#faf8f4;
+    --card:#ffffff;
+    --accent:#c75b39;
+    --accent-soft:#f3e4dd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:72px 28px 96px;}
+
+  /* Header */
+  .kicker{
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:20px;
+  }
+  h1{
+    font-size:clamp(38px,7vw,60px);line-height:1.04;
+    letter-spacing:-.02em;font-weight:700;margin-bottom:22px;
+  }
+  .lede{font-size:19px;color:var(--muted);max-width:60ch;}
+
+  .rule{height:1px;background:var(--line);border:0;margin:56px 0;}
+
+  h2{
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;margin-bottom:24px;
+  }
+
+  /* Facts grid */
+  .facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .fact{background:var(--card);padding:22px 24px;}
+  .fact .label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+  .fact .value{font-size:17px;font-weight:600;letter-spacing:-.01em;}
+
+  /* Schedule list */
+  .sched{list-style:none;}
+  .sched li{
+    display:flex;gap:18px;align-items:baseline;
+    padding:15px 0;border-bottom:1px solid var(--line);
+  }
+  .sched li:last-child{border-bottom:0;}
+  .sched .dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--accent);transform:translateY(-2px);}
+  .sched .what{font-weight:600;}
+  .sched .desc{color:var(--muted);font-weight:400;}
+  .note{font-size:14px;color:var(--muted);margin-top:18px;font-style:italic;}
+
+  /* Workstreams */
+  .tags{display:flex;flex-wrap:wrap;gap:10px;}
+  .tag{
+    background:var(--card);border:1px solid var(--line);
+    padding:9px 16px;border-radius:999px;font-size:14.5px;font-weight:500;
+  }
+  .tag span{color:var(--muted);font-weight:400;}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:26px;}
+  .timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line);}
+  .phase{position:relative;padding:0 0 26px;}
+  .phase:last-child{padding-bottom:0;}
+  .phase::before{content:"";position:absolute;left:-25px;top:5px;width:12px;height:12px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--accent);}
+  .phase .when{font-size:13px;letter-spacing:.04em;color:var(--accent);font-weight:600;margin-bottom:4px;}
+  .phase .body{color:var(--muted);}
+
+  /* How we work */
+  .work{display:grid;gap:14px;}
+  .work .item{display:flex;gap:14px;}
+  .work .n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+  /* CTA */
+  .cta{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:34px 32px;text-align:center;}
+  .cta h3{font-size:22px;letter-spacing:-.01em;margin-bottom:12px;}
+  .cta p{color:var(--muted);max-width:48ch;margin:0 auto;}
+  .cta .pillline{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .pill{background:var(--accent);color:#fff;padding:6px 15px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.02em;}
+  .pill.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+
+  footer{margin-top:64px;text-align:center;color:var(--muted);font-size:13px;}
+
+  @media(max-width:560px){
+    .wrap{padding:52px 22px 72px;}
+    .facts{grid-template-columns:1fr;}
+    .sched li{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kicker">Start Here</div>
+  <h1>Africa Week 2027</h1>
+  <p class="lede">An eight day celebration of African culture, business, technology, and innovation. Read this one page and you will know what we are building, where we are, and how to join in.</p>
+
+  <hr class="rule">
+
+  <h2>The essentials</h2>
+  <div class="facts">
+    <div class="fact"><div class="label">Dates</div><div class="value">18 to 25 May 2027</div></div>
+    <div class="fact"><div class="label">Venue</div><div class="value">Museum of Technology, Helsinki</div></div>
+    <div class="fact"><div class="label">Theme</div><div class="value">Technology, across the whole week</div></div>
+    <div class="fact"><div class="label">Audience goal</div><div class="value">2,000 to 5,000 people</div></div>
+  </div>
+  <p class="note">We are planning a full year ahead. That head start is our greatest advantage, and it is what will let us deliver a world class experience, the kind of event partners ask to be part of.</p>
+
+  <hr class="rule">
+
+  <h2>The week at a glance</h2>
+  <ul class="sched">
+    <li><span class="dot"></span><span><span class="what">Opening and exhibition.</span> <span class="desc">Runs all week.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">Technology and Business Day.</span> <span class="desc">Talks, startups, investors, partner showcases.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">Lifestyle and Fashion.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">Youth and Technology Day.</span> <span class="desc">Tracks for kids and for adults.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">African Food Festival and Tourism.</span> <span class="desc">Two days. The big crowd puller.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">Partner day and African cinema.</span></span></li>
+    <li><span class="dot"></span><span><span class="what">African Day.</span> <span class="desc">The final day. Invite only: embassies and special guests.</span></span></li>
+  </ul>
+  <p class="note">This program is a draft until it is locked on 31 December 2026. From January 2027, the focus is marketing and execution.</p>
+
+  <hr class="rule">
+
+  <h2>Pick where you want to help</h2>
+  <div class="tags">
+    <div class="tag">Program and speakers <span>· curating days, booking speakers</span></div>
+    <div class="tag">Partnerships and sponsors <span>· companies, embassies, funders</span></div>
+    <div class="tag">Food festival and tourism <span>· vendors, layout</span></div>
+    <div class="tag">Tech and digital <span>· app, website, AI features</span></div>
+    <div class="tag">Marketing and content <span>· brand, social, press</span></div>
+    <div class="tag">Operations and venue <span>· logistics, AV, volunteers</span></div>
+    <div class="tag">Finance and grants <span>· budget, applications</span></div>
+    <div class="tag">Youth and education <span>· youth day, schools</span></div>
+    <div class="tag">Cinema and culture <span>· film program</span></div>
+  </div>
+
+  <hr class="rule">
+
+  <h2>How we get there</h2>
+  <div class="timeline">
+    <div class="phase">
+      <div class="when">Now to August 2026</div>
+      <div class="body">Build the team, website, and brand. Start funding applications. Begin the monthly AI literacy workshops. Open the conversation with technology partners.</div>
+    </div>
+    <div class="phase">
+      <div class="when">September to December 2026</div>
+      <div class="body">Confirm partners and speakers. Lock the full program by 31 December.</div>
+    </div>
+    <div class="phase">
+      <div class="when">January to April 2027</div>
+      <div class="body">Marketing, registration, app launch, and final production.</div>
+    </div>
+    <div class="phase">
+      <div class="when">18 to 25 May 2027</div>
+      <div class="body">Africa Week.</div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <h2>How we work</h2>
+  <div class="work">
+    <div class="item"><div class="n">1</div><div>Everything lives in one shared workspace. The plan, ideas, and tasks are all in one place.</div></div>
+    <div class="item"><div class="n">2</div><div>Meetings are recorded and turned into clean notes and action items, so nothing gets lost.</div></div>
+    <div class="item"><div class="n">3</div><div>Ideas are always welcome. Add yours to the idea log, or raise them at the next meeting.</div></div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="cta">
+    <h3>Want in?</h3>
+    <p>Tell us what you would like to work on and we will plug you into a workstream. The two things we value most are ideas and devotion. This is built over months, by people who carry their part.</p>
+    <div class="pillline">
+      <span class="pill">Bring ideas</span>
+      <span class="pill ghost">Carry your part</span>
+    </div>
+  </div>
+
+  <footer>Africa Week 2027 · Museum of Technology, Helsinki</footer>
+
+</div>
+</body>
+</html>
