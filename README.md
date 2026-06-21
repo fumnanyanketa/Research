@@ -18,6 +18,9 @@ Working repository for synthesizing meeting recordings into plans and tracking e
 | [africa-week-site/](africa-week-site/) | Deployable site: the Start Here landing page (`index.html`), the idea-submission form (`ideas.html`), the `/api/submit` serverless function, and [DEPLOY.md](africa-week-site/DEPLOY.md) for pushing to Vercel + Supabase |
 | [africa-week-2027/tech-integration.md](africa-week-2027/tech-integration.md) | How technology and AI get woven into Africa Week 2027 (app, Anthropic partnership, exhibitions, workshops) |
 | [projects/other-initiatives.md](projects/other-initiatives.md) | Everything else in flight: AI photography tool, AI literacy workshops, agent agency, English Parliament project, storytelling workshop, Finnish language app |
+| [programs/program-overview.md](programs/program-overview.md) | Technology & AI Literacy Program — overview, audience, format, 12-month arc, funding |
+| [programs/technology-literacy-curriculum.md](programs/technology-literacy-curriculum.md) | Foundations track — device/files/internet/safety/digital-life modules |
+| [programs/ai-literacy-curriculum.md](programs/ai-literacy-curriculum.md) | AI track — what-is-AI/prompting/work/business/automations/building/agents/responsible-use modules |
 
 ## Source material
 
