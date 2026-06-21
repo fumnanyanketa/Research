@@ -7,8 +7,9 @@ Working repository for synthesizing meeting recordings into plans and tracking e
 | File | What it is |
 |------|------------|
 | [meeting-notes/2026-06-11-synthesis.md](meeting-notes/2026-06-11-synthesis.md) | Full synthesis of the four meeting recordings from 11 June 2026 — every idea raised, decision made, and lesson learned |
-| [meeting-notes/2026-06-19-richmond-synthesis.md](meeting-notes/2026-06-19-richmond-synthesis.md) | Latest meeting (with Richmond) — what's new vs. the 11 June docs: the AI Nativity agency, content/GEO strategy, election tools, build practices |
-| [meeting-notes/2026-06-11-action-items.md](meeting-notes/2026-06-11-action-items.md) | Consolidated action items with owners and deadlines (updated 19 June) |
+| [meeting-notes/2026-06-19-richmond-synthesis.md](meeting-notes/2026-06-19-richmond-synthesis.md) | Richmond 1:1 — the AI Nativity agency, content/GEO strategy, election tools, build practices |
+| [meeting-notes/2026-06-20-kickoff-synthesis.md](meeting-notes/2026-06-20-kickoff-synthesis.md) | Volunteer kickoff (20 June) — decisions, cadence, the Girls Club first project, confirmed Africa Week scope, the full idea bank |
+| [meeting-notes/2026-06-11-action-items.md](meeting-notes/2026-06-11-action-items.md) | Consolidated action items with owners and deadlines (updated 20 June) |
 | [africa-week-2027/master-plan.md](africa-week-2027/master-plan.md) | Africa Week 2027 master plan — 12-month roadmap to a Slush-level event |
 | [africa-week-2027/2026-06-20-kickoff-prep.md](africa-week-2027/2026-06-20-kickoff-prep.md) | My prep for the 20 June kickoff (attending as a contributor) — talking points, the capture/onboarding offer, how to be useful |
 | [africa-week-2027/idea-capture-template.md](africa-week-2027/idea-capture-template.md) | Ready-to-use template for capturing ideas live during meetings |

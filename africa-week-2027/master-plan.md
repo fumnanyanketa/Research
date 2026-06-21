@@ -4,15 +4,15 @@
 **Venue:** Museum of Technology, Helsinki (booked) — ~5 halls + outdoor entrance area
 **Theme:** To be decided (technology proposed) · "the innovative side of Africa"
 **Attendance target:** 2,000–5,000 across the week, including international visitors
-**North star:** Slush-level production quality. Become the event partners ask to join.
+**North star:** A world-class event **on our own terms**. The team deliberately turned down a place under Slush (20 June meeting) — the goal is ownership of our own platform, not joining or imitating a Western one. We borrow the *production disciplines* of world-class events, not their branding.
 
 ---
 
-## 1. What "Slush-level" actually means (and how we get there)
+## 1. The production disciplines we borrow (without copying anyone)
 
-Slush's quality comes from a few replicable disciplines, not budget alone:
+World-class events get their quality from a few replicable disciplines, not budget alone. We adopt the disciplines, keep the platform ours:
 
-| Slush discipline | Our version |
+| Discipline | Our version |
 |---|---|
 | Program locked & announced months out | Program locked **31 Dec 2026**, marketing-only from January |
 | One unmistakable visual identity | Single brand kit (logo, colors, templates) before any partner outreach; everything — site, app, banners, slides — uses it |

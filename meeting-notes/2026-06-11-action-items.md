@@ -1,15 +1,25 @@
-# Action Items — from meetings of 11 + 19 June 2026
+# Action Items — from meetings of 11 + 19 + 20 June 2026
 
 Consolidated to-do list. "You" = the meeting host (the one recording). Dates are 2026 unless noted.
 
-> Update 19 June (Richmond meeting): new items folded in below and marked **[R]**. Full context in [2026-06-19-richmond-synthesis.md](2026-06-19-richmond-synthesis.md).
+> Update 19 June (Richmond meeting): items marked **[R]**. Full context in [2026-06-19-richmond-synthesis.md](2026-06-19-richmond-synthesis.md).
+> Update 20 June (volunteer kickoff): items marked **[K]**. Full context in [2026-06-20-kickoff-synthesis.md](2026-06-20-kickoff-synthesis.md).
 
-## ⏰ Tomorrow (the 20 June kickoff meeting) — Richmond's prep advice [R]
+## ⏰ Near-term dates from the 20 June kickoff [K]
 
-- [ ] Keep attendance **small** — only serious/active/devoted people; reach out to key people directly.
-- [ ] Open with conversation/vibe, then run an **ideas workshop** (not just Africa Week — what do people want to do/see more of?).
-- [ ] Make sure people **understand what volunteering means**; map people → roles.
-- [ ] Record it for notes. Don't over-grip it — let the room breathe.
+- [ ] **Sat 27 June** — community picnic/potluck on an island (meet 11:00 harbour, start 12:00). Bring food + kids; announce in the Community group.
+- [ ] **Sat 18 July** — next working-group meeting at the office, ~3 hrs (arrive 15 min early).
+- [ ] **July** — build the **Girls Club** structure (12–17yo girls, monthly, closed after 2nd session, 10–12 participants, 2 facilitators); **first session early August**.
+- [ ] Set up the **WhatsApp restructure**: keep Community group for announcements; create the **closed working-group subgroup** (request-to-join, Mama approves).
+- [ ] Recruit a **social-media manager** volunteer (IG + LinkedIn, ~3–4 hrs/week) over the summer.
+
+## Your follow-ups from the kickoff [K]
+
+- [ ] **Finalize the Google Drive workspace** — now has a real mandate (idea database + recordings/transcripts + project list), plus a short **internal training** so the team can use it.
+- [ ] **Draft the technology-literacy curriculum/proposal** (renamed from "AI literacy" — basics→AI; monthly; start Aug/Sep; you're leading it).
+- [ ] **Website renewal** with Albert as a **summer project** (content + images refresh).
+- [ ] Keep the **capture pipeline** running: record → transcript → synthesis → idea database.
+- [ ] Add the brainstorm **idea bank** (see kickoff synthesis §3) into the idea database.
 
 ## AI Nativity agency — new track [R]
 
