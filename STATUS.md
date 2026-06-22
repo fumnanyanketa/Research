@@ -1,108 +1,117 @@
-# Repository Status — Deep Dive
+# Repository Status — Deep Dive (v2, corrected)
 
-*Generated 2026-06-22. An unbiased, file-by-file audit of this repository. Findings are based only on what is actually in the files, not on the repo name or commit messages.*
+*Generated 2026-06-22. An unbiased, file-by-file audit across **all 7 branches**.*
+
+> **Correction notice.** An earlier v1 of this file audited only 2 branches and concluded this repo was "a planning vault with one small website." That was wrong — it missed 5 branches and 3 entirely separate projects. The real picture is below: this repository is a **dumping ground of three unrelated project lines spread across 7 branches with no shared trunk.**
 
 ---
 
 ## 0. At a glance
 
-- **Repo name on disk:** `Research` (misleading — see §2).
-- **What it actually is:** a personal **research / planning vault** (Markdown) for an African‑diaspora association in Helsinki, Finland, plus **one small working web app**.
-- **Total content:** 28 tracked files, ~2,460 lines. ~95% is prose/Markdown planning; one real software artifact (`africa-week-site/`).
-- **No `main` / `master` branch exists.** The repo's default branch is `claude/document-access-request-ayqwnn`.
-- **No CI, no workflows, no tests, no `.github/`.**
-- **Activity window:** first commit 2026‑06‑12, last commit 2026‑06‑21. ~10 days of work, then quiet.
+- **7 branches, no `main`.** The default branch is `claude/document-access-request-ayqwnn`.
+- **5 of the 7 branches are orphan histories** — they share *no common ancestor* with each other or with the default. They are not features of one project; they are different projects that happen to live in the same repo.
+- The branches cluster into **three distinct projects**:
+  1. **Africa Week / association planning** (Markdown vault) — 2 branches.
+  2. **"AI Voices Intelligence System"** (research corpus) — 4 divergent branches.
+  3. **"Anchor"** (a personal-assistant mobile/web app, real code) — 1 branch.
+- **Nothing is merged anywhere.** Every branch is a parallel island. No CI, no trunk, no integration.
+- **Owner across all of them:** Fumnanya (`aiprotocolslab@gmail.com`).
 
 ---
 
-## 1. Branches (every branch, local + remote)
+## 1. Every branch (the full list)
 
-There are exactly **two branches**, both remote-tracked, and they are **byte-for-byte identical** — same tip commit `10bc04d`, 0 commits ahead/behind each other.
+Default/base for "ahead/behind" below is `claude/document-access-request-ayqwnn`. "Orphan" = no shared git ancestor with the default (independent root).
 
-| Branch | Tip | Last commit | Ahead/behind the other | What's actually in it |
-|---|---|---|---|---|
-| `claude/document-access-request-ayqwnn` *(default)* | `10bc04d` | 2026‑06‑21 | 0 / 0 | Identical to the other branch. Despite the name, it contains **no** "document access request" feature — it's the full planning vault + the site. |
-| `claude/peaceful-mccarthy-quelxh` | `10bc04d` | 2026‑06‑21 | 0 / 0 | Identical content. This is where this STATUS.md was added. |
+| Branch | Tip date | Commits | Rel. to default | Project | What's actually in it |
+|---|---|---|---|---|---|
+| `claude/document-access-request-ayqwnn` *(default)* | 2026‑06‑21 | 18 | — | **Africa Week** | The association planning vault: Africa Week 2027 master plan, two literacy curricula, meeting syntheses, and `africa-week-site/` (static landing + idea form + Vercel/Neon function). Despite the name, contains no "document access" feature. |
+| `claude/peaceful-mccarthy-quelxh` *(this branch)* | 2026‑06‑22 | 19 | +1 / 0 | **Africa Week** | Identical to default **plus this STATUS.md**. The only branch that shares history with default. |
+| `claude/inspiring-bohr-cfhutc` | 2026‑06‑12 | 78 | orphan | **AI Voices** | The most-developed Voices variant. 227 files: 16 voice digests + **64 blog posts** + `THE_AI_MIND_REPORT.md` (641 lines) + `ai_mind_report.html` (1,579-line interactive report). The "what top AI thinkers believe" synthesis. |
+| `claude/career-path-ai-research-0tmkth` | 2026‑06‑13 | 9 | orphan | **AI Voices** | The "career" cut. 160 files: **137 full verbatim transcripts** (~1.76M words; one sampled file is 882 lines) + `CAREER-SYNTHESIS.md` (136 lines) on how AI changes careers. Self-documents a data-quality bug (transcript mis-attribution). |
+| `claude/ai-personal-assistant-reminders-1otfl5` | 2026‑06‑17 | 25 | orphan | **Anchor app** | A real app, not docs. Expo/React-Native app (`app/`), React+Vite web app (`web/`), Supabase schema (172 lines) + Claude/Gemini edge function (122 lines), on-device Whisper transcription. Handoff doc says it **builds, APK is installed on the phone, "lots of bugs."** |
+| `claude/modest-heisenberg-02tr8a` | 2026‑06‑12 | 7 | orphan | **AI Voices** | Near-duplicate of the Voices *seed*: same 16 digests + scripts, plus a `.claude/` session-start hook and settings. Essentially an early scaffold variant. |
+| `claude/ai-voices-list-m99ise` | 2026‑06‑11 | 5 | orphan | **AI Voices** | The Voices **seed**: 16 voice digests, `ROSTER.md` (98 lines), `data/channels.yaml`, and Python fetch scripts. No transcripts/posts yet — the starting point the other two Voices branches grew from. |
 
 **Flags:**
-- ⚠️ **Both branch names are meaningless** relative to their content (auto-generated session names). Neither is a feature branch; they are two pointers at the same line of history.
-- ⚠️ **The default branch is a `claude/...` session branch, not `main`.** This is fragile: the site's own README has to warn deployers to manually override Vercel's Production Branch because the default branch is the "wrong" one. There is no stable trunk.
-- ✅ No stranded/divergent work — there is only one line of history (18 commits, 2026‑06‑12 → 2026‑06‑21). Nothing is unmerged or abandoned in a side branch; everything lives on the single shared tip.
+- ⚠️ **All branch names are auto-generated session names** and bear no relation to contents (e.g. "document-access-request", "inspiring-bohr", "modest-heisenberg").
+- ⚠️ **No trunk.** Default is a `claude/*` session branch. Three projects, zero integration, nothing merged.
+- ⚠️ **The 4 "AI Voices" branches are forks of one project that diverged and never reconciled** — they share the same README/ROSTER/scripts scaffold but carry different outputs (digests-only vs. transcripts+career vs. posts+report). This is duplicated, drifting work.
+- 🟡 **`modest-heisenberg` and `ai-voices-list` are near-redundant** — the weakest two branches; strong merge/delete candidates.
 
 ---
 
-## 2. What this project actually is (plain language)
+## 2. What this repository actually is (plain language)
 
-A **working notebook for one person** (the meeting recorder/contributor) who volunteers with an African community association in Helsinki. It turns auto‑transcribed meeting recordings into structured plans and tracks execution. Concretely, the files cover:
+It's **one person's multi-project scratch space**, where several unrelated Claude Code sessions each pushed their own branch and never converged. Three things live here:
 
-1. **Africa Week 2027** — an 8‑day cultural/technology event (18–25 May 2027) at Helsinki's Museum of Technology. A detailed 12‑month master plan, program-by-day architecture, funding/risk/metrics, a tech-integration plan, and a proposed shared‑Drive workspace.
-2. **A community "Technology & AI Literacy" program** — a two‑track (digital foundations → AI) monthly upskilling curriculum for immigrants, with module-by-module syllabi.
-3. **Meeting syntheses & action items** — three meetings (11, 19, 20 June 2026) written up by theme, with a consolidated owner/deadline action list.
-4. **Other initiatives** — an AI photography tool, an AI‑agent agency for SMEs, an "English Parliament / Community 2027" civic project, an AI‑storytelling workshop, a Finnish‑language app, etc. — each captured as concept + "next single step."
-5. **`africa-week-site/`** — the **only code**: a no-build static landing page (`index.html`) + idea‑submission form (`ideas.html`) + one Vercel serverless function (`api/submit.js`, 61 lines) that writes submissions to a Neon Postgres table. Self-contained and explicitly designed to be copied out into its own repo or deleted.
+**A. Africa Week 2027 + association planning** *(default + this branch)*
+A polished Markdown vault for an African-diaspora association in Helsinki: a 12-month plan for an 8-day cultural/tech event (May 2027), a two-track Technology & AI literacy curriculum, meeting syntheses, and a small deployable intake website (static HTML + one Vercel serverless function writing to Neon Postgres).
 
-So: **mostly a knowledge/planning base, with a small functional intake website attached.** There is no "research" in the academic/ML sense — no datasets, notebooks, papers, or experiments.
+**B. AI Voices Intelligence System** *(4 branches)*
+A research apparatus tracking what ~64 prominent AI figures are saying. A roster + per-person digests + Python fetchers for YouTube transcripts and blogs, evolving across branches into (i) a 137-transcript corpus with a **career-advice synthesis**, and (ii) a 64-post corpus with **"THE AI MIND REPORT"** (markdown + a standalone interactive HTML page). Genuinely substantial content; the fetch scripts need network access the managed env blocks, so transcripts were gathered by running locally / via web search.
 
----
+**C. Anchor** *(1 branch)*
+A personal "life operating system" app: record long conversations, transcribe on-device with Whisper (free), and have an LLM extract action items, reminders, habits, finances into one source of truth. Has both a React Native (Expo) build and a React/Vite web implementation plus a Supabase backend. Per its own handoff doc, it builds and is installed on the owner's Android phone but is buggy.
 
-## 3. Built vs. stubbed — rough completeness
-
-| Area | State | Notes |
-|---|---|---|
-| Meeting syntheses (3) | ✅ **Built** | Substantive, polished prose. |
-| Action items list | ✅ **Built** | Consolidated, owner/date columns filled. |
-| Africa Week master plan | 🟡 **Built but provisional** | Thorough, but **theme = "to be decided"** and **every workstream "Owner" cell is blank** — to be filled at a meeting that has now passed. |
-| Tech-integration / workspace / onboarding docs | ✅ **Built** | Complete drafts. |
-| Two literacy curricula + overview | ✅ **Built (draft)** | Explicitly marked "draft for editing"; content is complete. |
-| `africa-week-site` HTML/CSS/JS | ✅ **Built** | Static, functional, no build step. |
-| `api/submit.js` + schema | ✅ **Built** | Honeypot, validation, auto-creates table. Sound for its scope. |
-| **Live deployment** | ❌ **Not done** | Needs `DATABASE_URL` set in Vercel; no evidence it's deployed or tested against a real DB. |
-| Tests / CI / linting | ❌ **Absent** | None anywhere. |
-
-**Rough % complete:**
-- *As a planning/knowledge base:* ~**85%** — genuinely usable today; the gaps are real-world inputs (owners, theme), not writing.
-- *As deployable software (the site):* ~**80% built, 0% deployed/verified** — the code is done; it has never been shown running.
+There is **no academic "research"** here despite the repo name — it's planning + AI-commentary curation + an app.
 
 ---
 
-## 4. What's left to finish & the single biggest blocker
+## 3. Built vs. stubbed, per project (rough % complete)
 
-**Left to finish (project terms):**
-- Assign a named owner to each of the 9 Africa Week workstreams (all blank).
-- Decide the event theme (currently "TBD").
-- Deploy and smoke‑test the site (set `DATABASE_URL`, submit one idea end‑to‑end).
-- Decide whether the site lives here or moves to its own repo (the README recommends moving it).
+**A. Africa Week** — *~85% as a planning vault; site ~80% built, 0% deployed/verified.* Docs are complete and usable; gaps are real-world inputs (workstream owners blank, theme "TBD"). The site code is done but never confirmed deployed (needs `DATABASE_URL`). No tests/CI.
 
-**Single biggest blocker:** **There is no stable trunk and no clear "live" instance.** The whole repo hangs off auto-named `claude/*` session branches with no `main`, and the one shippable artifact (the site) has never been confirmed deployed. Everything else is execution that depends on real-world people/meetings, which a repo can't unblock. The fixable, in-repo blocker is **branch hygiene + actually deploying the site.**
+**B. AI Voices** — *content ~80% on the two rich branches; tooling ~50%.* The digests, transcripts, posts, and the two syntheses are real, substantial deliverables. Weaknesses: the fetch scripts can't run in-env; `career-path` documents its own transcript **mis-attribution bug** (wrong speakers in many `futures-*` files); and the work is **split across 4 branches that should be one**. The HTML report is a finished artifact.
+
+**B. AI Voices "products":**
+- `inspiring-bohr` → **THE AI MIND REPORT** (md + 1,579-line interactive HTML): essentially **done**.
+- `career-path` → **CAREER-SYNTHESIS** + 137 transcripts: **done but data-quality-flagged**.
+- `modest-heisenberg` / `ai-voices-list`: **superseded scaffolds** (~redundant).
+
+**C. Anchor** — *~60% built, not shippable.* Real, non-trivial code across native + web + backend. Self-reported "lots of bugs"; web app runs on in-memory sample data (Supabase wiring incomplete); native app builds but is the active bug-fixing target. Most *engineering* in the repo lives here.
+
+---
+
+## 4. What's left & the single biggest blocker
+
+**Per project:**
+- *Africa Week:* assign 9 workstream owners, lock the theme, deploy + smoke-test the site.
+- *AI Voices:* fix the transcript alias/mis-attribution bug and re-fetch; **collapse 4 branches into 1**; decide which synthesis is the canonical output.
+- *Anchor:* triage the "lots of bugs," wire the web app to Supabase (it's on sample data), stabilize the native build.
+
+**Single biggest blocker (whole repo):** **there is no trunk and no separation of projects.** Three unrelated efforts and 4 redundant forks all sit as un-mergeable islands on `claude/*` branches off a misleadingly-named default. Nothing can be "the repo's state" because the repo has no coherent state. This is an organization problem, not a code problem — and it's blocking clarity on every individual project.
 
 ---
 
 ## 5. Quick wins (nearly done)
 
-- **Promote a real `main` branch.** Both branches are identical — fast-forward/rename one to `main` and set it as default. Removes the deploy footgun.
-- **Deploy the site.** Code is complete; it's ~15 minutes per its own `DEPLOY.md` (Vercel + Neon, set one env var). High visible payoff.
-- **Fill the workstream owner table** in `master-plan.md` (kickoff already happened on 20 June; the synthesis names people — Mama, Richmond, Ibrahim, etc.).
-- **Lock the event theme** — one decision, unblocks the brand kit and outreach.
+- **Africa Week site** — ~15 min to deploy (Vercel + Neon, one env var); code complete.
+- **THE AI MIND REPORT** (`inspiring-bohr`) — a finished HTML deliverable; just needs to be the canonical Voices artifact (publish or export).
+- **Kill the two redundant Voices scaffolds** (`ai-voices-list`, `modest-heisenberg`) after lifting anything unique — instant clutter reduction.
+- **Fill Africa Week workstream owners** from the 20 June kickoff synthesis (names already in the notes).
 
 ---
 
-## 6. Blunt recommendation: **KEEP — but rename, restructure, and split**
+## 6. Blunt recommendation: **SPLIT into 3 repos; don't keep them entangled**
 
-This is a legitimately useful, well-written planning vault that's actively serving a real 2027 event. Don't discard it. But:
+These are three unrelated projects. Keeping them as orphan branches in one repo named "Research" is the core problem.
 
-- **Rename the repo.** "Research" describes nothing here. Call it `africa-week-2027` / `association-planning` so it's findable and honest.
-- **Establish a `main` branch and make it default.** The current `claude/*`-only setup is a latent deployment/operations hazard.
-- **Split the site out.** `africa-week-site/` is self-contained and the README already says to move it to its own repo for deployment. A planning vault and a deployable app shouldn't share a tree — separate them so each can have the right default branch and lifecycle.
-- **Nothing here should be killed.** No dead code, no abandoned branch, no contradictory junk — just provisional planning that needs real-world inputs. The only "waste" is two redundant identical branches; collapse them.
+- **Africa Week** → its own repo (`africa-week-2027`), with a real `main`. Split the site out again (its own README already recommends this). **Keep — it's live and useful.**
+- **AI Voices** → its own repo (`ai-voices`), with a real `main`. **Consolidate the 4 branches into one history**, make `inspiring-bohr` (richest) the base, fold in `career-path`'s transcripts + synthesis, then **delete `ai-voices-list` and `modest-heisenberg`.** Fix the mis-attribution bug. **Keep — strong content, bad git hygiene.**
+- **Anchor** → its own repo (`anchor`), with a real `main`. **Keep — it's the only substantial codebase**, but it needs a focused bug-fix pass and Supabase wiring before it's usable.
+- **This repo (`Research`)** → after the split, **archive it.** It has no coherent identity; its value is entirely in the three projects that should each leave.
+
+Nothing here is junk-to-delete except the two redundant Voices scaffolds. The waste is structural: parallel branches that never merged.
 
 ---
 
 ## 7. Next actions (prioritized)
 
-- [ ] Create a `main` branch from the current tip and set it as the repo's default; collapse the two redundant `claude/*` branches.
-- [ ] Deploy `africa-week-site` to Vercel + Neon, set `DATABASE_URL`, and submit one test idea end-to-end to confirm it works.
-- [ ] Move `africa-week-site/` into its own repository (per its README) once deploy is verified.
-- [ ] Fill in the 9 workstream owners in `africa-week-2027/master-plan.md` from the 20 June kickoff synthesis.
-- [ ] Make the event‑theme decision and record it in `master-plan.md` (replace "to be decided").
-- [ ] Rename this repository to something descriptive (e.g. `africa-week-2027`).
-- [ ] Add a one-line note to `README.md` pointing here (STATUS.md) and stating the current default-branch reality.
+- [ ] Decide the split: create three repos (`africa-week-2027`, `ai-voices`, `anchor`), each with a real `main` as default.
+- [ ] Move Anchor (`ai-personal-assistant-reminders-1otfl5`) into its own repo and start a focused bug-fix + Supabase-wiring pass.
+- [ ] Consolidate the 4 AI-Voices branches into one history (base = `inspiring-bohr`, fold in `career-path`); delete `ai-voices-list` + `modest-heisenberg`.
+- [ ] Fix the transcript mis-attribution bug noted in `CAREER-SYNTHESIS.md` and re-fetch the affected slugs.
+- [ ] Deploy + smoke-test the Africa Week site (set `DATABASE_URL`, submit one test idea end-to-end).
+- [ ] Fill the 9 workstream owners and the event theme in `africa-week-2027/master-plan.md`.
+- [ ] Once the three projects have moved, archive this `Research` repo (it has no standalone purpose).
