@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spontaneous Meetup App: Concept &amp; Prototype</title>
+<style>
+  :root{
+    --ink:#1a1c22;
+    --muted:#5d6470;
+    --line:#e7e9ee;
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --brand:#2f6df6;
+    --brand-soft:#eaf1ff;
+    --accent:#15a06a;
+    --accent-soft:#e6f6ee;
+    --warn:#b8791f;
+    --radius:16px;
+    --shadow:0 8px 30px rgba(20,24,40,.08);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    line-height:1.6;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:24px 18px 80px}
+
+  /* Header */
+  .hero{
+    background:linear-gradient(135deg,#2f6df6,#5b8cff 55%,#15a06a);
+    color:#fff;border-radius:22px;padding:34px 26px;margin:8px 0 30px;
+    box-shadow:var(--shadow);
+  }
+  .hero .kicker{
+    text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700;
+    opacity:.9;margin:0 0 10px;
+  }
+  .hero h1{margin:0 0 12px;font-size:30px;line-height:1.2;font-weight:800}
+  .hero p{margin:0;font-size:16px;opacity:.96;max-width:60ch}
+  .hero .meta{margin-top:18px;font-size:13px;opacity:.85}
+
+  /* Section cards */
+  section.card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px;margin:18px 0;box-shadow:0 1px 0 rgba(20,24,40,.02);
+  }
+  h2{font-size:21px;margin:4px 0 12px;font-weight:800;letter-spacing:-.01em}
+  h3{font-size:16px;margin:18px 0 6px;font-weight:700}
+  p{margin:10px 0}
+  .lead{font-size:16px;color:var(--ink)}
+  .muted{color:var(--muted)}
+  ul{margin:10px 0;padding-left:20px}
+  li{margin:6px 0}
+  strong{font-weight:700}
+  blockquote{
+    margin:14px 0;padding:12px 16px;background:var(--brand-soft);
+    border-left:4px solid var(--brand);border-radius:8px;font-style:italic;color:#22324d;
+  }
+  .pill{
+    display:inline-block;background:var(--accent-soft);color:#0e6b47;
+    font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;margin-right:6px;
+  }
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#fafbfc;font-weight:700}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .toc a{
+    text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);
+    padding:6px 11px;border-radius:999px;font-size:13px;font-weight:600;
+  }
+  .toc a:hover{border-color:var(--brand);color:var(--brand)}
+
+  /* ===== Prototype ===== */
+  .proto-intro{text-align:center;margin:46px 0 8px}
+  .proto-intro h2{font-size:24px}
+  .phones{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:26px;margin:26px 0 6px;
+  }
+  .phone-wrap{display:flex;flex-direction:column;align-items:center}
+  .phone{
+    width:260px;height:540px;background:#0c0e14;border-radius:38px;padding:11px;
+    box-shadow:var(--shadow);position:relative;
+  }
+  .phone .notch{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:104px;height:20px;background:#0c0e14;border-radius:0 0 14px 14px;z-index:5;
+  }
+  .screen{
+    width:100%;height:100%;background:var(--bg);border-radius:28px;overflow:hidden;
+    display:flex;flex-direction:column;position:relative;
+  }
+  .status-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px 6px;font-size:11px;font-weight:700;color:var(--ink);
+  }
+  .app-head{padding:4px 16px 10px}
+  .app-head .title{font-size:18px;font-weight:800}
+  .app-head .sub{font-size:11px;color:var(--muted)}
+  .screen-body{flex:1;overflow:hidden;padding:6px 14px}
+
+  /* generic UI bits inside phones */
+  .toggle-card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:16px;margin:8px 0;text-align:center;
+  }
+  .big-toggle{
+    width:74px;height:40px;border-radius:999px;margin:8px auto;position:relative;
+    background:var(--accent);transition:.2s;
+  }
+  .big-toggle::after{
+    content:"";position:absolute;top:3px;right:3px;width:34px;height:34px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  .big-toggle.off{background:#cfd4dd}
+  .big-toggle.off::after{right:auto;left:3px}
+  .state-on{color:var(--accent);font-weight:800;font-size:13px}
+  .state-off{color:var(--muted);font-weight:700;font-size:13px}
+  .countdown{font-size:12px;color:var(--muted);margin-top:2px}
+
+  .seg{display:flex;gap:6px;margin:8px 0}
+  .seg .opt{
+    flex:1;text-align:center;font-size:12px;font-weight:700;padding:7px 0;border-radius:10px;
+    background:#fff;border:1px solid var(--line);color:var(--muted);
+  }
+  .seg .opt.sel{background:var(--brand-soft);border-color:var(--brand);color:var(--brand)}
+  .field-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 2px}
+
+  .radius-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .slider{flex:1;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--brand) 55%,#dfe3ea 55%);position:relative}
+  .slider::after{content:"";position:absolute;top:50%;left:55%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--brand)}
+  .radius-val{font-size:12px;font-weight:700;color:var(--brand)}
+
+  .postit{
+    background:#fffef0;border:1px solid #f0ead0;border-left:4px solid #f4c84a;
+    border-radius:12px;padding:11px 12px;margin:9px 0;box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .postit .who{font-size:13px;font-weight:800}
+  .postit .who span{font-weight:600;color:var(--muted)}
+  .postit .note{font-size:13px;margin:3px 0 5px}
+  .postit .row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:4px}
+  .trust{font-size:10px;color:var(--accent);font-weight:700}
+
+  .detail-top{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:8px 0;
+  }
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--brand-soft);color:var(--brand);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+  .detail-head{display:flex;align-items:center;gap:10px}
+  .map-mini{height:96px;border-radius:12px;margin:10px 0;
+    background:
+      radial-gradient(circle at 60% 45%, rgba(47,109,246,.18) 0 18px, transparent 19px),
+      repeating-linear-gradient(0deg,#eef1f6 0 22px,#e7ebf2 22px 23px),
+      repeating-linear-gradient(90deg,#eef1f6 0 22px,#e7ebf2 22px 23px);
+    border:1px solid var(--line);position:relative}
+  .map-mini .pin{position:absolute;top:38%;left:58%;width:14px;height:14px;border-radius:50%;
+    background:var(--brand);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .btn{
+    display:block;text-align:center;font-size:14px;font-weight:800;padding:12px;border-radius:12px;
+    background:var(--brand);color:#fff;margin:8px 0;
+  }
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+  .btn.green{background:var(--accent)}
+
+  .compose-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0;min-height:64px}
+  .compose-box .ph{font-size:14px;color:#aeb4be}
+  .compose-box .typed{font-size:14px;font-weight:600}
+
+  .chat-bubble{max-width:78%;padding:8px 11px;border-radius:14px;font-size:12.5px;margin:6px 0}
+  .chat-them{background:#fff;border:1px solid var(--line)}
+  .chat-me{background:var(--brand);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+
+  .tabbar{display:flex;justify-content:space-around;padding:9px 0 12px;border-top:1px solid var(--line);background:#fff}
+  .tabbar .tab{font-size:10px;color:var(--muted);text-align:center;font-weight:600}
+  .tabbar .tab.active{color:var(--brand)}
+  .tabbar .ico{font-size:17px;display:block}
+
+  .caption{text-align:center;margin-top:12px;font-size:13px;color:var(--muted);max-width:24ch}
+  .caption b{color:var(--ink);display:block;font-size:14px;margin-bottom:2px}
+
+  .footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+  .note-bar{background:#fff8ea;border:1px solid #f0e2c0;border-radius:12px;padding:12px 14px;font-size:13px;color:#6b5418;margin:14px 0}
+  @media (max-width:560px){
+    .hero h1{font-size:25px}
+    .phone{width:240px;height:500px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="kicker">Concept &amp; Prototype</p>
+    <h1>Spontaneous Meetup App</h1>
+    <p>A real time, hyper local <em>"I'm here and open"</em> bulletin board for in person meetups that happen now, not three weeks from now.</p>
+    <div class="meta">Concept document and visual prototype &middot; Working title only</div>
+  </div>
+
+  <div class="note-bar">
+    This page has two parts. First, the full concept document. Second, a visual prototype: four high level screens showing what the app could look like.
+  </div>
+
+  <!-- TOC -->
+  <section class="card">
+    <h2>Contents</h2>
+    <div class="toc">
+      <a href="#insight">1. Core insight</a>
+      <a href="#problem">2. Problem it solves</a>
+      <a href="#how">3. How it works</a>
+      <a href="#mvp">4. MVP feature set</a>
+      <a href="#safety">5. Safety model</a>
+      <a href="#why">6. Why time limited</a>
+      <a href="#principles">7. Design principles</a>
+      <a href="#roadmap">8. Roadmap</a>
+      <a href="#questions">9. Open questions</a>
+      <a href="#naming">10. Naming</a>
+      <a href="#prototype">Visual prototype</a>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="card" id="insight">
+    <h2>1. The core insight</h2>
+    <p>People are surrounded by others all day, in the supermarket, at the office in Espoo, at a worship service, on a bike path, and almost never act on the quiet thought <em>"I'd be open to company right now."</em> Existing apps fix the wrong problem:</p>
+    <ul>
+      <li><strong>Dating apps</strong> are about romance, swiping, and judgement.</li>
+      <li><strong>Events platforms</strong> (Meetup, Facebook Events) are about <em>planned</em> things you upload in advance and commit to.</li>
+      <li><strong>Messaging</strong> assumes you already know who you'd reach out to.</li>
+    </ul>
+    <p>None of them serve the <strong>impromptu, low stakes, "who's around right now"</strong> moment. That gap is the whole product.</p>
+    <p><strong>The metaphor.</strong> A post-it on a billboard. Someone writes <em>"Lunch in Espoo, 12 PM, who's in?"</em> Anyone nearby reads it, decides in two seconds, and either joins or scrolls past. No algorithm, no profile mining, no commitment.</p>
+    <p><strong>Not event focused.</strong> This is deliberately <em>softer</em> than an events tool. The unit is not a structured event with tickets and RSVPs. It is a person being briefly, openly available: <em>"I'm going for lunch, or a bike ride, or a walk, come if you want."</em></p>
+  </section>
+
+  <!-- 2 -->
+  <section class="card" id="problem">
+    <h2>2. What problem it actually solves</h2>
+    <ul>
+      <li><strong>Loneliness without a plan.</strong> You don't need to organise anything or wait for a scheduled event. <em>"You're never alone,"</em> especially valuable in the colder months when it's harder to find people outside.</li>
+      <li><strong>Latent willingness goes unused.</strong> Plenty of people would say yes to company but would never <em>initiate</em>. A two second toggle lowers the activation energy to almost zero on both sides.</li>
+      <li><strong>Discovering your own neighbourhood.</strong> Instead of always meeting the same small circle, you reach the people <em>physically around you</em>, at the shop, the park, the same spot in Espoo.</li>
+    </ul>
+  </section>
+
+  <!-- 3 -->
+  <section class="card" id="how">
+    <h2>3. How it works (the user's mental model)</h2>
+    <ol>
+      <li><strong>You feel like company.</strong> You're heading to lunch, or just want a walk.</li>
+      <li><strong>You flip a toggle</strong> next to your name: <em>available</em>.</li>
+      <li><strong>You set how long</strong> it lasts, 1 hour, 2 hours, or custom, and it <strong>auto expires</strong>. It does not stay on, it is not programmed to recur, and you are never persistently visible.</li>
+      <li><strong>You set your radius</strong>, how far around you others can see you.</li>
+      <li><strong>You optionally drop a short post</strong>, <em>"Lunch 12 PM Espoo,"</em> <em>"Bike ride,"</em> <em>"Anyone doing a tour to Norway?"</em></li>
+      <li><strong>People within radius see you</strong>, your name, your age, and your note, and can message you to say <em>yes</em>.</li>
+      <li><strong>The hour ends, you disappear</strong> from the map until you choose to toggle back on.</li>
+    </ol>
+    <blockquote>There's a worship service today. You turn on, within your Espoo radius a few people see it, and two or three of them say "I'll join you for lunch after." A particular spot, a particular time, an impromptu meetup.</blockquote>
+  </section>
+
+  <!-- 4 -->
+  <section class="card" id="mvp">
+    <h2>4. MVP feature set</h2>
+    <p class="muted">Keep it sparse. The spontaneity is the point, and every extra field is friction.</p>
+    <table>
+      <tr><th>Area</th><th>In the MVP</th><th>Notes</th></tr>
+      <tr><td><strong>Profile</strong></td><td>Name, age, one short "about me" line</td><td>No relationship status, no galleries, no résumé.</td></tr>
+      <tr><td><strong>Availability toggle</strong></td><td>On or off, prominent, one tap</td><td>The core gesture of the whole app.</td></tr>
+      <tr><td><strong>Duration</strong></td><td>1 hr, 2 hr, or custom, auto expires</td><td>Never persists. Re enabling is always a deliberate act.</td></tr>
+      <tr><td><strong>Visibility radius</strong></td><td>Slider, user controlled</td><td>You decide who can see you. Default conservative.</td></tr>
+      <tr><td><strong>The post or status</strong></td><td>Short free text note, optional time and place</td><td><em>"Lunch 12 PM Espoo."</em> This is the post-it.</td></tr>
+      <tr><td><strong>Discovery</strong></td><td>See available people and posts within your radius</td><td>List first, map optional in v1.</td></tr>
+      <tr><td><strong>Direct message</strong></td><td>Tap a post, message to say yes</td><td>Lightweight 1:1 thread, only while or around the window.</td></tr>
+      <tr><td><strong>Safety basics</strong></td><td>Report, block, no persistent location</td><td>See section 5.</td></tr>
+    </table>
+    <h3>Explicitly <em>not</em> in the MVP</h3>
+    <ul>
+      <li>Relationship status or any dating signal.</li>
+      <li>Elaborate profiles, photo galleries, bios.</li>
+      <li>Ranking, scoring, gamification, or popularity.</li>
+      <li>Event uploads with tickets and RSVPs (that is the heavier thing we are avoiding).</li>
+      <li>Algorithmic feed. Proximity plus recency is the only sort.</li>
+    </ul>
+  </section>
+
+  <!-- 5 -->
+  <section class="card" id="safety">
+    <h2>5. Safety model, minimal but real</h2>
+    <p>Safety is the <strong>single biggest concern</strong> for this product. The design answer is <strong>ephemerality instead of surveillance</strong>: the app reveals as little as possible, for as short a time as possible.</p>
+    <h3>Built into the core mechanic</h3>
+    <ul>
+      <li><strong>No persistent location tracking between posts.</strong> When your window ends, you vanish from the map. The app is not a "where is everyone, always" tracker.</li>
+      <li><strong>Time boxed visibility.</strong> You're only discoverable during a window <em>you</em> opened, for a duration <em>you</em> chose. This is the structural difference from a tracking app, and the main reason the safety anxiety is lower than something like a persistent locator.</li>
+      <li><strong>User controlled radius.</strong> You decide the blast radius of every post.</li>
+      <li><strong>Approximate, not pinpoint, location.</strong> Show "in this area, this neighbourhood," not exact coordinates, until both people choose to share more.</li>
+    </ul>
+    <h3>Lightweight trust layer (small, non invasive)</h3>
+    <ul>
+      <li><strong>Report and block</strong>, always one tap away.</li>
+      <li><strong>A light reputation signal</strong>, for example <em>"X people have met up with this person, no reports,"</em> enough of a signal to feel safer without ranking or gamifying people.</li>
+      <li><strong>Verified identity options</strong> to consider (phone verification at minimum) without turning onboarding into a wall.</li>
+    </ul>
+    <p class="muted">Meeting strangers in person carries real risk. The honest framing is "there are ways to reduce the risk," not "there is no risk." This needs deliberate design, not a disclaimer.</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="card" id="why">
+    <h2>6. Why time limited visibility changes everything</h2>
+    <p>This is worth stating plainly, because it is the conceptual heart of the design.</p>
+    <ul>
+      <li>A persistent "share my location" app asks you to be <strong>continuously trackable</strong>. High anxiety, easy to abuse, feels like surveillance.</li>
+      <li>This app asks you to raise a <strong>temporary "I'm openly here" flag</strong> that you light up on purpose, and that <strong>burns out on its own</strong>.</li>
+    </ul>
+    <p>Those are fundamentally different things. The toggle plus auto expiry is not just a feature. It is what makes the whole concept feel safe and casual enough that people will actually use it.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="card" id="principles">
+    <h2>7. Design principles</h2>
+    <ol>
+      <li><strong>Spontaneity over planning.</strong> Optimise for the next two hours, never the next two weeks.</li>
+      <li><strong>Sparse over rich.</strong> Less profile, less friction, less judgement.</li>
+      <li><strong>Ephemeral by default.</strong> Nothing persists unless the user re acts.</li>
+      <li><strong>The user holds the dials.</strong> Duration and radius are always theirs.</li>
+      <li><strong>Soft, not transactional.</strong> Easygoing company, not a marketplace or a dating funnel.</li>
+      <li><strong>Proximity is the algorithm.</strong> Who's near plus who's recent. No black box.</li>
+    </ol>
+  </section>
+
+  <!-- 8 -->
+  <section class="card" id="roadmap">
+    <h2>8. Roadmap sketch</h2>
+    <p><span class="pill">Phase 0</span> <strong>Validate (no code).</strong> Concierge test in one neighbourhood (for example an Espoo community, or a worship community), a shared channel where people post "available for lunch, 12 PM" by hand. Proves the behaviour before building anything.</p>
+    <p><span class="pill">Phase 1</span> <strong>MVP.</strong> The section 4 feature set. One city or area. Launch into a single real community where density exists from day one (density is everything for a proximity app).</p>
+    <p><span class="pill">Phase 2</span> <strong>Trust and retention.</strong> Reputation signal, better reporting, phone verification, light notifications ("3 people are available near you right now").</p>
+    <p><span class="pill">Phase 3</span> <strong>Light structure (only if pulled).</strong> Recurring soft posts, interest tags, small group meetups, added only if users ask, never at the cost of the spontaneity.</p>
+  </section>
+
+  <!-- 9 -->
+  <section class="card" id="questions">
+    <h2>9. Open questions</h2>
+    <ul>
+      <li><strong>Cold start and density.</strong> A proximity app is useless with no one around. Which single community do we seed first so early users always see someone? (A worship community and an Espoo neighbourhood are both natural candidates.)</li>
+      <li><strong>Safety design.</strong> What is the minimum viable safety layer that is genuinely protective (verification, meeting in public, the reputation signal) without killing the casual feel?</li>
+      <li><strong>Identity vs privacy.</strong> How much do we reveal up front? Full name? First name plus age? Approximate vs exact location, and at which step does more get shared?</li>
+      <li><strong>Messaging scope.</strong> Can anyone in radius message you, or only respond to a specific post? How do we prevent unwanted messages while keeping it open?</li>
+      <li><strong>Abuse and harassment.</strong> Block and report are table stakes. What stops a bad actor from reappearing, and do we need any moderation?</li>
+      <li><strong>Notifications.</strong> How do we nudge availability ("people are around now") without becoming a nagging app that pressures people?</li>
+    </ul>
+  </section>
+
+  <!-- 10 -->
+  <section class="card" id="naming">
+    <h2>10. Naming directions</h2>
+    <p>The name should signal <em>spontaneous, present, open, nearby</em>, not dating, not events.</p>
+    <ul>
+      <li>Around, or Around Now</li>
+      <li>Open (as in "I'm open")</li>
+      <li>Nearby</li>
+      <li>Postit, or Pin (the billboard metaphor)</li>
+      <li>Here (as in "I'm here")</li>
+      <li>A Finnish rooted name for the local launch</li>
+    </ul>
+    <blockquote>A post-it on the neighbourhood billboard: flip yourself "available" for an hour, drop a note like "lunch 12 PM, who's in?", and meet the people already around you, then quietly disappear when the hour's up.</blockquote>
+  </section>
+
+  <!-- ===================== PROTOTYPE ===================== -->
+  <div class="proto-intro" id="prototype">
+    <h2>Visual prototype</h2>
+    <p class="muted">Four high level screens. Illustrative only, to show what the experience could feel like.</p>
+  </div>
+
+  <div class="phones">
+
+    <!-- SCREEN 1: AVAILABILITY -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status-bar"><span>9:41</span><span>&#9679;&#9679;&#9679; &#128246;</span></div>
+          <div class="app-head">
+            <div class="title">Around</div>
+            <div class="sub">Hi Amara, ready when you are</div>
+          </div>
+          <div class="screen-body">
+            <div class="toggle-card">
+              <div class="big-toggle"></div>
+              <div class="state-on">You're available</div>
+              <div class="countdown">Visible for 58 min, then off</div>
+            </div>
+            <div class="field-label">Stay visible for</div>
+            <div class="seg">
+              <div class="opt">1 hr</div>
+              <div class="opt sel">2 hr</div>
+              <div class="opt">Custom</div>
+            </div>
+            <div class="field-label">Who can see you</div>
+            <div class="radius-row">
+              <div class="slider"></div>
+              <div class="radius-val">2 km</div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab active"><span class="ico">&#9673;</span>You</div>
+            <div class="tab"><span class="ico">&#128205;</span>Nearby</div>
+            <div class="tab"><span class="ico">&#9993;</span>Chats</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>1. I'm available</b>One tap to go live. Pick a duration and a radius. It auto expires.</div>
+    </div>
+
+    <!-- SCREEN 2: NEARBY FEED -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status-bar"><span>9:41</span><span>&#9679;&#9679;&#9679; &#128246;</span></div>
+          <div class="app-head">
+            <div class="title">Nearby now</div>
+            <div class="sub">6 people open within 2 km &middot; Espoo</div>
+          </div>
+          <div class="screen-body" style="overflow:auto">
+            <div class="postit">
+              <div class="who">Mikael, 29 <span>&middot; 600 m</span></div>
+              <div class="note">Lunch at 12, who's in? Near the station.</div>
+              <div class="row"><span><span class="dot"></span>open 1h 10m</span><span class="trust">12 meetups, no reports</span></div>
+            </div>
+            <div class="postit">
+              <div class="who">Sofia, 34 <span>&middot; 1.2 km</span></div>
+              <div class="note">Going for a bike ride along the coast. Come along!</div>
+              <div class="row"><span><span class="dot"></span>open 45m</span><span class="trust">5 meetups, no reports</span></div>
+            </div>
+            <div class="postit">
+              <div class="who">David, 41 <span>&middot; 1.8 km</span></div>
+              <div class="note">Coffee after the service? Anyone around?</div>
+              <div class="row"><span><span class="dot"></span>open 2h</span><span class="trust">new, phone verified</span></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><span class="ico">&#9673;</span>You</div>
+            <div class="tab active"><span class="ico">&#128205;</span>Nearby</div>
+            <div class="tab"><span class="ico">&#9993;</span>Chats</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>2. Who's around</b>The billboard. Post-its from people open right now, sorted by closeness.</div>
+    </div>
+
+    <!-- SCREEN 3: POST DETAIL -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status-bar"><span>9:41</span><span>&#9679;&#9679;&#9679; &#128246;</span></div>
+          <div class="app-head">
+            <div class="title" style="font-size:15px;color:var(--muted)">&#8592; Nearby</div>
+          </div>
+          <div class="screen-body">
+            <div class="detail-top">
+              <div class="detail-head">
+                <div class="avatar">M</div>
+                <div>
+                  <div style="font-weight:800">Mikael, 29</div>
+                  <div style="font-size:11px;color:var(--muted)">600 m away &middot; open for 1h 10m</div>
+                </div>
+              </div>
+              <div class="map-mini"><div class="pin"></div></div>
+              <div style="font-size:13px"><strong>"Lunch at 12, who's in? Near the station."</strong></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:6px">Friendly, new to Espoo, likes finding lunch company.</div>
+              <div class="trust" style="margin-top:8px">&#10003; 12 meetups, no reports &middot; phone verified</div>
+            </div>
+            <div class="btn green">Say I'm in &#128075;</div>
+            <div class="btn ghost">Message first</div>
+            <div style="text-align:center;font-size:10px;color:var(--muted)">Report &middot; Block &middot; Meet in a public place</div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><span class="ico">&#9673;</span>You</div>
+            <div class="tab active"><span class="ico">&#128205;</span>Nearby</div>
+            <div class="tab"><span class="ico">&#9993;</span>Chats</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>3. Say yes</b>Approximate location, a light trust signal, and a two second way to join.</div>
+    </div>
+
+    <!-- SCREEN 4: COMPOSE / CHAT -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status-bar"><span>9:41</span><span>&#9679;&#9679;&#9679; &#128246;</span></div>
+          <div class="app-head">
+            <div class="title">Drop a post</div>
+            <div class="sub">Keep it short. This is your post-it.</div>
+          </div>
+          <div class="screen-body">
+            <div class="compose-box"><span class="typed">Lunch 12 PM Espoo, who's in?</span></div>
+            <div class="field-label">Visible for</div>
+            <div class="seg">
+              <div class="opt sel">1 hr</div>
+              <div class="opt">2 hr</div>
+              <div class="opt">Custom</div>
+            </div>
+            <div class="field-label">Radius</div>
+            <div class="radius-row"><div class="slider"></div><div class="radius-val">2 km</div></div>
+            <div class="btn" style="margin-top:14px">Post to people nearby</div>
+            <div style="text-align:center;font-size:10px;color:var(--muted)">You'll disappear automatically when it ends</div>
+          </div>
+          <div class="tabbar">
+            <div class="tab active"><span class="ico">&#9673;</span>You</div>
+            <div class="tab"><span class="ico">&#128205;</span>Nearby</div>
+            <div class="tab"><span class="ico">&#9993;</span>Chats</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><b>4. Post it</b>Write the note, set time and radius, post. It expires on its own.</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Spontaneous Meetup App &middot; Concept document and visual prototype.<br>
+    Working title and illustrative mockups only.
+  </div>
+
+</div>
+</body>
+</html>
