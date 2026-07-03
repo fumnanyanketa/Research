@@ -21,6 +21,7 @@ Working repository for synthesizing meeting recordings into plans and tracking e
 | [programs/program-overview.md](programs/program-overview.md) | Technology & AI Literacy Program — overview, audience, format, 12-month arc, funding |
 | [programs/technology-literacy-curriculum.md](programs/technology-literacy-curriculum.md) | Foundations track — device/files/internet/safety/digital-life modules |
 | [programs/ai-literacy-curriculum.md](programs/ai-literacy-curriculum.md) | AI track — what-is-AI/prompting/work/business/automations/building/agents/responsible-use modules |
+| [business-ideas/african-food-ecommerce-finland-feasibility-study.md](business-ideas/african-food-ecommerce-finland-feasibility-study.md) | Market & feasibility study: importing African food products for e-commerce sale in Finland, expanding to the Nordics then Europe — demand sizing, competitors, regulatory/import rules, logistics (Posti/PostNord), unit economics, risks, and low-capital entry paths |
 
 ## Source material
 
