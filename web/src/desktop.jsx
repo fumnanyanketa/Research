@@ -1,5 +1,5 @@
 /* Anchor — always-on desktop dashboard */
-import { useState as dUseState } from "react";
+import { useState as dUseState, useRef as dUseRef, useEffect as dUseEffect } from "react";
 import { Icon } from "./icons.jsx";
 import { Ring, Donut, DotMatrix } from "./viz.jsx";
 import { MetaLine } from "./mobile.jsx";
@@ -290,14 +290,36 @@ function ProposedStrip({ store }) {
 function CaptureBar({ store }) {
   const [rec, setRec] = dUseState(false);
   const [text, setText] = dUseState("");
+  const recogRef = dUseRef(null);
+  const baseRef = dUseRef("");
+  dUseEffect(() => () => { try { recogRef.current?.stop(); } catch { /* noop */ } }, []);
   const submit = () => { if (text.trim()) { store.addThought(text.trim()); setText(""); } };
+  const startRec = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { window.alert("Voice input isn't supported in this browser — try Chrome, or just type."); return; }
+    const r = new SR();
+    r.lang = navigator.language || "en-US";
+    r.interimResults = true;
+    r.continuous = true;
+    baseRef.current = text.trim() ? text.trim() + " " : "";
+    r.onresult = (e) => {
+      let t = "";
+      for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + " ";
+      setText((baseRef.current + t).replace(/\s+/g, " ").trim());
+    };
+    r.onerror = (e) => { setRec(false); if (e.error !== "no-speech" && e.error !== "aborted") window.alert("Voice error: " + e.error); };
+    r.onend = () => setRec(false);
+    recogRef.current = r;
+    try { r.start(); setRec(true); } catch { /* already running */ }
+  };
+  const stopRec = () => { try { recogRef.current?.stop(); } catch { /* noop */ } setRec(false); };
   return (
     <div className="capbar">
       <span className="ai-dot" style={{ marginLeft: 4 }} />
       <input className="capbar-input" value={text} placeholder="Capture a thought, task, or conversation. Anchor sorts it."
         onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && submit()} />
       {text.trim() && <button className="btn-ghost" style={{ padding: "9px 14px" }} onClick={submit}>Add</button>}
-      <button className={`capbar-rec ${rec ? "rec" : ""}`} onClick={() => setRec(r => !r)}>
+      <button className={`capbar-rec ${rec ? "rec" : ""}`} onClick={rec ? stopRec : startRec}>
         <Icon name="mic" size={17} /> {rec ? "Listening…" : "Record"}
       </button>
     </div>
