@@ -28,6 +28,7 @@ export const Icon = ({ name, size = 20, sw = 1.6, style, className }) => {
     mind:    <><path d="M5 5.5h11a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H5z"/><path d="M5 11.5h12a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H5zM5 4v15"/></>,
     user:    <><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></>,
     anchor:  <><circle cx="12" cy="5" r="2"/><path d="M12 7v13M5 13a7 7 0 0 0 14 0M3.5 13H6M18 13h2.5"/></>,
+    projects:<><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.3"/><circle cx="12" cy="12" r="0.6"/></>,
   };
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"

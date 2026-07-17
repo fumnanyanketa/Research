@@ -200,8 +200,40 @@ export function useAnchorStore() {
       setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, key } : t)));
       persist(() => supabase.from("tasks").update({ is_key: key }).eq("id", id));
     };
+    // Local stand-in for the AI extraction step (used until Supabase + the
+    // extract function are wired). If a note is addressed to a project, e.g.
+    // "PuhuScribe: chose the stack" or "afaes: done shared the folder", file it
+    // as a step on that project (marked done when it starts with "done").
+    // Everything else becomes a proposed task, same as before.
+    const routeToProject = (title) => {
+      const m = title.match(/^\s*([^:]{2,42}):\s*(.+)$/);
+      if (!m) return null;
+      const label = m[1].trim().toLowerCase();
+      const rest = m[2].trim();
+      const proj = projects.find((p) => {
+        const n = p.name.toLowerCase(), id = p.id.toLowerCase();
+        return n === label || id === label || n.includes(label) || label.includes(id);
+      });
+      if (!proj) return null;
+      const doneNow = /^done\b[:\s-]*/i.test(rest);
+      const text = rest.replace(/^done\b[:\s-]*/i, "").trim() || rest;
+      setProjects((ps) => ps.map((p) => (
+        p.id === proj.id ? { ...p, milestones: [...p.milestones, { text, done: doneNow }] } : p
+      )));
+      return proj.name;
+    };
+
+    const addProjectStep = (projectId, text) => {
+      const t = (text || "").trim();
+      if (!t) return;
+      setProjects((ps) => ps.map((p) => (
+        p.id === projectId ? { ...p, milestones: [...p.milestones, { text: t, done: false }] } : p
+      )));
+    };
+
     const addThought = async (title) => {
       if (!isConfigured) {
+        if (routeToProject(title)) return;
         setTasks((ts) => [{ id: "p" + Date.now(), title, status: "proposed", priority: "grey", area: "Inbox" }, ...ts]);
         return;
       }
@@ -357,7 +389,7 @@ export function useAnchorStore() {
       loading, name: USER_NAME,
       tasks, habits, goals, finance, areas: areasWithOpen,
       keyTasks, proposed,
-      projects: projectsView, projectsOverall, toggleMilestone,
+      projects: projectsView, projectsOverall, toggleMilestone, addProjectStep,
       toggleHabit, confirmTask, dismissTask, completeTask, toggleKey, addThought, addGoal,
       editTask, deleteTask, editGoal, deleteGoal, addHabit, editHabit, deleteHabit, addFinance,
     };
