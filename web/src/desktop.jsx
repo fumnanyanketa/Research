@@ -4,6 +4,8 @@ import { Icon } from "./icons.jsx";
 import { Ring, Donut, DotMatrix } from "./viz.jsx";
 import { MetaLine } from "./mobile.jsx";
 
+const PRIO_DOT = { high: "red", medium: "amber", low: "grey" };
+
 /* ---------- September goal (dark hero + secondary countdowns) ---------- */
 function GoalCard({ goals, addGoal }) {
   const [primary, ...rest] = goals;
@@ -192,6 +194,48 @@ function BrainCard({ areas }) {
   );
 }
 
+/* ---------- projects · progress (Central Command model) ---------- */
+function ProjectsCard({ projects, overall, toggleMilestone }) {
+  const [open, setOpen] = dUseState(null);
+  return (
+    <div className="card feature dcard projects-area">
+      <div className="row spread" style={{ marginBottom: 16 }}>
+        <div className="lbl">PROJECTS · PROGRESS</div>
+        <div className="row" style={{ gap: 12 }}>
+          <span className="lbl" style={{ color: "var(--muted-2)" }}>{projects.length} ACTIVE</span>
+          <Ring value={overall / 100} size={50} stroke={6}>
+            <div className="num" style={{ fontSize: 13.5 }}>{overall}<span style={{ color: "var(--muted-2)", fontSize: 10 }}>%</span></div>
+          </Ring>
+        </div>
+      </div>
+      <div className="proj-grid">
+        {projects.map((p) => (
+          <div key={p.id} className={`proj-tile ${open === p.id ? "open" : ""}`}>
+            <button className="proj-head" onClick={() => setOpen((o) => (o === p.id ? null : p.id))}>
+              <div className="row spread" style={{ gap: 10 }}>
+                <span className="proj-name"><span className={`dot ${PRIO_DOT[p.priority] || "grey"}`} /> {p.name}</span>
+                <span className="num proj-pct">{p.progress}%</span>
+              </div>
+              <div className="proj-bar"><i style={{ width: p.progress + "%" }} /></div>
+              <div className="proj-steps"><b>{p.done}/{p.total}</b> steps · <span className="proj-next">{p.next}</span></div>
+            </button>
+            {open === p.id && (
+              <div className="proj-ms">
+                {p.milestones.map((m, i) => (
+                  <button key={i} className={`ms-row ${m.done ? "on" : ""}`} onClick={() => toggleMilestone(p.id, i)}>
+                    <span className="ms-box"><Icon name="check" size={12} sw={2.6} /></span>
+                    <span className="ms-text">{m.text}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ---------- top capture bar ---------- */
 function CaptureBar({ store }) {
   const [rec, setRec] = dUseState(false);
@@ -240,6 +284,7 @@ export function DesktopApp({ store }) {
         <FinanceCard finance={store.finance} />
         <KeyTasksCard store={store} />
         <BrainCard areas={store.areas} />
+        <ProjectsCard projects={store.projects} overall={store.projectsOverall} toggleMilestone={store.toggleMilestone} />
       </div>
     </div>
   );
