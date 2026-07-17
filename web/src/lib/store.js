@@ -133,6 +133,25 @@ async function loadAll() {
   };
 }
 
+// Projects load from Supabase. Seeds the table from the built-in set the first
+// time it is empty, so a fresh project gets the current Central Command list.
+async function loadProjects(seed) {
+  let { data } = await supabase.from("projects").select().order("sort");
+  if (!data || data.length === 0) {
+    const rows = seed.map((p, i) => ({
+      id: p.id, name: p.name, priority: p.priority, urgency: p.urgency, next: p.next,
+      milestones: p.milestones, focus: p.priority === "high" && p.urgency === "this-week", sort: i,
+    }));
+    const ins = await supabase.from("projects").insert(rows).select();
+    data = ins.data || rows;
+  }
+  const projects = data.map((r) => ({
+    id: r.id, name: r.name, priority: r.priority, urgency: r.urgency, next: r.next, milestones: r.milestones || [],
+  }));
+  const focusIds = data.filter((r) => r.focus).map((r) => r.id);
+  return { projects, focusIds };
+}
+
 /* ---------- local persistence (used until Supabase is configured) ----------
    Without this, every reload throws away edits and resets to the sample data.
    With Supabase configured, Supabase is the source of truth and localStorage
@@ -176,6 +195,8 @@ export function useAnchorStore() {
         const r = await loadAll();
         if (!alive) return;
         setTasks(r.tasks); setHabits(r.habits); setGoals(r.goals); setAreas(r.areas); setFinance(r.finance);
+        const pr = await loadProjects(SAMPLE_PROJECTS);
+        if (alive) { setProjects(pr.projects); setFocusIds(pr.focusIds); }
       } catch (e) {
         console.error("Anchor: failed to load from Supabase", e);
       } finally {
@@ -249,37 +270,46 @@ export function useAnchorStore() {
       if (!proj) return null;
       const doneNow = /^done\b[:\s-]*/i.test(rest);
       const text = rest.replace(/^done\b[:\s-]*/i, "").trim() || rest;
-      setProjects((ps) => ps.map((p) => (
-        p.id === proj.id ? { ...p, milestones: [...p.milestones, { text, done: doneNow }] } : p
-      )));
+      const newMs = [...proj.milestones, { text, done: doneNow }];
+      setProjects((ps) => ps.map((p) => (p.id === proj.id ? { ...p, milestones: newMs } : p)));
+      persist(() => supabase.from("projects").update({ milestones: newMs }).eq("id", proj.id));
       return proj.name;
     };
 
+    const saveMilestones = (projectId, milestones) => {
+      setProjects((ps) => ps.map((p) => (p.id === projectId ? { ...p, milestones } : p)));
+      persist(() => supabase.from("projects").update({ milestones }).eq("id", projectId));
+    };
     const addProjectStep = (projectId, text) => {
       const t = (text || "").trim();
       if (!t) return;
-      setProjects((ps) => ps.map((p) => (
-        p.id === projectId ? { ...p, milestones: [...p.milestones, { text: t, done: false }] } : p
-      )));
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      saveMilestones(projectId, [...cur.milestones, { text: t, done: false }]);
     };
     const deleteProjectStep = (projectId, index) => {
-      setProjects((ps) => ps.map((p) => (
-        p.id === projectId ? { ...p, milestones: p.milestones.filter((_, i) => i !== index) } : p
-      )));
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      saveMilestones(projectId, cur.milestones.filter((_, i) => i !== index));
     };
     const addProject = (name, priority = "medium") => {
       const nm = (name || "").trim();
       if (!nm) return;
       const id = nm.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project-" + (projects.length + 1);
       if (projects.some((p) => p.id === id)) return;
-      setProjects((ps) => [...ps, { id, name: nm, priority, urgency: "this-month", next: "Define the first steps", milestones: [] }]);
+      const row = { id, name: nm, priority, urgency: "this-month", next: "Define the first steps", milestones: [] };
+      setProjects((ps) => [...ps, row]);
+      persist(() => supabase.from("projects").insert({ ...row, sort: projects.length }));
     };
     const deleteProject = (projectId) => {
       setProjects((ps) => ps.filter((p) => p.id !== projectId));
       setFocusIds((ids) => ids.filter((x) => x !== projectId));
+      persist(() => supabase.from("projects").delete().eq("id", projectId));
     };
     const toggleFocus = (projectId) => {
-      setFocusIds((ids) => (ids.includes(projectId) ? ids.filter((x) => x !== projectId) : [...ids, projectId]));
+      const on = !focusIds.includes(projectId);
+      setFocusIds((ids) => (on ? [...ids, projectId] : ids.filter((x) => x !== projectId)));
+      persist(() => supabase.from("projects").update({ focus: on }).eq("id", projectId));
     };
 
     const addThought = async (title) => {
@@ -411,13 +441,12 @@ export function useAnchorStore() {
       });
     };
 
-    // Projects: tick a milestone (local for now; a Supabase write comes with
-    // the projects table). Percent is always steps done / total, no guesswork.
+    // Projects: tick a milestone. Percent is always steps done / total.
     const toggleMilestone = (projectId, index) => {
-      setProjects((ps) => ps.map((p) => (
-        p.id !== projectId ? p
-          : { ...p, milestones: p.milestones.map((m, i) => (i === index ? { ...m, done: !m.done } : m)) }
-      )));
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      const milestones = cur.milestones.map((m, i) => (i === index ? { ...m, done: !m.done } : m));
+      saveMilestones(projectId, milestones);
     };
 
     const openByArea = {};

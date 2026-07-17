@@ -153,6 +153,24 @@ select current_date, 3400, 'income', 'Clients'
 where not exists (select 1 from finance_entries where source = 'Clients'
   and date_trunc('month', occurred_on) = date_trunc('month', current_date));
 
+-- Projects + milestones (the Central Command tracking model). Milestones are
+-- kept as a JSONB array of { text, done } so progress = done / total, matching
+-- the app's model exactly. id is the project slug (natural key). The app seeds
+-- this table from its built-in set on first run when it is empty.
+create table if not exists projects (
+  id text primary key,
+  name text not null,
+  priority text not null default 'medium' check (priority in ('high', 'medium', 'low')),
+  urgency text not null default 'this-month',
+  next text,
+  focus boolean not null default false,
+  milestones jsonb not null default '[]',
+  sort int not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table projects add column if not exists focus boolean not null default false;
+alter table projects add column if not exists milestones jsonb not null default '[]';
+
 -- v1 is single-user via the anon key. Add Supabase Auth + per-user policies
 -- before storing anything you wouldn't want readable with the anon key.
 alter table areas enable row level security;
@@ -162,10 +180,11 @@ alter table habits enable row level security;
 alter table habit_logs enable row level security;
 alter table goals enable row level security;
 alter table finance_entries enable row level security;
+alter table projects enable row level security;
 do $$
 declare t text;
 begin
-  foreach t in array array['areas', 'entries', 'tasks', 'habits', 'habit_logs', 'goals', 'finance_entries'] loop
+  foreach t in array array['areas', 'entries', 'tasks', 'habits', 'habit_logs', 'goals', 'finance_entries', 'projects'] loop
     execute format('drop policy if exists "v1 open access" on %I', t);
     execute format('create policy "v1 open access" on %I for all using (true) with check (true)', t);
   end loop;
