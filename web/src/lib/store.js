@@ -133,17 +133,40 @@ async function loadAll() {
   };
 }
 
+/* ---------- local persistence (used until Supabase is configured) ----------
+   Without this, every reload throws away edits and resets to the sample data.
+   With Supabase configured, Supabase is the source of truth and localStorage
+   is bypassed entirely. */
+const LS_PREFIX = "anchor.v1.";
+function loadLocal(key, fallback) {
+  if (isConfigured || typeof localStorage === "undefined") return fallback;
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if (raw == null) return fallback;
+    const v = JSON.parse(raw);
+    return v == null ? fallback : v;
+  } catch { return fallback; }
+}
+function saveLocal(key, value) {
+  if (isConfigured || typeof localStorage === "undefined") return;
+  try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(value)); } catch { /* quota / private mode */ }
+}
+
 /* ---------- the hook ---------- */
 export function useAnchorStore() {
   const [loading, setLoading] = useState(isConfigured);
-  const [tasks, setTasks] = useState(isConfigured ? [] : SAMPLE_TASKS);
-  const [habits, setHabits] = useState(isConfigured ? [] : SAMPLE_HABITS);
-  const [goals, setGoals] = useState(isConfigured ? [] : SAMPLE_GOALS);
-  const [areas, setAreas] = useState(isConfigured ? [] : SAMPLE_AREAS);
-  const [finance, setFinance] = useState(isConfigured ? [] : SAMPLE_FINANCE);
+  const [tasks, setTasks] = useState(isConfigured ? [] : loadLocal("tasks", SAMPLE_TASKS));
+  const [habits, setHabits] = useState(isConfigured ? [] : loadLocal("habits", SAMPLE_HABITS));
+  const [goals, setGoals] = useState(isConfigured ? [] : loadLocal("goals", SAMPLE_GOALS));
+  const [areas, setAreas] = useState(isConfigured ? [] : loadLocal("areas", SAMPLE_AREAS));
+  const [finance, setFinance] = useState(isConfigured ? [] : loadLocal("finance", SAMPLE_FINANCE));
   // Projects + milestones (the Central Command model). Local-only for now; a
   // Supabase projects/milestones table is a later milestone.
-  const [projects, setProjects] = useState(SAMPLE_PROJECTS);
+  const [projects, setProjects] = useState(loadLocal("projects", SAMPLE_PROJECTS));
+  // Focus set: which projects to work first. Defaults to the time-sensitive
+  // ones (high priority + due this week), same rule as the Central Command board.
+  const defaultFocus = SAMPLE_PROJECTS.filter((p) => p.priority === "high" && p.urgency === "this-week").map((p) => p.id);
+  const [focusIds, setFocusIds] = useState(loadLocal("focusIds", defaultFocus));
 
   useEffect(() => {
     if (!isConfigured) return;
@@ -161,6 +184,15 @@ export function useAnchorStore() {
     })();
     return () => { alive = false; };
   }, []);
+
+  // Persist each slice locally whenever it changes (no-op when Supabase is on).
+  useEffect(() => { saveLocal("tasks", tasks); }, [tasks]);
+  useEffect(() => { saveLocal("habits", habits); }, [habits]);
+  useEffect(() => { saveLocal("goals", goals); }, [goals]);
+  useEffect(() => { saveLocal("areas", areas); }, [areas]);
+  useEffect(() => { saveLocal("finance", finance); }, [finance]);
+  useEffect(() => { saveLocal("projects", projects); }, [projects]);
+  useEffect(() => { saveLocal("focusIds", focusIds); }, [focusIds]);
 
   return useMemo(() => {
     const persist = (fn) => { if (isConfigured) fn().catch?.((e) => console.error(e)); };
@@ -229,6 +261,25 @@ export function useAnchorStore() {
       setProjects((ps) => ps.map((p) => (
         p.id === projectId ? { ...p, milestones: [...p.milestones, { text: t, done: false }] } : p
       )));
+    };
+    const deleteProjectStep = (projectId, index) => {
+      setProjects((ps) => ps.map((p) => (
+        p.id === projectId ? { ...p, milestones: p.milestones.filter((_, i) => i !== index) } : p
+      )));
+    };
+    const addProject = (name, priority = "medium") => {
+      const nm = (name || "").trim();
+      if (!nm) return;
+      const id = nm.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project-" + (projects.length + 1);
+      if (projects.some((p) => p.id === id)) return;
+      setProjects((ps) => [...ps, { id, name: nm, priority, urgency: "this-month", next: "Define the first steps", milestones: [] }]);
+    };
+    const deleteProject = (projectId) => {
+      setProjects((ps) => ps.filter((p) => p.id !== projectId));
+      setFocusIds((ids) => ids.filter((x) => x !== projectId));
+    };
+    const toggleFocus = (projectId) => {
+      setFocusIds((ids) => (ids.includes(projectId) ? ids.filter((x) => x !== projectId) : [...ids, projectId]));
     };
 
     const addThought = async (title) => {
@@ -379,19 +430,21 @@ export function useAnchorStore() {
     const projectsView = projects.map((p) => {
       const total = p.milestones.length;
       const done = p.milestones.filter((m) => m.done).length;
-      return { ...p, done, total, progress: total ? Math.round((100 * done) / total) : 0 };
+      return { ...p, done, total, progress: total ? Math.round((100 * done) / total) : 0, focus: focusIds.includes(p.id) };
     });
     const projectsOverall = projectsView.length
       ? Math.round(projectsView.reduce((a, p) => a + p.progress, 0) / projectsView.length)
       : 0;
+    const focusProjects = projectsView.filter((p) => p.focus);
 
     return {
       loading, name: USER_NAME,
       tasks, habits, goals, finance, areas: areasWithOpen,
       keyTasks, proposed,
-      projects: projectsView, projectsOverall, toggleMilestone, addProjectStep,
+      projects: projectsView, projectsOverall, focusProjects,
+      toggleMilestone, addProjectStep, deleteProjectStep, addProject, deleteProject, toggleFocus,
       toggleHabit, confirmTask, dismissTask, completeTask, toggleKey, addThought, addGoal,
       editTask, deleteTask, editGoal, deleteGoal, addHabit, editHabit, deleteHabit, addFinance,
     };
-  }, [loading, tasks, habits, goals, areas, finance, projects]);
+  }, [loading, tasks, habits, goals, areas, finance, projects, focusIds]);
 }

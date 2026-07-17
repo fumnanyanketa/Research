@@ -195,25 +195,35 @@ function BrainCard({ areas }) {
 }
 
 /* ---------- projects · progress (Central Command model) ---------- */
-function ProjectsCard({ projects, overall, toggleMilestone }) {
+function ProjectsCard({ store }) {
+  const { projects, projectsOverall, toggleMilestone, toggleFocus, deleteProject, addProjectStep, deleteProjectStep, addProject } = store;
   const [open, setOpen] = dUseState(null);
+  const [showAll, setShowAll] = dUseState(true);
+  const focusCount = projects.filter((p) => p.focus).length;
+  const list = showAll ? projects : projects.filter((p) => p.focus);
+  const newProject = () => { const n = window.prompt("New project name"); if (n && n.trim()) addProject(n.trim()); };
+  const addStep = (p) => { const t = window.prompt(`New step for ${p.name}`); if (t && t.trim()) addProjectStep(p.id, t.trim()); };
   return (
     <div className="card feature dcard projects-area">
       <div className="row spread" style={{ marginBottom: 16 }}>
         <div className="lbl">PROJECTS · PROGRESS</div>
-        <div className="row" style={{ gap: 12 }}>
-          <span className="lbl" style={{ color: "var(--muted-2)" }}>{projects.length} ACTIVE</span>
-          <Ring value={overall / 100} size={50} stroke={6}>
-            <div className="num" style={{ fontSize: 13.5 }}>{overall}<span style={{ color: "var(--muted-2)", fontSize: 10 }}>%</span></div>
+        <div className="row" style={{ gap: 14, alignItems: "center" }}>
+          <div className="seg proj-seg">
+            <button className={!showAll ? "on" : ""} onClick={() => setShowAll(false)}>Focus {focusCount}</button>
+            <button className={showAll ? "on" : ""} onClick={() => setShowAll(true)}>All {projects.length}</button>
+          </div>
+          <button className="goal-add-row" onClick={newProject}><Icon name="plus" size={15} /> New</button>
+          <Ring value={projectsOverall / 100} size={50} stroke={6}>
+            <div className="num" style={{ fontSize: 13.5 }}>{projectsOverall}<span style={{ color: "var(--muted-2)", fontSize: 10 }}>%</span></div>
           </Ring>
         </div>
       </div>
       <div className="proj-grid">
-        {projects.map((p) => (
-          <div key={p.id} className={`proj-tile ${open === p.id ? "open" : ""}`}>
+        {list.map((p) => (
+          <div key={p.id} className={`proj-tile ${open === p.id ? "open" : ""} ${p.focus ? "foc" : ""}`}>
             <button className="proj-head" onClick={() => setOpen((o) => (o === p.id ? null : p.id))}>
               <div className="row spread" style={{ gap: 10 }}>
-                <span className="proj-name"><span className={`dot ${PRIO_DOT[p.priority] || "grey"}`} /> {p.name}</span>
+                <span className="proj-name"><span className={`dot ${PRIO_DOT[p.priority] || "grey"}`} /> {p.name}{p.focus && <span className="foc-tag">focus</span>}</span>
                 <span className="num proj-pct">{p.progress}%</span>
               </div>
               <div className="proj-bar"><i style={{ width: p.progress + "%" }} /></div>
@@ -222,13 +232,53 @@ function ProjectsCard({ projects, overall, toggleMilestone }) {
             {open === p.id && (
               <div className="proj-ms">
                 {p.milestones.map((m, i) => (
-                  <button key={i} className={`ms-row ${m.done ? "on" : ""}`} onClick={() => toggleMilestone(p.id, i)}>
-                    <span className="ms-box"><Icon name="check" size={12} sw={2.6} /></span>
-                    <span className="ms-text">{m.text}</span>
-                  </button>
+                  <div key={i} className="ms-line">
+                    <button className={`ms-row ${m.done ? "on" : ""}`} onClick={() => toggleMilestone(p.id, i)}>
+                      <span className="ms-box"><Icon name="check" size={12} sw={2.6} /></span>
+                      <span className="ms-text">{m.text}</span>
+                    </button>
+                    <button className="ms-del" onClick={() => deleteProjectStep(p.id, i)} aria-label="Delete step"><Icon name="x" size={13} /></button>
+                  </div>
                 ))}
+                {p.milestones.length === 0 && <div className="proj-next" style={{ padding: "8px 8px 2px", fontSize: 12 }}>No steps yet.</div>}
+                <button className="proj-add-step" onClick={() => addStep(p)}><Icon name="plus" size={14} /> Add a step</button>
+                <div className="row" style={{ gap: 16, padding: "8px 8px 2px" }}>
+                  <button className="link-btn" style={{ color: p.focus ? "var(--accent-text)" : "var(--muted)" }} onClick={() => toggleFocus(p.id)}>{p.focus ? "In focus ✓" : "Add to focus"}</button>
+                  <button className="link-btn" onClick={() => { if (window.confirm(`Remove "${p.name}" from your projects?`)) deleteProject(p.id); }}>Remove</button>
+                </div>
               </div>
             )}
+          </div>
+        ))}
+        {list.length === 0 && <div className="proj-next" style={{ padding: "10px 2px" }}>No projects in focus. Switch to All and add some.</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- proposed-by-AI strip (desktop capture feedback) ---------- */
+function ProposedStrip({ store }) {
+  const { proposed, confirmTask, dismissTask } = store;
+  if (!proposed.length) return null;
+  return (
+    <div className="proposed-strip">
+      <div className="lbl" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 11 }}>
+        <span className="ai-dot" /> PROPOSED BY AI <span style={{ color: "var(--muted-2)" }}>· {proposed.length} to review</span>
+      </div>
+      <div className="proposed-strip-grid">
+        {proposed.map((t) => (
+          <div key={t.id} className="proposed-card">
+            <div className="row" style={{ gap: 11, alignItems: "flex-start" }}>
+              <span className={`dot ${t.priority}`} style={{ marginTop: 5 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{t.title}</div>
+                <div style={{ fontSize: 11.5, color: "var(--muted-2)", marginTop: 4 }}>{t.area}</div>
+              </div>
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 12 }}>
+              <button className="btn-accent" style={{ flex: 1, padding: "8px 0", fontSize: 12.5 }} onClick={() => confirmTask(t.id)}><Icon name="check" size={14} sw={2.2} /> Confirm</button>
+              <button className="btn-ghost" style={{ flex: 1, padding: "8px 0", fontSize: 12.5 }} onClick={() => dismissTask(t.id)}><Icon name="x" size={14} /> Dismiss</button>
+            </div>
           </div>
         ))}
       </div>
@@ -277,6 +327,8 @@ export function DesktopApp({ store }) {
         <div className="greet-chip"><Icon name="calendar" size={16} /> Today <span className="greet-sep">·</span> Jun 13</div>
       </div>
 
+      <ProposedStrip store={store} />
+
       <div className="dash-grid">
         <GoalCard goals={store.goals} addGoal={store.addGoal} />
         <HabitsCard habits={store.habits} toggleHabit={store.toggleHabit} />
@@ -284,7 +336,7 @@ export function DesktopApp({ store }) {
         <FinanceCard finance={store.finance} />
         <KeyTasksCard store={store} />
         <BrainCard areas={store.areas} />
-        <ProjectsCard projects={store.projects} overall={store.projectsOverall} toggleMilestone={store.toggleMilestone} />
+        <ProjectsCard store={store} />
       </div>
     </div>
   );
