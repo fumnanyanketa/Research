@@ -10,9 +10,9 @@ Full design: [DESIGN.md](./DESIGN.md)
 
 | Path | What it is |
 |---|---|
-| `web/` | **The implemented design** (React + Vite). Recreated from the Claude Design handoff: light field with dark feature cards, lime accent, Geist type. Renders the mobile app (Today / Capture / Tasks / Habits) and the desktop dashboard (countdowns, habits, calendar, finance pulse, key tasks, the "Brain" of life areas). Currently runs on in-memory sample data; next step is wiring it to Supabase. Run: `cd web && npm install && npm run dev`. |
+| `web/` | **The implemented design** (React + Vite). Light field with dark feature cards, lime accent, Geist type. Renders the mobile app (Today / Capture / **Projects** / Tasks / Habits) and the desktop dashboard (countdowns, habits, calendar, finance pulse, key tasks, the "Brain" of life areas, and the **Projects · Progress** board). Runs on sample data that now **persists to localStorage** (edits survive reloads) until Supabase is configured. Run: `cd web && npm install && npm run dev`. |
 | `app/` | Earlier Expo (React Native) prototype, iPhone + Android. Four tabs: **Today**, **Capture** (typed or spoken thoughts + conversation recording, on-device transcription), **Tasks**, **Habits**. Kept for the native capture path; the `web/` app is the current design implementation. |
-| `supabase/schema.sql` | Database: `areas`, `entries`, `tasks` (with priority + key star), `habits` + `habit_logs`, `goals`, `finance_entries`. Seeded with life areas, a language-learning habit, and a September goal. |
+| `supabase/schema.sql` | Database: `areas`, `entries`, `tasks` (with priority + key star), `habits` + `habit_logs`, `goals`, `finance_entries`, and `projects` (milestones as JSONB). Seeded with life areas, a language-learning habit, and a September goal. |
 | `supabase/functions/process-entry/` | Edge function that runs Claude over a transcript and extracts a summary, the life area, people, decisions, insights, and priority-ranked action items (owed-by-you vs owed-to-you). |
 
 Transcription is **free**: Whisper runs on the phone via `whisper.rn` (the model
@@ -66,8 +66,34 @@ npx expo start --dev-client
 - **Habits** tab: check off daily habits (the 30-min language habit is seeded)
   and see your weekly streak.
 
+## Projects (the Central Command model)
+
+Anchor is the product version of Central Command, so its project-tracking model
+now lives in the app:
+
+- **Projects · Progress**: every project is broken into milestone steps, and
+  progress is always `steps done / total`, no guesswork. Tick a step and the
+  percentage recomputes live. There is a desktop dashboard card and a dedicated
+  mobile **Projects** tab.
+- **Focus set**: star the projects to work first. Focus drives the Today screen
+  strip and a Focus/All filter. Defaults to the time-sensitive ones (high
+  priority, due this week).
+- **Capture into projects**: on Capture, a note addressed to a project files
+  straight onto it. `PuhuScribe: chose the stack` adds a step; a leading `done`
+  (`AFAES workspace: done shared the folder`) marks it complete. Anything else
+  becomes a proposed task. This is the local stand-in for the AI extraction
+  step, so the same habit carries over once the extract function is wired.
+- **CRUD**: add or remove projects, add or delete steps, all from the UI.
+
+The project set is seeded from the current Central Command list. When Supabase
+is configured it loads from and writes to the `projects` table; until then it
+uses sample data persisted in localStorage.
+
 ## Roadmap
 
+- **Next (needs your keys):** wire Supabase (URL + anon key) and the Gemini/
+  Claude extract function, so capture persists, syncs across devices, and the
+  real AI extraction replaces the local routing.
 - **Phase 2:** push-notification reminders for confirmed tasks, Google Calendar
   sync for dated commitments, nightly debrief + voice journaling, finance UI.
 - **Phase 3:** chat over your whole history (semantic search), the strategic

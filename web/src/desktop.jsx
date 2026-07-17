@@ -1,8 +1,10 @@
 /* Anchor — always-on desktop dashboard */
-import { useState as dUseState } from "react";
+import { useState as dUseState, useRef as dUseRef, useEffect as dUseEffect } from "react";
 import { Icon } from "./icons.jsx";
 import { Ring, Donut, DotMatrix } from "./viz.jsx";
 import { MetaLine } from "./mobile.jsx";
+
+const PRIO_DOT = { high: "red", medium: "amber", low: "grey" };
 
 /* ---------- September goal (dark hero + secondary countdowns) ---------- */
 function GoalCard({ goals, addGoal }) {
@@ -192,18 +194,132 @@ function BrainCard({ areas }) {
   );
 }
 
+/* ---------- projects · progress (Central Command model) ---------- */
+function ProjectsCard({ store }) {
+  const { projects, projectsOverall, toggleMilestone, toggleFocus, deleteProject, addProjectStep, deleteProjectStep, addProject } = store;
+  const [open, setOpen] = dUseState(null);
+  const [showAll, setShowAll] = dUseState(true);
+  const focusCount = projects.filter((p) => p.focus).length;
+  const list = showAll ? projects : projects.filter((p) => p.focus);
+  const newProject = () => { const n = window.prompt("New project name"); if (n && n.trim()) addProject(n.trim()); };
+  const addStep = (p) => { const t = window.prompt(`New step for ${p.name}`); if (t && t.trim()) addProjectStep(p.id, t.trim()); };
+  return (
+    <div className="card feature dcard projects-area">
+      <div className="row spread" style={{ marginBottom: 16 }}>
+        <div className="lbl">PROJECTS · PROGRESS</div>
+        <div className="row" style={{ gap: 14, alignItems: "center" }}>
+          <div className="seg proj-seg">
+            <button className={!showAll ? "on" : ""} onClick={() => setShowAll(false)}>Focus {focusCount}</button>
+            <button className={showAll ? "on" : ""} onClick={() => setShowAll(true)}>All {projects.length}</button>
+          </div>
+          <button className="goal-add-row" onClick={newProject}><Icon name="plus" size={15} /> New</button>
+          <Ring value={projectsOverall / 100} size={50} stroke={6}>
+            <div className="num" style={{ fontSize: 13.5 }}>{projectsOverall}<span style={{ color: "var(--muted-2)", fontSize: 10 }}>%</span></div>
+          </Ring>
+        </div>
+      </div>
+      <div className="proj-grid">
+        {list.map((p) => (
+          <div key={p.id} className={`proj-tile ${open === p.id ? "open" : ""} ${p.focus ? "foc" : ""}`}>
+            <button className="proj-head" onClick={() => setOpen((o) => (o === p.id ? null : p.id))}>
+              <div className="row spread" style={{ gap: 10 }}>
+                <span className="proj-name"><span className={`dot ${PRIO_DOT[p.priority] || "grey"}`} /> {p.name}{p.focus && <span className="foc-tag">focus</span>}</span>
+                <span className="num proj-pct">{p.progress}%</span>
+              </div>
+              <div className="proj-bar"><i style={{ width: p.progress + "%" }} /></div>
+              <div className="proj-steps"><b>{p.done}/{p.total}</b> steps · <span className="proj-next">{p.next}</span></div>
+            </button>
+            {open === p.id && (
+              <div className="proj-ms">
+                {p.milestones.map((m, i) => (
+                  <div key={i} className="ms-line">
+                    <button className={`ms-row ${m.done ? "on" : ""}`} onClick={() => toggleMilestone(p.id, i)}>
+                      <span className="ms-box"><Icon name="check" size={12} sw={2.6} /></span>
+                      <span className="ms-text">{m.text}</span>
+                    </button>
+                    <button className="ms-del" onClick={() => deleteProjectStep(p.id, i)} aria-label="Delete step"><Icon name="x" size={13} /></button>
+                  </div>
+                ))}
+                {p.milestones.length === 0 && <div className="proj-next" style={{ padding: "8px 8px 2px", fontSize: 12 }}>No steps yet.</div>}
+                <button className="proj-add-step" onClick={() => addStep(p)}><Icon name="plus" size={14} /> Add a step</button>
+                <div className="row" style={{ gap: 16, padding: "8px 8px 2px" }}>
+                  <button className="link-btn" style={{ color: p.focus ? "var(--accent-text)" : "var(--muted)" }} onClick={() => toggleFocus(p.id)}>{p.focus ? "In focus ✓" : "Add to focus"}</button>
+                  <button className="link-btn" onClick={() => { if (window.confirm(`Remove "${p.name}" from your projects?`)) deleteProject(p.id); }}>Remove</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        {list.length === 0 && <div className="proj-next" style={{ padding: "10px 2px" }}>No projects in focus. Switch to All and add some.</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- proposed-by-AI strip (desktop capture feedback) ---------- */
+function ProposedStrip({ store }) {
+  const { proposed, confirmTask, dismissTask } = store;
+  if (!proposed.length) return null;
+  return (
+    <div className="proposed-strip">
+      <div className="lbl" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 11 }}>
+        <span className="ai-dot" /> PROPOSED BY AI <span style={{ color: "var(--muted-2)" }}>· {proposed.length} to review</span>
+      </div>
+      <div className="proposed-strip-grid">
+        {proposed.map((t) => (
+          <div key={t.id} className="proposed-card">
+            <div className="row" style={{ gap: 11, alignItems: "flex-start" }}>
+              <span className={`dot ${t.priority}`} style={{ marginTop: 5 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>{t.title}</div>
+                <div style={{ fontSize: 11.5, color: "var(--muted-2)", marginTop: 4 }}>{t.area}</div>
+              </div>
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 12 }}>
+              <button className="btn-accent" style={{ flex: 1, padding: "8px 0", fontSize: 12.5 }} onClick={() => confirmTask(t.id)}><Icon name="check" size={14} sw={2.2} /> Confirm</button>
+              <button className="btn-ghost" style={{ flex: 1, padding: "8px 0", fontSize: 12.5 }} onClick={() => dismissTask(t.id)}><Icon name="x" size={14} /> Dismiss</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ---------- top capture bar ---------- */
 function CaptureBar({ store }) {
   const [rec, setRec] = dUseState(false);
   const [text, setText] = dUseState("");
+  const recogRef = dUseRef(null);
+  const baseRef = dUseRef("");
+  dUseEffect(() => () => { try { recogRef.current?.stop(); } catch { /* noop */ } }, []);
   const submit = () => { if (text.trim()) { store.addThought(text.trim()); setText(""); } };
+  const startRec = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { window.alert("Voice input isn't supported in this browser — try Chrome, or just type."); return; }
+    const r = new SR();
+    r.lang = navigator.language || "en-US";
+    r.interimResults = true;
+    r.continuous = true;
+    baseRef.current = text.trim() ? text.trim() + " " : "";
+    r.onresult = (e) => {
+      let t = "";
+      for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + " ";
+      setText((baseRef.current + t).replace(/\s+/g, " ").trim());
+    };
+    r.onerror = (e) => { setRec(false); if (e.error !== "no-speech" && e.error !== "aborted") window.alert("Voice error: " + e.error); };
+    r.onend = () => setRec(false);
+    recogRef.current = r;
+    try { r.start(); setRec(true); } catch { /* already running */ }
+  };
+  const stopRec = () => { try { recogRef.current?.stop(); } catch { /* noop */ } setRec(false); };
   return (
     <div className="capbar">
       <span className="ai-dot" style={{ marginLeft: 4 }} />
       <input className="capbar-input" value={text} placeholder="Capture a thought, task, or conversation. Anchor sorts it."
         onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && submit()} />
       {text.trim() && <button className="btn-ghost" style={{ padding: "9px 14px" }} onClick={submit}>Add</button>}
-      <button className={`capbar-rec ${rec ? "rec" : ""}`} onClick={() => setRec(r => !r)}>
+      <button className={`capbar-rec ${rec ? "rec" : ""}`} onClick={rec ? stopRec : startRec}>
         <Icon name="mic" size={17} /> {rec ? "Listening…" : "Record"}
       </button>
     </div>
@@ -233,6 +349,8 @@ export function DesktopApp({ store }) {
         <div className="greet-chip"><Icon name="calendar" size={16} /> Today <span className="greet-sep">·</span> Jun 13</div>
       </div>
 
+      <ProposedStrip store={store} />
+
       <div className="dash-grid">
         <GoalCard goals={store.goals} addGoal={store.addGoal} />
         <HabitsCard habits={store.habits} toggleHabit={store.toggleHabit} />
@@ -240,6 +358,7 @@ export function DesktopApp({ store }) {
         <FinanceCard finance={store.finance} />
         <KeyTasksCard store={store} />
         <BrainCard areas={store.areas} />
+        <ProjectsCard store={store} />
       </div>
     </div>
   );

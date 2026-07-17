@@ -100,6 +100,27 @@ function TodayScreen({ store }) {
         ))}
       </div>
 
+      {/* Projects in focus */}
+      {store.focusProjects.length > 0 && (
+        <>
+          <div className="row spread" style={{ margin: "26px 0 4px" }}>
+            <div className="lbl">FOCUS PROJECTS</div>
+            <div className="lbl" style={{ color: "var(--muted-2)" }}>{store.projectsOverall}% overall</div>
+          </div>
+          <div className="card" style={{ padding: "4px 16px" }}>
+            {store.focusProjects.map((p, i) => (
+              <div key={p.id} className="row" style={{ gap: 12, padding: "14px 0", borderTop: i ? "1px solid var(--border)" : "none", alignItems: "center" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</div>
+                  <div className="proj-bar" style={{ marginTop: 8 }}><i style={{ width: p.progress + "%" }} /></div>
+                </div>
+                <span className="num" style={{ fontSize: 15, flex: "none" }}>{p.progress}%</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {/* Habits */}
       <div className="row spread" style={{ margin: "26px 0 4px" }}>
         <div className="lbl">HABITS</div>
@@ -221,6 +242,7 @@ function CaptureScreen({ store }) {
           {busy ? "Filing…" : "File it"}
         </button>
       )}
+      <div className="capture-tip">Tip: start with a project name and a colon to file it straight onto that project, for example "PuhuScribe: chose the stack" or "AFAES workspace: done shared the folder".</div>
 
       {/* Record — live voice dictation (browser speech-to-text) */}
       <div className="col" style={{ alignItems: "center", margin: "22px 0 8px", gap: 12 }}>
@@ -404,10 +426,111 @@ function HabitsScreen({ store }) {
   );
 }
 
+/* ---------- PROJECTS ---------- */
+function ProjectRow({ p, store }) {
+  const [open, setOpen] = mUseState(false);
+  const [adding, setAdding] = mUseState(false);
+  const [text, setText] = mUseState("");
+  const dot = { high: "red", medium: "amber", low: "grey" }[p.priority] || "grey";
+  const addStep = () => {
+    const t = text.trim();
+    if (!t) { setAdding(false); return; }
+    store.addProjectStep(p.id, t);
+    setText("");
+  };
+  const removeProject = () => {
+    if (window.confirm(`Remove "${p.name}" from your projects?`)) store.deleteProject(p.id);
+  };
+  return (
+    <div className={`card proj-m-card ${open ? "open" : ""} ${p.focus ? "foc" : ""}`}>
+      <button className="proj-m-head" onClick={() => setOpen((o) => !o)}>
+        <div className="row spread" style={{ gap: 10 }}>
+          <span className="proj-m-name">
+            <span className={`dot ${dot}`} /> {p.name}
+            {p.focus && <span className="foc-tag">focus</span>}
+          </span>
+          <span className="num" style={{ fontSize: 16 }}>{p.progress}%</span>
+        </div>
+        <div className="proj-bar" style={{ margin: "10px 0 8px" }}><i style={{ width: p.progress + "%" }} /></div>
+        <div className="row spread">
+          <span className="proj-steps"><b>{p.done}/{p.total}</b> steps done</span>
+          <Icon name="chevdown" size={16} sw={1.8} style={{ color: "var(--muted-2)", transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms ease" }} />
+        </div>
+      </button>
+      {open && (
+        <div className="proj-ms" style={{ borderTop: "1px solid var(--border)", padding: "6px 6px 10px" }}>
+          {p.next && <div className="proj-m-next">{p.next}</div>}
+          {p.milestones.map((m, i) => (
+            <div key={i} className="ms-line">
+              <button className={`ms-row ${m.done ? "on" : ""}`} onClick={() => store.toggleMilestone(p.id, i)}>
+                <span className="ms-box"><Icon name="check" size={12} sw={2.6} /></span>
+                <span className="ms-text">{m.text}</span>
+              </button>
+              <button className="ms-del" onClick={() => store.deleteProjectStep(p.id, i)} aria-label="Delete step"><Icon name="x" size={13} /></button>
+            </div>
+          ))}
+          {p.milestones.length === 0 && <div className="proj-m-next" style={{ padding: "8px" }}>No steps yet. Add the first one below.</div>}
+          {adding ? (
+            <div className="row" style={{ gap: 8, padding: "6px 6px 2px" }}>
+              <input className="proj-add-input" autoFocus value={text} placeholder="New step…"
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") addStep(); if (e.key === "Escape") { setText(""); setAdding(false); } }} />
+              <button className="btn-accent" style={{ padding: "8px 12px", fontSize: 12.5 }} onClick={addStep}>Add</button>
+            </div>
+          ) : (
+            <button className="proj-add-step" onClick={() => setAdding(true)}><Icon name="plus" size={14} /> Add a step</button>
+          )}
+          <div className="row" style={{ gap: 16, padding: "10px 8px 2px" }}>
+            <button className="link-btn" style={{ color: p.focus ? "var(--accent-text)" : "var(--muted)" }} onClick={() => store.toggleFocus(p.id)}>
+              {p.focus ? "In focus ✓" : "Add to focus"}
+            </button>
+            <button className="link-btn" onClick={removeProject}>Remove</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProjectsScreen({ store }) {
+  const { projects, focusProjects, projectsOverall, addProject } = store;
+  const [tab, setTab] = mUseState("focus");
+  const totalSteps = projects.reduce((a, p) => a + p.total, 0);
+  const doneSteps = projects.reduce((a, p) => a + p.done, 0);
+  const list = tab === "focus" ? focusProjects : projects;
+  const newProject = () => {
+    const name = window.prompt("New project name");
+    if (name && name.trim()) addProject(name.trim());
+  };
+  return (
+    <div className="screen-pad">
+      <ScreenHeader kicker="WHAT YOU'RE BUILDING" title="Projects"
+        right={<Ring value={projectsOverall / 100} size={54} stroke={6}><div className="num" style={{ fontSize: 14 }}>{projectsOverall}<span style={{ color: "var(--muted-2)", fontSize: 10 }}>%</span></div></Ring>} />
+      <div className="seg" style={{ width: "100%", marginBottom: 14 }}>
+        <button className={tab === "focus" ? "on" : ""} style={{ flex: 1 }} onClick={() => setTab("focus")}>Focus ({focusProjects.length})</button>
+        <button className={tab === "all" ? "on" : ""} style={{ flex: 1 }} onClick={() => setTab("all")}>All ({projects.length})</button>
+      </div>
+      {tab === "all" && (
+        <div className="lbl" style={{ color: "var(--muted-2)", margin: "0 0 10px" }}>{doneSteps}/{totalSteps} STEPS DONE OVERALL</div>
+      )}
+      <div className="col" style={{ gap: 10 }}>
+        {list.map((p) => <ProjectRow key={p.id} p={p} store={store} />)}
+        {list.length === 0 && (
+          <div className="empty-note">{tab === "focus" ? "No projects in focus. Open All and tap “Add to focus” on the ones to work first." : "No projects yet."}</div>
+        )}
+      </div>
+      <button className="btn-ghost" style={{ width: "100%", marginTop: 14 }} onClick={newProject}>
+        <Icon name="plus" size={16} /> New project
+      </button>
+    </div>
+  );
+}
+
 /* ---------- tab bar + phone frame ---------- */
 const TABS = [
   { id: "today", label: "Today", icon: "today" },
   { id: "capture", label: "Capture", icon: "capture" },
+  { id: "projects", label: "Projects", icon: "projects" },
   { id: "tasks", label: "Tasks", icon: "tasks" },
   { id: "habits", label: "Habits", icon: "habits" },
 ];
@@ -433,7 +556,7 @@ function TabBar({ active, setActive, badge }) {
 
 function Phone({ initial, store }) {
   const [active, setActive] = mUseState(initial);
-  const Screen = { today: TodayScreen, capture: CaptureScreen, tasks: TasksScreen, habits: HabitsScreen }[active];
+  const Screen = { today: TodayScreen, capture: CaptureScreen, projects: ProjectsScreen, tasks: TasksScreen, habits: HabitsScreen }[active];
   return (
     <div className="phone-wrap">
       <div className="phone">
@@ -457,7 +580,7 @@ function Phone({ initial, store }) {
 /* Full-screen mobile app (no device frame) — the real, usable app. */
 export function MobileShell({ store }) {
   const [active, setActive] = mUseState("today");
-  const Screen = { today: TodayScreen, capture: CaptureScreen, tasks: TasksScreen, habits: HabitsScreen }[active];
+  const Screen = { today: TodayScreen, capture: CaptureScreen, projects: ProjectsScreen, tasks: TasksScreen, habits: HabitsScreen }[active];
   return (
     <div className="app-shell">
       <div className="screen-body scroll-y">

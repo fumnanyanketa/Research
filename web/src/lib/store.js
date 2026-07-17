@@ -39,6 +39,22 @@ const SAMPLE_GOALS = [
   { id: "g2", short: "BETA", icon: "biz", title: "Ship the AI product public beta", remaining: 32, total: 60, elapsed: 28 },
   { id: "g3", short: "DELIVERY", icon: "camera", title: "Deliver the Hale wedding album", remaining: 14, total: 30, elapsed: 16 },
 ];
+const SAMPLE_PROJECTS = [
+  { id: "atlas-os", name: "Atlas OS", priority: "high", urgency: "this-month", next: "Sprint to a full WORKING Atlas by Jul 31: build it end-to-end with AI (orchestrator + Cortex + all agents running, model-agnostic, demoable). Then reverse-engineer it to learn each part; deploy/harden/self-improve come after", milestones: [{ text: "Give Atlas its own repo and move the design docs into it", done: false }, { text: "Decide the build approach and the model-agnostic architecture: a provider-abstraction layer so Atlas can run on any model (Claude, GPT, Gemini, DeepSeek, etc.), plus whether to build the agent loop yourself or use an existing harness", done: false }, { text: "Design the memory model: how Cortex stores shared state and how agents read and write it", done: false }, { text: "Build the Cortex shared memory layer", done: false }, { text: "Build the Atlas orchestrator (the loop that routes work to the agents)", done: false }, { text: "Wire the first agent end-to-end through the orchestrator and Cortex (first working slice)", done: false }, { text: "Build the remaining agents (Scout, Forge, Pulse, Herald, Warden)", done: false }, { text: "Build the tools the agents use", done: false }, { text: "Build the evals harness (measure quality and reliability), run across providers to keep it model-agnostic", done: false }, { text: "Deploy v1 (get it running live)", done: false }, { text: "Add the self-improvement loop (agents improve from evals and memory)", done: false }, { text: "Harden and iterate (observability, reliability, the flywheel actually running)", done: false }] },
+  { id: "afaes-workspace", name: "AFAES workspace", priority: "high", urgency: "this-week", next: "Share the folder with the volunteers' Google accounts at the right access level, then add the starter content they need", milestones: [{ text: "Decide the folder structure: the sections/subfolders volunteers need", done: true }, { text: "Organize the existing Drive folder into that structure", done: true }, { text: "Set sharing and permissions: share with volunteers' Google accounts at the right access level (least-privilege)", done: false }, { text: "Add the starter content and templates volunteers need", done: false }, { text: "Write a short \"how to use this folder\" note", done: true }, { text: "Share it with volunteers and confirm they can access what they need", done: false }] },
+  { id: "ai-literacy-curriculum", name: "AI literacy curriculum", priority: "high", urgency: "this-week", next: "Finish and adapt the curriculum (complete the 3 levels for the AFAES audience), then shape it into per-session plans for the hybrid workshops", milestones: [{ text: "Finish and adapt the curriculum itself: complete the 3 levels, fill gaps, adapt to the AFAES audience, lock the monthly framing and cadence", done: false }, { text: "Shape it into per-session plans (outcomes, hands-on exercises, materials)", done: false }, { text: "Lock format and logistics with AFAES (hybrid setup, cohort size, number/length of sessions, roles, dates)", done: false }, { text: "Build the facilitator kit (slides, handouts, exercises, between-session tasks, hybrid tech)", done: false }, { text: "Set up recruitment and intake (sign-up, screening, referral through AFAES)", done: false }, { text: "Set up measurement (pre/post survey, attendance, one behavioral \"did they use it\" metric)", done: false }, { text: "Run the pilot cohort (first full hybrid workshop series, end to end)", done: false }, { text: "Review the pilot and revise (what worked, what to fix)", done: false }, { text: "Make it repeatable (facilitator guide, reusable materials so it can be rerun)", done: false }, { text: "Secure funding and partnerships (identify funders, apply, formalize the AFAES partnership)", done: false }] },
+  { id: "ai-nativity-consulting", name: "AI Nativity · Consulting", priority: "high", urgency: "this-week", next: "Map out everything needed to start the consulting business, then finish the Startiraha application and prep the TE meeting", milestones: [{ text: "Initial TE office meeting held", done: true }, { text: "Contacted Business Helsinki (interest email sent; they asked for the business plan + financials)", done: true }, { text: "Define the consulting offering (services, niche, target clients, positioning, pricing)", done: false }, { text: "Draft the business plan (what Business Helsinki asked for)", done: false }, { text: "Draft the financials (profitability calculation, startup budget, sales forecast)", done: false }, { text: "Submit the business plan + financials to Business Helsinki", done: false }, { text: "Attend the 90-minute Business Helsinki meeting (booked after you submit)", done: false }, { text: "Submit the Startiraha application", done: false }, { text: "Register the toiminimi (Y-tunnus via YTJ/PRH + tax registers: ennakkovero, VAT if needed)", done: false }, { text: "Sort YEL entrepreneur's pension insurance", done: false }, { text: "Startiraha approved and business registered (funded and operating)", done: false }] },
+  { id: "anchor", name: "Anchor", priority: "high", urgency: "this-month", next: "Lock the v1 scope (Anchor is Central Command productized), choose web-first or native-first for this push, then split Anchor into its own repo and wire the web app to Supabase", milestones: [{ text: "Lock the v1 scope: Anchor is Central Command productized. Define the one core loop (capture, extract, track, remind) and exactly what ships in v1", done: false }, { text: "Choose the platform for this push (web-first or native-first) and the model-agnostic LLM layer for extraction", done: false }, { text: "Split Anchor into its own repo with a clean main branch (out of the research repo)", done: false }, { text: "Bring over the Central Command model: projects, milestones and progress, merged with tasks, reminders, habits and finances into one Supabase source of truth", done: false }, { text: "Wire the app to Supabase for real (replace the in-memory sample data)", done: false }, { text: "Build the dashboard from the Command Board prototype (focus view, progress, approve updates) as the home screen", done: false }, { text: "Build the capture input: voice and text in, on-device Whisper transcribe, LLM extracts tasks, steps and updates into the source of truth", done: false }, { text: "Build the reminder and notification engine (daily focus plus nudges), replacing the Central Command email routines", done: false }, { text: "Triage and fix the native-build bugs into a real list, and stabilize a working build", done: false }, { text: "Test end-to-end on the owner's phone: capture a real day and watch it land on the dashboard", done: false }, { text: "Ship v1: installed and used daily as the real system", done: false }] },
+  { id: "knowledge-base", name: "Knowledge base", priority: "medium", urgency: "this-month", next: "Finish building the knowledge base: merge claude/skilljar-study-plan-1jywco so the real content is canonical, then do one real INGEST", milestones: [{ text: "Merge the `skilljar-study-plan` branch into the default branch so the real content is canonical", done: false }, { text: "Delete the redundant `optimistic-thompson` branch", done: false }, { text: "Set a clean canonical default branch (optionally rename to `main`)", done: false }, { text: "One test run of ingest/query/lint to confirm the system works end-to-end", done: false }, { text: "Fill the 10 blank course-note templates with real content", done: false }, { text: "Do one real INGEST of something you care about (first seed beyond the courses)", done: false }, { text: "Set up the feeding workflow: on-demand ingest, a regular habit, and a first bit of automation", done: false }] },
+  { id: "language-app-jsmastery", name: "Language app (JS Mastery)", priority: "medium", urgency: "this-month", next: "Finish the remaining tutorial sections, get it running end-to-end, then write up the engineering lessons for PuhuScribe 3", milestones: [{ text: "Project and toolchain set up from the tutorial", done: true }, { text: "Core features built (main screens, navigation, state)", done: true }, { text: "Data/content and secondary features built", done: true }, { text: "Finish the remaining tutorial sections to the end", done: false }, { text: "App runs end-to-end: build passes, works locally, quick test", done: false }, { text: "Write up the engineering lessons that carry into the PuhuScribe 3 rebuild", done: false }] },
+  { id: "puhuscribe", name: "PuhuScribe 3", priority: "medium", urgency: "this-month", next: "Start the PuhuScribe 3 rebuild: lock v3 scope + the monetization decision and capture v2's lessons, then choose the architecture and stack", milestones: [{ text: "Lock v3 scope + the monetization decision, and capture v2's lessons (what to keep, what to fix)", done: false }, { text: "Choose the v3 architecture and stack (apply the JS Mastery engineering approach)", done: false }, { text: "Design the data model and content pipeline (reuse the FSRS engine and content vs rebuild)", done: false }, { text: "Stand up the v3 skeleton: repo, toolchain, auth, CI, deploy pipeline", done: false }, { text: "Rebuild the core learning loop end-to-end (acquire, schedule, review)", done: false }, { text: "Rebuild the supporting features (vocab/sentence banks, grammar, practice, AI layer, TTS)", done: false }, { text: "Port the content and data from v2", done: false }, { text: "Add monetization (the missing pillar: paywall / subscription)", done: false }, { text: "v2 housekeeping: salvage GROWTH-ENGINE.md, delete the 9 stale claude/* branches, apply the puhekieli corrections", done: false }, { text: "Test end-to-end and harden (QA, fix bugs)", done: false }, { text: "Launch PuhuScribe 3 (deploy, migrate users)", done: false }] },
+  { id: "ai-nativity-publishing", name: "AI Nativity · Publishing", priority: "medium", urgency: "this-month", next: "Publish the parked launch post to open the Substack, then set the YouTube creation strategy and record the first tutorial", milestones: [{ text: "Substack: publish the parked launch post (resolve its two header decisions) to open the newsletter", done: false }, { text: "Substack: set the newsletter cadence and a simple write-to-publish process", done: false }, { text: "YouTube: finalize the creation strategy (niche, format, topics, cadence)", done: false }, { text: "YouTube: sort the production setup (recording, screen capture, audio, editing workflow)", done: false }, { text: "YouTube: produce and publish the first tutorial video (script, record, edit, publish)", done: false }, { text: "YouTube: set up the channel page (banner, about, playlists)", done: false }, { text: "Socials: set up the build-in-public socials (LinkedIn/X profiles + approach)", done: false }, { text: "Socials: post the first build-in-public updates", done: false }, { text: "Rhythm: build a repeatable cross-channel production process (content calendar/pipeline)", done: false }, { text: "Rhythm: reach a consistent publishing rhythm (sustained regular output)", done: false }] },
+  { id: "fitness-app-40plus", name: "Fitness app 40+", priority: "medium", urgency: "this-month", next: "Define the concept: the core problem for women 40+ and the one core feature the MVP nails, then decide the MVP scope", milestones: [{ text: "Define the concept: the core problem for women 40+ and the one core feature the MVP nails", done: false }, { text: "Decide the MVP scope: the minimum feature set (what is in, what is out)", done: false }, { text: "Choose platform + stack (mobile/web) and design the basic flows/UX", done: false }, { text: "Set up the project skeleton (repo, toolchain, auth, data model)", done: false }, { text: "Build the core feature end-to-end", done: false }, { text: "Build the supporting screens for a usable MVP", done: false }, { text: "Add the content/data (workouts, plans, whatever it delivers)", done: false }, { text: "Test end-to-end and fix blocking bugs", done: false }, { text: "Release the MVP to a small group of testers", done: false }] },
+  { id: "yki-prep", name: "YKI exam prep", priority: "medium", urgency: "this-month", next: "Turn the shared YKI prep materials into a structured study curriculum, then work through it toward the YKI test", milestones: [{ text: "Inventory the raw materials: go through everything the friend shared and catalog it by skill/topic", done: false }, { text: "Decide the curriculum structure and confirm the target YKI level (the 4 skills, unit/week layout)", done: false }, { text: "Organize the materials into that structure (map each piece to a unit or skill)", done: false }, { text: "Spot the gaps and source or add material to fill them", done: false }, { text: "Build the study sequence and schedule (what order, what pace)", done: false }, { text: "Assemble a full mock/practice exam from the materials as the capstone", done: false }, { text: "Final pass: curriculum is complete, usable, and ready to study from", done: false }] },
+  { id: "millionaire-masterplan", name: "Millionaire Master Plan", priority: "low", urgency: "this-month", next: "Take the book's assessment to find your wealth level, then read it through and capture the key ideas", milestones: [{ text: "Take the book's assessment to find your current wealth level/profile", done: false }, { text: "Read the book through", done: false }, { text: "Capture the key ideas and your current-level actions as you read", done: false }, { text: "Identify your specific next-level moves from the framework", done: false }, { text: "Write your concrete personal plan (actions in sequence)", done: false }, { text: "Fold the plan into your actual projects and priorities here", done: false }, { text: "Start executing the first moves from the plan", done: false }] },
+  { id: "ai-readiness-app", name: "AI readiness app", priority: "low", urgency: "someday", next: "Define the problem an AI readiness app would solve and who it is for, then research what already exists", milestones: [{ text: "Define the problem: what \"AI readiness\" gap, and for whom (individuals, SMEs, NGOs)", done: false }, { text: "Research what already exists and where the gap is", done: false }, { text: "Sketch the concept in one page: what the app actually does", done: false }, { text: "Decide the format (assessment tool, course, dashboard, something else)", done: false }, { text: "Go/no-go: park it, or promote it to a real build project with its own repo", done: false }] },
+];
+
 
 /* ---------- mapping helpers ---------- */
 const PRIORITY_TO_DOT = { high: "red", medium: "amber", low: "grey" };
@@ -117,14 +133,59 @@ async function loadAll() {
   };
 }
 
+// Projects load from Supabase. Seeds the table from the built-in set the first
+// time it is empty, so a fresh project gets the current Central Command list.
+async function loadProjects(seed) {
+  let { data } = await supabase.from("projects").select().order("sort");
+  if (!data || data.length === 0) {
+    const rows = seed.map((p, i) => ({
+      id: p.id, name: p.name, priority: p.priority, urgency: p.urgency, next: p.next,
+      milestones: p.milestones, focus: p.priority === "high" && p.urgency === "this-week", sort: i,
+    }));
+    const ins = await supabase.from("projects").insert(rows).select();
+    data = ins.data || rows;
+  }
+  const projects = data.map((r) => ({
+    id: r.id, name: r.name, priority: r.priority, urgency: r.urgency, next: r.next, milestones: r.milestones || [],
+  }));
+  const focusIds = data.filter((r) => r.focus).map((r) => r.id);
+  return { projects, focusIds };
+}
+
+/* ---------- local persistence (used until Supabase is configured) ----------
+   Without this, every reload throws away edits and resets to the sample data.
+   With Supabase configured, Supabase is the source of truth and localStorage
+   is bypassed entirely. */
+const LS_PREFIX = "anchor.v1.";
+function loadLocal(key, fallback) {
+  if (isConfigured || typeof localStorage === "undefined") return fallback;
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if (raw == null) return fallback;
+    const v = JSON.parse(raw);
+    return v == null ? fallback : v;
+  } catch { return fallback; }
+}
+function saveLocal(key, value) {
+  if (isConfigured || typeof localStorage === "undefined") return;
+  try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(value)); } catch { /* quota / private mode */ }
+}
+
 /* ---------- the hook ---------- */
 export function useAnchorStore() {
   const [loading, setLoading] = useState(isConfigured);
-  const [tasks, setTasks] = useState(isConfigured ? [] : SAMPLE_TASKS);
-  const [habits, setHabits] = useState(isConfigured ? [] : SAMPLE_HABITS);
-  const [goals, setGoals] = useState(isConfigured ? [] : SAMPLE_GOALS);
-  const [areas, setAreas] = useState(isConfigured ? [] : SAMPLE_AREAS);
-  const [finance, setFinance] = useState(isConfigured ? [] : SAMPLE_FINANCE);
+  const [tasks, setTasks] = useState(isConfigured ? [] : loadLocal("tasks", SAMPLE_TASKS));
+  const [habits, setHabits] = useState(isConfigured ? [] : loadLocal("habits", SAMPLE_HABITS));
+  const [goals, setGoals] = useState(isConfigured ? [] : loadLocal("goals", SAMPLE_GOALS));
+  const [areas, setAreas] = useState(isConfigured ? [] : loadLocal("areas", SAMPLE_AREAS));
+  const [finance, setFinance] = useState(isConfigured ? [] : loadLocal("finance", SAMPLE_FINANCE));
+  // Projects + milestones (the Central Command model). Local-only for now; a
+  // Supabase projects/milestones table is a later milestone.
+  const [projects, setProjects] = useState(loadLocal("projects", SAMPLE_PROJECTS));
+  // Focus set: which projects to work first. Defaults to the time-sensitive
+  // ones (high priority + due this week), same rule as the Central Command board.
+  const defaultFocus = SAMPLE_PROJECTS.filter((p) => p.priority === "high" && p.urgency === "this-week").map((p) => p.id);
+  const [focusIds, setFocusIds] = useState(loadLocal("focusIds", defaultFocus));
 
   useEffect(() => {
     if (!isConfigured) return;
@@ -134,6 +195,8 @@ export function useAnchorStore() {
         const r = await loadAll();
         if (!alive) return;
         setTasks(r.tasks); setHabits(r.habits); setGoals(r.goals); setAreas(r.areas); setFinance(r.finance);
+        const pr = await loadProjects(SAMPLE_PROJECTS);
+        if (alive) { setProjects(pr.projects); setFocusIds(pr.focusIds); }
       } catch (e) {
         console.error("Anchor: failed to load from Supabase", e);
       } finally {
@@ -142,6 +205,15 @@ export function useAnchorStore() {
     })();
     return () => { alive = false; };
   }, []);
+
+  // Persist each slice locally whenever it changes (no-op when Supabase is on).
+  useEffect(() => { saveLocal("tasks", tasks); }, [tasks]);
+  useEffect(() => { saveLocal("habits", habits); }, [habits]);
+  useEffect(() => { saveLocal("goals", goals); }, [goals]);
+  useEffect(() => { saveLocal("areas", areas); }, [areas]);
+  useEffect(() => { saveLocal("finance", finance); }, [finance]);
+  useEffect(() => { saveLocal("projects", projects); }, [projects]);
+  useEffect(() => { saveLocal("focusIds", focusIds); }, [focusIds]);
 
   return useMemo(() => {
     const persist = (fn) => { if (isConfigured) fn().catch?.((e) => console.error(e)); };
@@ -181,8 +253,68 @@ export function useAnchorStore() {
       setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, key } : t)));
       persist(() => supabase.from("tasks").update({ is_key: key }).eq("id", id));
     };
+    // Local stand-in for the AI extraction step (used until Supabase + the
+    // extract function are wired). If a note is addressed to a project, e.g.
+    // "PuhuScribe: chose the stack" or "afaes: done shared the folder", file it
+    // as a step on that project (marked done when it starts with "done").
+    // Everything else becomes a proposed task, same as before.
+    const routeToProject = (title) => {
+      const m = title.match(/^\s*([^:]{2,42}):\s*(.+)$/);
+      if (!m) return null;
+      const label = m[1].trim().toLowerCase();
+      const rest = m[2].trim();
+      const proj = projects.find((p) => {
+        const n = p.name.toLowerCase(), id = p.id.toLowerCase();
+        return n === label || id === label || n.includes(label) || label.includes(id);
+      });
+      if (!proj) return null;
+      const doneNow = /^done\b[:\s-]*/i.test(rest);
+      const text = rest.replace(/^done\b[:\s-]*/i, "").trim() || rest;
+      const newMs = [...proj.milestones, { text, done: doneNow }];
+      setProjects((ps) => ps.map((p) => (p.id === proj.id ? { ...p, milestones: newMs } : p)));
+      persist(() => supabase.from("projects").update({ milestones: newMs }).eq("id", proj.id));
+      return proj.name;
+    };
+
+    const saveMilestones = (projectId, milestones) => {
+      setProjects((ps) => ps.map((p) => (p.id === projectId ? { ...p, milestones } : p)));
+      persist(() => supabase.from("projects").update({ milestones }).eq("id", projectId));
+    };
+    const addProjectStep = (projectId, text) => {
+      const t = (text || "").trim();
+      if (!t) return;
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      saveMilestones(projectId, [...cur.milestones, { text: t, done: false }]);
+    };
+    const deleteProjectStep = (projectId, index) => {
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      saveMilestones(projectId, cur.milestones.filter((_, i) => i !== index));
+    };
+    const addProject = (name, priority = "medium") => {
+      const nm = (name || "").trim();
+      if (!nm) return;
+      const id = nm.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project-" + (projects.length + 1);
+      if (projects.some((p) => p.id === id)) return;
+      const row = { id, name: nm, priority, urgency: "this-month", next: "Define the first steps", milestones: [] };
+      setProjects((ps) => [...ps, row]);
+      persist(() => supabase.from("projects").insert({ ...row, sort: projects.length }));
+    };
+    const deleteProject = (projectId) => {
+      setProjects((ps) => ps.filter((p) => p.id !== projectId));
+      setFocusIds((ids) => ids.filter((x) => x !== projectId));
+      persist(() => supabase.from("projects").delete().eq("id", projectId));
+    };
+    const toggleFocus = (projectId) => {
+      const on = !focusIds.includes(projectId);
+      setFocusIds((ids) => (on ? [...ids, projectId] : ids.filter((x) => x !== projectId)));
+      persist(() => supabase.from("projects").update({ focus: on }).eq("id", projectId));
+    };
+
     const addThought = async (title) => {
       if (!isConfigured) {
+        if (routeToProject(title)) return;
         setTasks((ts) => [{ id: "p" + Date.now(), title, status: "proposed", priority: "grey", area: "Inbox" }, ...ts]);
         return;
       }
@@ -309,6 +441,14 @@ export function useAnchorStore() {
       });
     };
 
+    // Projects: tick a milestone. Percent is always steps done / total.
+    const toggleMilestone = (projectId, index) => {
+      const cur = projects.find((p) => p.id === projectId);
+      if (!cur) return;
+      const milestones = cur.milestones.map((m, i) => (i === index ? { ...m, done: !m.done } : m));
+      saveMilestones(projectId, milestones);
+    };
+
     const openByArea = {};
     tasks.forEach((t) => { if (t.status !== "done") openByArea[t.area] = (openByArea[t.area] || 0) + 1; });
     const areasWithOpen = areas.map((a) => ({ ...a, open: openByArea[a.name] || 0 }));
@@ -316,12 +456,24 @@ export function useAnchorStore() {
     const keyTasks = active.filter((t) => t.key).concat(active.filter((t) => !t.key)).slice(0, 4);
     const proposed = tasks.filter((t) => t.status === "proposed");
 
+    const projectsView = projects.map((p) => {
+      const total = p.milestones.length;
+      const done = p.milestones.filter((m) => m.done).length;
+      return { ...p, done, total, progress: total ? Math.round((100 * done) / total) : 0, focus: focusIds.includes(p.id) };
+    });
+    const projectsOverall = projectsView.length
+      ? Math.round(projectsView.reduce((a, p) => a + p.progress, 0) / projectsView.length)
+      : 0;
+    const focusProjects = projectsView.filter((p) => p.focus);
+
     return {
       loading, name: USER_NAME,
       tasks, habits, goals, finance, areas: areasWithOpen,
       keyTasks, proposed,
+      projects: projectsView, projectsOverall, focusProjects,
+      toggleMilestone, addProjectStep, deleteProjectStep, addProject, deleteProject, toggleFocus,
       toggleHabit, confirmTask, dismissTask, completeTask, toggleKey, addThought, addGoal,
       editTask, deleteTask, editGoal, deleteGoal, addHabit, editHabit, deleteHabit, addFinance,
     };
-  }, [loading, tasks, habits, goals, areas, finance]);
+  }, [loading, tasks, habits, goals, areas, finance, projects, focusIds]);
 }
